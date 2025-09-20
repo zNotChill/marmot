@@ -1,15 +1,14 @@
 package me.znotchill.marmot.minestom
 
-import io.netty.buffer.ByteBuf
-import io.netty.buffer.Unpooled
 import me.znotchill.blossom.command.command
+import me.znotchill.blossom.component.component
 import me.znotchill.blossom.extensions.addListener
 import me.znotchill.blossom.server.BlossomServer
 import me.znotchill.marmot.minestom.api.MarmotAPI
+import me.znotchill.marmot.minestom.api.MarmotEvent
 import net.minestom.server.entity.GameMode
 import net.minestom.server.event.player.AsyncPlayerConfigurationEvent
 import net.minestom.server.event.player.PlayerLoadedEvent
-import net.minestom.server.event.player.PlayerPluginMessageEvent
 import net.minestom.server.instance.InstanceContainer
 
 class Server : BlossomServer(
@@ -19,6 +18,21 @@ class Server : BlossomServer(
     lateinit var instanceContainer: InstanceContainer
 
     override fun preLoad() {
+        MarmotAPI.registerEvents(eventHandler)
+
+        MarmotAPI.addEvent(MarmotEvent.LEFT_CLICK_BEGIN) { player ->
+            player.sendMessage("began left click")
+        }
+        MarmotAPI.addEvent(MarmotEvent.LEFT_CLICK_END) { player ->
+            player.sendMessage("stopped left click")
+        }
+        MarmotAPI.addEvent(MarmotEvent.RIGHT_CLICK_BEGIN) { player ->
+            player.sendMessage("began right click")
+        }
+        MarmotAPI.addEvent(MarmotEvent.RIGHT_CLICK_END) { player ->
+            player.sendMessage("stopped right click")
+        }
+
         instanceContainer = BaseInstance().createInstance(instanceManager)
 
         eventHandler.addListener<PlayerLoadedEvent> { event ->
@@ -37,19 +51,6 @@ class Server : BlossomServer(
             player.permissionLevel = 4
         }
 
-        eventHandler.addListener<PlayerPluginMessageEvent> { event ->
-            when (event.identifier) {
-                "marmot:click_update" -> {
-                    val buf: ByteBuf = Unpooled.wrappedBuffer(event.message)
-
-                    val leftHeld = buf.readBoolean()
-                    val rightHeld = buf.readBoolean()
-
-                    println("Player ${event.player.username} leftHeld=$leftHeld rightHeld=$rightHeld")
-                }
-            }
-        }
-
         registerCommand(
             command("lockcamera") {
                 val lock = argument<Boolean>("lock")
@@ -64,6 +65,38 @@ class Server : BlossomServer(
                 val lock = argument<Boolean>("lock")
                 syntax(lock) { lockBool ->
                     MarmotAPI.setMouseLock(this, lockBool)
+                }
+            }
+        )
+
+        registerCommand(
+            command("sendhealth") {
+                syntax {
+                    MarmotAPI.sendHealthPacket(this)
+                }
+            }
+        )
+
+        registerCommand(
+            command("ismarmot") {
+                val playerName = argument<String>("player")
+                syntax(playerName) { nameStr ->
+                    val player = players.find { it.username == nameStr }
+                    if (player == null) return@syntax
+
+                    val isMarmot = MarmotAPI.isUsingMarmot(player)
+
+                    if (isMarmot) {
+                        val message = component {
+                            text("${player.username} is using Marmot.")
+                        }
+                        sendMessage(message)
+                    } else {
+                        val message = component {
+                            text("${player.username} is not using Marmot.")
+                        }
+                        sendMessage(message)
+                    }
                 }
             }
         )

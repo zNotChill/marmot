@@ -1,12 +1,122 @@
 package me.znotchill.marmot.minestom.api
 
+import io.netty.buffer.ByteBuf
 import io.netty.buffer.ByteBufAllocator
+import io.netty.buffer.Unpooled
+import me.znotchill.blossom.extensions.addListener
 import net.minestom.server.entity.Player
+import net.minestom.server.event.GlobalEventHandler
+import net.minestom.server.event.player.PlayerDisconnectEvent
+import net.minestom.server.event.player.PlayerLoadedEvent
+import net.minestom.server.event.player.PlayerPluginMessageEvent
 import net.minestom.server.network.packet.server.common.PluginMessagePacket
 import java.nio.ByteBuffer
+import java.util.UUID
 import kotlin.collections.iterator
 
+enum class MarmotEvent {
+    LEFT_CLICK_BEGIN,
+    LEFT_CLICK_END,
+    RIGHT_CLICK_BEGIN,
+    RIGHT_CLICK_END
+}
+
 object MarmotAPI {
+    private val players: MutableMap<UUID, MarmotPlayer> = mutableMapOf()
+
+    private val events: MutableMap<MarmotEvent, (player: Player) -> Unit> = mutableMapOf()
+
+    fun getEvent(event: MarmotEvent): (Player) -> Unit {
+        return events[event] ?: {}
+    }
+
+    fun addEvent(event: MarmotEvent, run: (Player) -> Unit) {
+        events[event] = run
+    }
+
+    fun registerEvents(eventHandler: GlobalEventHandler) {
+        eventHandler.addListener<PlayerPluginMessageEvent> { event ->
+            val player = event.player
+
+            when (event.identifier) {
+                "marmot:click_update" -> {
+                    val playerMarmot = player.marmot ?: return@addListener
+                    val buf: ByteBuf = Unpooled.wrappedBuffer(event.message)
+
+                    val leftHeld = buf.readBoolean()
+                    val rightHeld = buf.readBoolean()
+
+                    if (leftHeld && !playerMarmot.holdingLeftClick) {
+                        getEvent(MarmotEvent.LEFT_CLICK_BEGIN)(event.player)
+                    } else if (!leftHeld && playerMarmot.holdingLeftClick) {
+                        getEvent(MarmotEvent.LEFT_CLICK_END)(event.player)
+                    }
+
+                    if (rightHeld && !playerMarmot.holdingRightClick) {
+                        getEvent(MarmotEvent.RIGHT_CLICK_BEGIN)(event.player)
+                    } else if (!rightHeld && playerMarmot.holdingRightClick) {
+                        getEvent(MarmotEvent.RIGHT_CLICK_END)(event.player)
+                    }
+
+                    playerMarmot.holdingLeftClick = leftHeld
+                    playerMarmot.holdingRightClick = rightHeld
+
+                    println("Player ${event.player.username} leftHeld=$leftHeld rightHeld=$rightHeld")
+                }
+                "marmot:is_marmot" -> {
+                    println("received is_marmot health packet from client")
+                    players[event.player.uuid] = MarmotPlayer.create(event.player)
+                }
+            }
+        }
+
+        eventHandler.addListener<PlayerLoadedEvent> { event ->
+            println("sending is_marmot health packet to client")
+            sendHealthPacket(event.player)
+        }
+
+        eventHandler.addListener<PlayerDisconnectEvent> { event ->
+            players.remove(event.player.uuid)
+        }
+    }
+
+    fun isUsingMarmot(player: Player): Boolean {
+        return players[player.uuid]?.isMarmot == true
+    }
+
+    fun getMarmotPlayer(player: Player): MarmotPlayer? {
+        return players[player.uuid]
+    }
+
+    /**
+     * Sends a basic health packet to the client.
+     * If the client is using Marmot, the client will automatically
+     * send back a confirmation health packet.
+     */
+    fun sendHealthPacket(player: Player) {
+        val buf = ByteBufAllocator.DEFAULT.buffer()
+        buf.writeInt(1)
+
+        val bytes = ByteArray(buf.readableBytes())
+        val packet = PluginMessagePacket("marmot:is_marmot", bytes)
+        player.sendPacket(packet)
+    }
+
+    /**
+     * Send forced keybinds to the client.
+     * Opens a GUI on the client asking the user if they
+     * want to override their keybinds temporarily.
+     *
+     * Must use Minecraft translation keys, for example:
+     * ```kt
+     * sendKeybinds(
+     *  player,
+     *  mapOf(
+     *   "key.advancements" to "key.keyboard.y"
+     *  )
+     * )
+     * ```
+     */
     fun sendKeybinds(player: Player, binds: Map<String, String>) {
         val buf = ByteBufAllocator.DEFAULT.buffer()
 
@@ -24,6 +134,9 @@ object MarmotAPI {
         player.sendPacket(packet)
     }
 
+    /**
+     * Forcefully manipulate the client's camera.
+     */
     fun sendCameraPacket(
         player: Player,
         pitch: Float,
@@ -40,12 +153,10 @@ object MarmotAPI {
         player.sendPacket(packet)
     }
 
-    fun lockCamera(player: Player) {
-        setCameraLock(player, true)
-    }
-    fun unlockCamera(player: Player) {
-        setCameraLock(player, false)
-    }
+    /**
+     * Decides whether the player's camera should be locked
+     * from moving.
+     */
     fun setCameraLock(player: Player, locked: Boolean) {
         val buffer = ByteBuffer.allocate(1)
         buffer.put(if (locked) 1 else 0)
@@ -53,12 +164,10 @@ object MarmotAPI {
         player.sendPacket(packet)
     }
 
-    fun lockMouse(player: Player) {
-        setMouseLock(player, true)
-    }
-    fun unlockMouse(player: Player) {
-        setMouseLock(player, false)
-    }
+    /**
+     * Decides whether the player's mouse should be locked
+     * from pressing left and right click.
+     */
     fun setMouseLock(player: Player, locked: Boolean) {
         val buffer = ByteBuffer.allocate(1)
         buffer.put(if (locked) 1 else 0)
