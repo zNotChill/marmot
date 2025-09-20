@@ -13,6 +13,8 @@ repositories {
 
 dependencies {
     testImplementation(kotlin("test"))
+    implementation("io.netty:netty-buffer:4.1.111.Final")
+    implementation("io.netty:netty-common:4.1.111.Final")
     implementation("net.minestom:minestom:2025.09.13-1.21.8")
     implementation("me.znotchill:blossom:1.4.1")
     implementation("io.github.xn32:json5k:0.3.0")
