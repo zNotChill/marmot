@@ -4,12 +4,12 @@ import me.znotchill.marmot.client.packets.clientbound.handlers.CameraHandler
 import me.znotchill.marmot.client.packets.clientbound.handlers.CameraLockHandler
 import me.znotchill.marmot.client.packets.clientbound.handlers.ForceKeybindsHandler
 import me.znotchill.marmot.client.packets.clientbound.handlers.IsMarmotClientHandler
-import me.znotchill.marmot.client.packets.clientbound.handlers.MouseLockHandler
+import me.znotchill.marmot.client.packets.clientbound.handlers.MouseHandler
 import me.znotchill.marmot.client.packets.clientbound.payloads.CameraLockPayload
 import me.znotchill.marmot.client.packets.clientbound.payloads.CameraPayload
 import me.znotchill.marmot.client.packets.clientbound.payloads.ForceKeybindsPayload
 import me.znotchill.marmot.client.packets.clientbound.payloads.IsMarmotClientPayload
-import me.znotchill.marmot.client.packets.clientbound.payloads.MouseLockPayload
+import me.znotchill.marmot.client.packets.clientbound.payloads.MousePayload
 import me.znotchill.marmot.client.packets.serverbound.payloads.ClickUpdatePayload
 import me.znotchill.marmot.client.packets.serverbound.payloads.IsMarmotServerPayload
 import net.fabricmc.api.ClientModInitializer
@@ -23,7 +23,7 @@ class MarmotClient : ClientModInitializer {
     override fun onInitializeClient() {
         PayloadTypeRegistry.playS2C().register(CameraPayload.ID, CameraPayload.CODEC)
         PayloadTypeRegistry.playS2C().register(CameraLockPayload.ID, CameraLockPayload.CODEC)
-        PayloadTypeRegistry.playS2C().register(MouseLockPayload.ID, MouseLockPayload.CODEC)
+        PayloadTypeRegistry.playS2C().register(MousePayload.ID, MousePayload.CODEC)
         PayloadTypeRegistry.playS2C().register(ForceKeybindsPayload.ID, ForceKeybindsPayload.CODEC)
         PayloadTypeRegistry.playS2C().register(IsMarmotClientPayload.ID, IsMarmotClientPayload.CODEC)
 
@@ -33,7 +33,7 @@ class MarmotClient : ClientModInitializer {
         CameraHandler().register()
         CameraLockHandler().register()
         ForceKeybindsHandler().register()
-        MouseLockHandler().register()
+        MouseHandler().register()
         IsMarmotClientHandler().register()
 
         ClientTickEvents.END_CLIENT_TICK.register { client: MinecraftClient ->

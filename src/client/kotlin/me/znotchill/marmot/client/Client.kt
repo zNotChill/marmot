@@ -37,6 +37,7 @@ object Client {
 
     var cameraLocked: Boolean = false
     var mouseButtonsLocked: Boolean = false
+    var emitMouseEvents: Boolean = false
 
     var isLeftClicking: Boolean = false
     var isRightClicking: Boolean = false

@@ -7,15 +7,17 @@ import net.minecraft.network.codec.PacketCodecs
 import net.minecraft.network.packet.CustomPayload
 
 
-class MouseLockPayload(
-    val locked: Byte
+class MousePayload(
+    val locked: Byte,
+    val emitEvents: Byte,
 ) : CustomPayload {
     companion object {
-        val ID = CustomPayload.Id<MouseLockPayload>(ClientPackets.MOUSE_LOCK)
+        val ID = CustomPayload.Id<MousePayload>(ClientPackets.MOUSE)
 
-        val CODEC: PacketCodec<PacketByteBuf, MouseLockPayload> = PacketCodec.tuple(
-            PacketCodecs.BYTE, MouseLockPayload::locked,
-            ::MouseLockPayload
+        val CODEC: PacketCodec<PacketByteBuf, MousePayload> = PacketCodec.tuple(
+            PacketCodecs.BYTE, MousePayload::locked,
+            PacketCodecs.BYTE, MousePayload::emitEvents,
+            ::MousePayload
         )
     }
 

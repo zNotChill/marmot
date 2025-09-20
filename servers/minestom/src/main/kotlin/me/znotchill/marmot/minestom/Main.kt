@@ -63,8 +63,9 @@ class Server : BlossomServer(
         registerCommand(
             command("lockmouse") {
                 val lock = argument<Boolean>("lock")
-                syntax(lock) { lockBool ->
-                    MarmotAPI.setMouseLock(this, lockBool)
+                val emit = argument<Boolean>("emit")
+                syntax(lock, emit) { lockBool, emitBool ->
+                    MarmotAPI.setMouse(this, lockBool, emitBool)
                 }
             }
         )

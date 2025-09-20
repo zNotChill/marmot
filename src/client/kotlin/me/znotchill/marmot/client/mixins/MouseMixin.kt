@@ -18,7 +18,7 @@ class MouseMixin {
 
     @Inject(method = ["onMouseButton"], at = [At("HEAD")], cancellable = true)
     fun onMouseButton(ci: CallbackInfo) {
-        if (Client.mouseButtonsLocked) {
+        if (Client.mouseButtonsLocked && !Client.emitMouseEvents) {
             ci.cancel()
         }
     }

@@ -165,13 +165,15 @@ object MarmotAPI {
     }
 
     /**
-     * Decides whether the player's mouse should be locked
-     * from pressing left and right click.
+     * Forcefully manipulate the player's mouse.
+     * Can be locked from clicking left or right click.
+     * Can be locked from emitting click events.
      */
-    fun setMouseLock(player: Player, locked: Boolean) {
-        val buffer = ByteBuffer.allocate(1)
+    fun setMouse(player: Player, locked: Boolean, emitEvents: Boolean) {
+        val buffer = ByteBuffer.allocate(2)
         buffer.put(if (locked) 1 else 0)
-        val packet = PluginMessagePacket("marmot:mouse_lock", buffer.array())
+        buffer.put(if (emitEvents) 1 else 0)
+        val packet = PluginMessagePacket("marmot:mouse", buffer.array())
         player.sendPacket(packet)
     }
 }
