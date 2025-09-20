@@ -46,8 +46,10 @@ repositories {
     // Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
     // See https://docs.gradle.org/current/userguide/declaring_repositories.html
     // for more information about repositories.
+    maven(url = "https://repo.essential.gg/repository/maven-public")
 }
 
+val elementaVersion = 710
 dependencies {
     // To change the versions see the gradle.properties file
     minecraft("com.mojang:minecraft:${project.property("minecraft_version")}")
@@ -56,6 +58,8 @@ dependencies {
     modImplementation("net.fabricmc:fabric-language-kotlin:${project.property("kotlin_loader_version")}")
 
     modImplementation("net.fabricmc.fabric-api:fabric-api:${project.property("fabric_version")}")
+    implementation("gg.essential:elementa:${elementaVersion}")
+    implementation("gg.essential:elementa-unstable-layoutdsl:${elementaVersion}")
 }
 
 tasks.processResources {

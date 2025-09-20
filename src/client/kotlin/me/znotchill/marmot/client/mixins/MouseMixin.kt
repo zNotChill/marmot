@@ -1,6 +1,7 @@
 package me.znotchill.marmot.client.mixins
 
 import me.znotchill.marmot.client.Client
+import net.minecraft.client.MinecraftClient
 import net.minecraft.client.Mouse
 import org.spongepowered.asm.mixin.Mixin
 import org.spongepowered.asm.mixin.injection.At
@@ -18,8 +19,10 @@ class MouseMixin {
 
     @Inject(method = ["onMouseButton"], at = [At("HEAD")], cancellable = true)
     fun onMouseButton(ci: CallbackInfo) {
+        val mc = MinecraftClient.getInstance()
         if (Client.mouseButtonsLocked && !Client.emitMouseEvents) {
-            ci.cancel()
+            if (mc.currentScreen == null)
+                ci.cancel()
         }
     }
 }
