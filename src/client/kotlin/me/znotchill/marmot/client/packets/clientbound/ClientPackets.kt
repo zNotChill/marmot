@@ -8,4 +8,5 @@ object ClientPackets {
     val MOUSE: Identifier = Identifier.of("marmot", "mouse")
     val FORCE_KEYBINDS: Identifier = Identifier.of("marmot", "force_keybinds")
     val IS_MARMOT: Identifier = Identifier.of("marmot", "is_marmot")
+    val CHAT_TOGGLE: Identifier = Identifier.of("marmot", "chat_toggle")
 }
