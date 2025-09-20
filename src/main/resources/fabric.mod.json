@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "id": "marmot",
+  "version": "${version}",
+  "name": "marmot",
+  "description": "",
+  "authors": [],
+  "contact": {},
+  "license": "All-Rights-Reserved",
+  "environment": "client",
+  "entrypoints": {
+    "fabric-datagen": [
+      "me.znotchill.marmot.client.MarmotDataGenerator"
+    ],
+    "client": [
+      "me.znotchill.marmot.client.MarmotClient"
+    ],
+    "main": [
+      "me.znotchill.marmot.Marmot"
+    ]
+  },
+  "mixins": [
+    "marmot.mixins.json",
+    {
+      "config": "marmot.client.mixins.json",
+      "environment": "client"
+    }
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric-language-kotlin": ">=${kotlin_loader_version}",
+    "fabric": "*",
+    "minecraft": "${minecraft_version}"
+  }
+}
