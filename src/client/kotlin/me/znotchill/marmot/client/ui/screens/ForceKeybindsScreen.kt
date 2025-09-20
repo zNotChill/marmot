@@ -1,6 +1,6 @@
 package me.znotchill.marmot.client.ui.screens
 
-import me.znotchill.marmot.client.payloads.ForceKeybindsPayload
+import me.znotchill.marmot.client.packets.clientbound.payloads.ForceKeybindsPayload
 import net.minecraft.client.gui.DrawContext
 import net.minecraft.client.gui.screen.Screen
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder

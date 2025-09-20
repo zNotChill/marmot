@@ -1,17 +1,16 @@
-package me.znotchill.marmot.client.payloads
+package me.znotchill.marmot.client.packets.clientbound.payloads
 
+import me.znotchill.marmot.client.packets.clientbound.ClientPackets
 import net.minecraft.network.PacketByteBuf
 import net.minecraft.network.codec.PacketCodec
 import net.minecraft.network.codec.PacketCodecs
 import net.minecraft.network.packet.CustomPayload
-import net.minecraft.util.Identifier
-
 
 class CameraLockPayload(
     val locked: Byte
 ) : CustomPayload {
     companion object {
-        val ID = CustomPayload.Id<CameraLockPayload>(Identifier.of("marmot", "camera_lock"))
+        val ID = CustomPayload.Id<CameraLockPayload>(ClientPackets.CAMERA_LOCK)
 
         val CODEC: PacketCodec<PacketByteBuf, CameraLockPayload> = PacketCodec.tuple(
             PacketCodecs.BYTE, CameraLockPayload::locked,

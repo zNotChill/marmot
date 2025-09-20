@@ -1,16 +1,17 @@
-package me.znotchill.marmot.client.payloads
+package me.znotchill.marmot.client.packets.clientbound.payloads
 
+import me.znotchill.marmot.client.packets.clientbound.ClientPackets
 import net.minecraft.network.PacketByteBuf
 import net.minecraft.network.codec.PacketCodec
 import net.minecraft.network.packet.CustomPayload
-import net.minecraft.util.Identifier
+import kotlin.collections.iterator
 
 
 class ForceKeybindsPayload(
     val binds: Map<String, String>
 ) : CustomPayload {
     companion object {
-        val ID = CustomPayload.Id<ForceKeybindsPayload>(Identifier.of("marmot", "force_keybinds"))
+        val ID = CustomPayload.Id<ForceKeybindsPayload>(ClientPackets.FORCE_KEYBINDS)
 
         val CODEC: PacketCodec<PacketByteBuf, ForceKeybindsPayload> =
             PacketCodec.of(

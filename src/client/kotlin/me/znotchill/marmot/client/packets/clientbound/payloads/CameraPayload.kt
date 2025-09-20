@@ -1,11 +1,10 @@
-package me.znotchill.marmot.client.payloads
+package me.znotchill.marmot.client.packets.clientbound.payloads
 
+import me.znotchill.marmot.client.packets.clientbound.ClientPackets
 import net.minecraft.network.PacketByteBuf
 import net.minecraft.network.codec.PacketCodec
 import net.minecraft.network.codec.PacketCodecs
 import net.minecraft.network.packet.CustomPayload
-import net.minecraft.util.Identifier
-
 
 class CameraPayload(
     val x: Float,
@@ -14,7 +13,7 @@ class CameraPayload(
     val fov: Float,
 ) : CustomPayload {
     companion object {
-        val ID = CustomPayload.Id<CameraPayload>(Identifier.of("marmot", "camera"))
+        val ID = CustomPayload.Id<CameraPayload>(ClientPackets.CAMERA)
 
         val CODEC: PacketCodec<PacketByteBuf, CameraPayload> = PacketCodec.tuple(
             PacketCodecs.FLOAT, CameraPayload::x,
