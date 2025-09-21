@@ -3,9 +3,12 @@ package me.znotchill.marmot.minestom
 import me.znotchill.blossom.command.command
 import me.znotchill.blossom.component.component
 import me.znotchill.blossom.extensions.addListener
+import me.znotchill.blossom.extensions.ticks
+import me.znotchill.blossom.scheduler.task
 import me.znotchill.blossom.server.BlossomServer
 import me.znotchill.marmot.minestom.api.MarmotAPI
 import me.znotchill.marmot.minestom.api.MarmotEvent
+import me.znotchill.marmot.minestom.uis.TestUI
 import net.minestom.server.entity.GameMode
 import net.minestom.server.event.player.AsyncPlayerConfigurationEvent
 import net.minestom.server.event.player.PlayerLoadedEvent
@@ -101,6 +104,16 @@ class Server : BlossomServer(
                 }
             }
         )
+
+        scheduler.task {
+            repeat = 1.ticks
+            run = { task ->
+                players.forEach { player ->
+                    val ui = TestUI()
+                    MarmotAPI.sendUI(player, ui)
+                }
+            }
+        }
     }
 
 }

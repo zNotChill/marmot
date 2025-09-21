@@ -10,8 +10,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo
 
 @Mixin(Mouse::class)
 class MouseMixin {
-    @Inject(method = ["updateMouse"], at = [At("HEAD")], cancellable = true)
-    fun update(ci: CallbackInfo) {
+    @Inject(method = ["Lnet/minecraft/client/Mouse;updateMouse(D)V"], at = [At("HEAD")], cancellable = true)
+    fun update(timeDelta: Double, ci: CallbackInfo) {
         if (Client.cameraLocked) {
             ci.cancel()
         }

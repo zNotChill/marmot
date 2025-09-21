@@ -5,6 +5,7 @@ plugins {
     kotlin("jvm") version "2.2.20"
     id("fabric-loom") version "1.11-SNAPSHOT"
     id("maven-publish")
+    kotlin("plugin.serialization") version "2.2.20"
 }
 
 version = project.property("mod_version") as String
@@ -21,6 +22,9 @@ java {
     // if it is present.
     // If you remove this line, sources will not be generated.
     withSourcesJar()
+}
+kotlin {
+    jvmToolchain(targetJavaVersion)
 }
 
 loom {
@@ -46,11 +50,10 @@ repositories {
     // Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
     // See https://docs.gradle.org/current/userguide/declaring_repositories.html
     // for more information about repositories.
-    maven(url = "https://repo.essential.gg/repository/maven-public")
 }
 
-val elementaVersion = 710
 dependencies {
+    implementation(project(":common"))
     // To change the versions see the gradle.properties file
     minecraft("com.mojang:minecraft:${project.property("minecraft_version")}")
     mappings("net.fabricmc:yarn:${project.property("yarn_mappings")}:v2")
@@ -58,8 +61,7 @@ dependencies {
     modImplementation("net.fabricmc:fabric-language-kotlin:${project.property("kotlin_loader_version")}")
 
     modImplementation("net.fabricmc.fabric-api:fabric-api:${project.property("fabric_version")}")
-    implementation("gg.essential:elementa:${elementaVersion}")
-    implementation("gg.essential:elementa-unstable-layoutdsl:${elementaVersion}")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
 }
 
 tasks.processResources {

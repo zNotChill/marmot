@@ -1,17 +1,10 @@
 package me.znotchill.marmot.client
 
-import me.znotchill.marmot.client.packets.clientbound.handlers.CameraHandler
-import me.znotchill.marmot.client.packets.clientbound.handlers.CameraLockHandler
-import me.znotchill.marmot.client.packets.clientbound.handlers.ForceKeybindsHandler
-import me.znotchill.marmot.client.packets.clientbound.handlers.IsMarmotClientHandler
-import me.znotchill.marmot.client.packets.clientbound.handlers.MouseHandler
-import me.znotchill.marmot.client.packets.clientbound.payloads.CameraLockPayload
-import me.znotchill.marmot.client.packets.clientbound.payloads.CameraPayload
-import me.znotchill.marmot.client.packets.clientbound.payloads.ForceKeybindsPayload
-import me.znotchill.marmot.client.packets.clientbound.payloads.IsMarmotClientPayload
-import me.znotchill.marmot.client.packets.clientbound.payloads.MousePayload
+import me.znotchill.marmot.client.packets.clientbound.handlers.*
+import me.znotchill.marmot.client.packets.clientbound.payloads.*
 import me.znotchill.marmot.client.packets.serverbound.payloads.ClickUpdatePayload
 import me.znotchill.marmot.client.packets.serverbound.payloads.IsMarmotServerPayload
+import me.znotchill.marmot.client.ui.UIRenderer
 import net.fabricmc.api.ClientModInitializer
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents
@@ -26,6 +19,7 @@ class MarmotClient : ClientModInitializer {
         PayloadTypeRegistry.playS2C().register(MousePayload.ID, MousePayload.CODEC)
         PayloadTypeRegistry.playS2C().register(ForceKeybindsPayload.ID, ForceKeybindsPayload.CODEC)
         PayloadTypeRegistry.playS2C().register(IsMarmotClientPayload.ID, IsMarmotClientPayload.CODEC)
+        PayloadTypeRegistry.playS2C().register(UIPayload.ID, UIPayload.CODEC)
 
         PayloadTypeRegistry.playC2S().register(ClickUpdatePayload.ID, ClickUpdatePayload.CODEC)
         PayloadTypeRegistry.playC2S().register(IsMarmotServerPayload.ID, IsMarmotServerPayload.CODEC)
@@ -35,6 +29,9 @@ class MarmotClient : ClientModInitializer {
         ForceKeybindsHandler().register()
         MouseHandler().register()
         IsMarmotClientHandler().register()
+        UIHandler().register()
+
+        UIRenderer.register()
 
         ClientTickEvents.END_CLIENT_TICK.register { client: MinecraftClient ->
             val leftPressed = client.mouse.wasLeftButtonClicked()
@@ -59,6 +56,11 @@ class MarmotClient : ClientModInitializer {
             Client.roll = 0f
             Client.targetFov = client.options.fov.value.toFloat()
             Client.cameraLocked = false
+            Client.isLeftClicking = false
+            Client.isRightClicking = false
+            Client.emitMouseEvents = true
+            Client.cameraLocked = false
+            UIRenderer.setWindow(null)
 
             KeybindManager.restoreAll()
         }

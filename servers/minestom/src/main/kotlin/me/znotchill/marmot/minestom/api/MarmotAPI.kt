@@ -4,6 +4,8 @@ import io.netty.buffer.ByteBuf
 import io.netty.buffer.ByteBufAllocator
 import io.netty.buffer.Unpooled
 import me.znotchill.blossom.extensions.addListener
+import me.znotchill.marmot.common.ui.MarmotUI
+import me.znotchill.marmot.common.ui.UIWindow
 import net.minestom.server.entity.Player
 import net.minestom.server.event.GlobalEventHandler
 import net.minestom.server.event.player.PlayerDisconnectEvent
@@ -11,8 +13,7 @@ import net.minestom.server.event.player.PlayerLoadedEvent
 import net.minestom.server.event.player.PlayerPluginMessageEvent
 import net.minestom.server.network.packet.server.common.PluginMessagePacket
 import java.nio.ByteBuffer
-import java.util.UUID
-import kotlin.collections.iterator
+import java.util.*
 
 enum class MarmotEvent {
     LEFT_CLICK_BEGIN,
@@ -175,5 +176,29 @@ object MarmotAPI {
         buffer.put(if (emitEvents) 1 else 0)
         val packet = PluginMessagePacket("marmot:mouse", buffer.array())
         player.sendPacket(packet)
+    }
+
+    /**
+     * Send a constructed UI to display on the player's screen.
+     */
+    fun sendUI(player: Player, marmotUI: MarmotUI) {
+        sendUI(player, marmotUI.build())
+    }
+
+    /**
+     * Send a constructed UI to display on the player's screen.
+     */
+    fun sendUI(player: Player, uiWindow: UIWindow) {
+        val jsonString = uiWindow.encode()
+        println(jsonString)
+        val buf = ByteBufAllocator.DEFAULT.buffer()
+        BufUtils.writeString(buf, jsonString)
+
+        val bytes = ByteArray(buf.readableBytes())
+        buf.getBytes(buf.readerIndex(), bytes)
+
+        val packet = PluginMessagePacket("marmot:ui", bytes)
+        player.sendPacket(packet)
+        buf.release()
     }
 }

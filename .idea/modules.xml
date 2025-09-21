@@ -3,11 +3,11 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/marmot.iml" filepath="$PROJECT_DIR$/.idea/modules/marmot.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/marmot.client.iml" filepath="$PROJECT_DIR$/.idea/modules/marmot.client.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/marmot.main.iml" filepath="$PROJECT_DIR$/.idea/modules/marmot.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/mod/marmot.mod.client.iml" filepath="$PROJECT_DIR$/.idea/modules/mod/marmot.mod.client.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/mod/marmot.mod.main.iml" filepath="$PROJECT_DIR$/.idea/modules/mod/marmot.mod.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/mod/marmot.mod.test.iml" filepath="$PROJECT_DIR$/.idea/modules/mod/marmot.mod.test.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/servers/minestom/marmot.servers.minestom.main.iml" filepath="$PROJECT_DIR$/.idea/modules/servers/minestom/marmot.servers.minestom.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/servers/minestom/marmot.servers.minestom.test.iml" filepath="$PROJECT_DIR$/.idea/modules/servers/minestom/marmot.servers.minestom.test.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/marmot.test.iml" filepath="$PROJECT_DIR$/.idea/modules/marmot.test.iml" />
     </modules>
   </component>
 </project>

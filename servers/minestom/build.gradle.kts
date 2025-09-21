@@ -1,5 +1,6 @@
 plugins {
     kotlin("jvm") version "2.2.20"
+    kotlin("plugin.serialization") version "2.2.20"
 }
 
 group = "me.znotchill"
@@ -12,6 +13,7 @@ repositories {
 }
 
 dependencies {
+    implementation(project(":common"))
     testImplementation(kotlin("test"))
     implementation("io.netty:netty-buffer:4.1.111.Final")
     implementation("io.netty:netty-common:4.1.111.Final")
@@ -22,6 +24,7 @@ dependencies {
     implementation("net.kyori:adventure-text-minimessage:4.24.0")
     implementation("net.kyori:adventure-api:4.24.0")
     implementation("org.slf4j:slf4j-simple:2.0.13")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
 }
 
 tasks.test {
