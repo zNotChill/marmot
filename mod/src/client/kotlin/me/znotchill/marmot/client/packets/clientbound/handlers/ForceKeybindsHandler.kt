@@ -38,6 +38,7 @@ class ForceKeybindsHandler {
             val forcedKey = InputUtil.fromTranslationKey(forcedKeyTranslationKey)
                 ?: return@forEach println("Unknown key translation: $forcedKeyTranslationKey")
 
+            println("RECEIVED KEYBIND $keyBinding -> $forcedKey")
             KeybindManager.overrideKeybind(keyBinding, forcedKey)
             println("Set ${keyBinding.translationKey} to $forcedKeyTranslationKey")
         }

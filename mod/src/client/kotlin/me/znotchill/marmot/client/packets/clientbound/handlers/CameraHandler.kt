@@ -9,9 +9,9 @@ class CameraHandler {
         ClientPlayNetworking.registerGlobalReceiver(CameraPayload.ID) { payload, context ->
             val client = context.client()
             client.execute {
-                Client.pitch = payload.x
-                Client.yaw = payload.y
-                Client.roll = payload.z
+                Client.customPitch = payload.x
+                Client.customYaw = payload.y
+                Client.customRoll = payload.z
                 Client.targetFov = payload.fov
             }
         }

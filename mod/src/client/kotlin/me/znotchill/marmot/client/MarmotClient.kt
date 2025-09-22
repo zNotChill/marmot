@@ -51,9 +51,9 @@ class MarmotClient : ClientModInitializer {
 
         ClientPlayConnectionEvents.DISCONNECT.register { _, _ ->
             val client = MinecraftClient.getInstance()
-            Client.pitch = 0f
-            Client.yaw = 0f
-            Client.roll = 0f
+            Client.customPitch = 0f
+            Client.customYaw = 0f
+            Client.customRoll = 0f
             Client.targetFov = client.options.fov.value.toFloat()
             Client.cameraLocked = false
             Client.isLeftClicking = false

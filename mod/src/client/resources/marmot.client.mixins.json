@@ -1,9 +1,14 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "me.znotchill.marmot.mixin.client",
+  "package": "me.znotchill.marmot.client.mixins",
   "compatibilityLevel": "JAVA_21",
+  "refmap": "marmot.refmap.json",
   "client": [
+    "GameRendererMixin",
+    "MouseMixin",
+    "HeldItemRendererMixin",
+    "HeldItemRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1

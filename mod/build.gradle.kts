@@ -1,9 +1,11 @@
+import net.fabricmc.loom.task.RemapJarTask
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     kotlin("jvm") version "2.2.20"
     id("fabric-loom") version "1.11-SNAPSHOT"
+    kotlin("kapt") version "2.2.20"
     id("maven-publish")
     kotlin("plugin.serialization") version "2.2.20"
 }
@@ -36,6 +38,21 @@ loom {
             sourceSet("client")
         }
     }
+
+    mixin {
+        defaultRefmapName = "marmot.refmap.json"
+    }
+}
+
+sourceSets {
+    named("client") {
+        java.srcDirs("src/client/java", "src/client/kotlin")
+        resources.srcDirs("src/client/resources")
+    }
+}
+
+kapt {
+    correctErrorTypes = true
 }
 
 fabricApi {
@@ -50,10 +67,15 @@ repositories {
     // Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
     // See https://docs.gradle.org/current/userguide/declaring_repositories.html
     // for more information about repositories.
+    maven("https://repo.spongepowered.org/repository/maven-public/")
 }
 
 dependencies {
     implementation(project(":common"))
+    include(project(":common"))
+
+    compileOnly("org.spongepowered:mixin:0.8.7")
+    annotationProcessor("org.spongepowered:mixin:0.8.7:processor")
     // To change the versions see the gradle.properties file
     minecraft("com.mojang:minecraft:${project.property("minecraft_version")}")
     mappings("net.fabricmc:yarn:${project.property("yarn_mappings")}:v2")
@@ -73,9 +95,9 @@ tasks.processResources {
     filesMatching("fabric.mod.json") {
         expand(
             "version" to project.version,
-            "minecraft_version" to project.property("minecraft_version"),
-            "loader_version" to project.property("loader_version"),
-            "kotlin_loader_version" to project.property("kotlin_loader_version")
+            "minecraft_version" to project.property("minecraft_version") as Any,
+            "loader_version" to project.property("loader_version") as Any,
+            "kotlin_loader_version" to project.property("kotlin_loader_version") as Any
         )
     }
 }
@@ -115,4 +137,17 @@ publishing {
         // The repositories here will be used for publishing your artifact, not for
         // retrieving dependencies.
     }
+}
+
+tasks.named<Jar>("sourcesJar") {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+tasks.withType<ProcessResources>().configureEach {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+tasks.named<JavaCompile>("compileClientJava") {
+    options.annotationProcessorPath = configurations.annotationProcessor.get()
+}
+tasks.named<RemapJarTask>("remapJar") {
+    archiveFileName.set("${project.name}-${project.version}-yarn.jar")
 }
