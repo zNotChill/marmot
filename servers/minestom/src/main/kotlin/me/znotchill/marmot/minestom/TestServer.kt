@@ -14,7 +14,7 @@ import net.minestom.server.event.player.AsyncPlayerConfigurationEvent
 import net.minestom.server.event.player.PlayerLoadedEvent
 import net.minestom.server.instance.InstanceContainer
 
-class Server : BlossomServer(
+private class Server : BlossomServer(
     "Marmot-Server",
     auth = false
 ) {

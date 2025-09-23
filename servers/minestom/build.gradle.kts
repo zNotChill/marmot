@@ -1,9 +1,10 @@
 plugins {
+    `maven-publish`
     kotlin("jvm") version "2.2.20"
     kotlin("plugin.serialization") version "2.2.20"
 }
 
-group = "me.znotchill"
+group = "me.znotchill.marmot"
 version = "1.0-SNAPSHOT"
 
 repositories {
@@ -32,4 +33,20 @@ tasks.test {
 }
 kotlin {
     jvmToolchain(21)
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("mavenJava") {
+            from(components["java"])
+
+            groupId = "me.znotchill.marmot"
+            artifactId = "marmot-api-minestom"
+            version
+        }
+    }
+
+    repositories {
+        mavenLocal()
+    }
 }

@@ -4,6 +4,7 @@ import io.netty.buffer.ByteBuf
 import io.netty.buffer.ByteBufAllocator
 import io.netty.buffer.Unpooled
 import me.znotchill.blossom.extensions.addListener
+import me.znotchill.marmot.common.networking.BufUtils
 import me.znotchill.marmot.common.ui.MarmotUI
 import me.znotchill.marmot.common.ui.UIWindow
 import net.minestom.server.entity.Player

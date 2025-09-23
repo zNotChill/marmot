@@ -1,4 +1,4 @@
-package me.znotchill.marmot.minestom.api
+package me.znotchill.marmot.common.networking
 
 import io.netty.buffer.ByteBuf
 import java.nio.charset.StandardCharsets
