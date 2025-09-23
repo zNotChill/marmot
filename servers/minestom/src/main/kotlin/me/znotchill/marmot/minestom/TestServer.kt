@@ -105,15 +105,16 @@ private class Server : BlossomServer(
             }
         )
 
-        scheduler.task {
-            repeat = 1.ticks
-            run = { task ->
-                players.forEach { player ->
-                    val ui = TestUI()
-                    MarmotAPI.sendUI(player, ui)
+        registerCommand(
+            command("ui") {
+                syntax {
+                    players.forEach { player ->
+                        val ui = TestUI()
+                        MarmotAPI.sendUI(player, ui)
+                    }
                 }
             }
-        }
+        )
     }
 
 }

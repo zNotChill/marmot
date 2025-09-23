@@ -15,6 +15,24 @@ object UIRenderer {
         currentWindow = window
     }
 
+    fun applyDiff(diff: UIDiff) {
+        when (diff) {
+            is UIDiff.Full -> setWindow(diff.window)
+            is UIDiff.Update -> {
+                val comp = currentWindow?.getComponentByIdDeep(diff.id)
+                if (comp != null) {
+                    println("updating")
+                }
+            }
+            is UIDiff.Add -> {
+                currentWindow?.components?.add(diff.component)
+            }
+            is UIDiff.Remove -> {
+                currentWindow?.components?.removeIf { it.id == diff.id }
+            }
+        }
+    }
+
     fun register() {
         HudRenderCallback.EVENT.register { context, _ ->
             currentWindow?.let { window ->

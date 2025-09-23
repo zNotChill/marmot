@@ -36,8 +36,8 @@ data class Spacing(
 @Serializable
 @Polymorphic
 sealed class UIComponent() {
-    var x: Float = 0f
-    var y: Float = 0f
+    var x: Int = 0
+    var y: Int = 0
     var anchor: Anchor = Anchor.CENTER_CENTER
     var id: String = UUID.randomUUID().toString()
 
@@ -52,6 +52,9 @@ sealed class UIComponent() {
     abstract fun width(): Int
     abstract fun height(): Int
 }
+
+fun UIComponent.deepEquals(other: UIComponent): Boolean =
+    JsonUtil.json.encodeToString(this) == JsonUtil.json.encodeToString(other)
 
 infix fun UIComponent.relative(component: UIComponent): UIComponent {
     this.relativeTo = component.id
@@ -164,6 +167,8 @@ data class UIWindow(
         }
         return id?.let { search(components) }
     }
+
+    fun deepCopy(): UIWindow = JsonUtil.json.decodeFromString(this.encode())
 
     companion object {
         fun decode(json: String): UIWindow =

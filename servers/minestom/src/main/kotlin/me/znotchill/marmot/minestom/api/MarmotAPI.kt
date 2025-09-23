@@ -191,8 +191,9 @@ object MarmotAPI {
      */
     fun sendUI(player: Player, uiWindow: UIWindow) {
         val jsonString = uiWindow.encode()
-        println(jsonString)
+        println("sending: $jsonString")
         val buf = ByteBufAllocator.DEFAULT.buffer()
+        buf.writeBoolean(false)
         BufUtils.writeString(buf, jsonString)
 
         val bytes = ByteArray(buf.readableBytes())
@@ -201,5 +202,7 @@ object MarmotAPI {
         val packet = PluginMessagePacket("marmot:ui", bytes)
         player.sendPacket(packet)
         buf.release()
+
+        player.marmot?.previousWindow = uiWindow.deepCopy()
     }
 }
