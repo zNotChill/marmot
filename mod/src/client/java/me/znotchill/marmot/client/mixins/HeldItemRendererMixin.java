@@ -16,7 +16,7 @@ public abstract class HeldItemRendererMixin {
     @Shadow private float lastEquipProgressOffHand;
 
     @Inject(method = "updateHeldItems", at = @At("HEAD"), cancellable = true)
-    private void forceEquip(CallbackInfo ci) {
+    void forceEquip(CallbackInfo ci) {
         if (Client.mouseButtonsLocked) {
             equipProgressMainHand = 1f;
             lastEquipProgressMainHand = 1f;

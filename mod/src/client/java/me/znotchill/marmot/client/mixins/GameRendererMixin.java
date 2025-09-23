@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(GameRenderer.class)
 public class GameRendererMixin {
     @Inject(method = "getFov", at = @At("RETURN"), cancellable = true)
-    private void onGetFov(Camera camera, float tickDelta, boolean changingFov, CallbackInfoReturnable<Float> ci) {
+    void onGetFov(Camera camera, float tickDelta, boolean changingFov, CallbackInfoReturnable<Float> ci) {
         float vanillaFov = ci.getReturnValue();
 
         if (Client.currentFov < 0f) {
@@ -29,7 +29,7 @@ public class GameRendererMixin {
     }
 
     @Inject(method = "bobView", at = @At("HEAD"), cancellable = true)
-    private void applyCustomCamera(MatrixStack matrices, float tickProgress, CallbackInfo ci) {
+    void applyCustomCamera(MatrixStack matrices, float tickProgress, CallbackInfo ci) {
         if (Client.cameraLocked) {
             matrices.multiply(new Quaternionf().rotateXYZ(Client.customPitch, Client.customYaw, 0f));
             ci.cancel();

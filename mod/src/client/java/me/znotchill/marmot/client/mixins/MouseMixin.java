@@ -10,15 +10,15 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(Mouse.class)
 public class MouseMixin {
-    @Inject(method = "updateMouse", at = @At("HEAD"), cancellable = true)
-    private void update(double timeDelta, CallbackInfo ci) {
+    @Inject(method = "updateMouse(D)V", at = @At("HEAD"), cancellable = true)
+    void update(double timeDelta, CallbackInfo ci) {
         if (Client.cameraLocked) {
             ci.cancel();
         }
     }
 
     @Inject(method = "onMouseButton(JIII)V", at = @At("HEAD"), cancellable = true)
-    private void onMouseButton(CallbackInfo ci) {
+    void onMouseButton(CallbackInfo ci) {
         MinecraftClient mc = MinecraftClient.getInstance();
         if (Client.mouseButtonsLocked && !Client.emitMouseEvents) {
             if (mc.currentScreen == null) {

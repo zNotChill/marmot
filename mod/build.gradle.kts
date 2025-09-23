@@ -1,4 +1,3 @@
-import net.fabricmc.loom.task.RemapJarTask
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
@@ -40,11 +39,14 @@ loom {
     }
 
     mixin {
-        defaultRefmapName = "marmot.refmap.json"
+        add(sourceSets.main.get(), "marmot.client.mixins.json")
     }
 }
 
 sourceSets {
+    named("main") {
+        extensions.extraProperties["refMap"] = "marmot.refmap.json"
+    }
     named("client") {
         java.srcDirs("src/client/java", "src/client/kotlin")
         resources.srcDirs("src/client/resources")
@@ -74,8 +76,8 @@ dependencies {
     implementation(project(":common"))
     include(project(":common"))
 
-    compileOnly("org.spongepowered:mixin:0.8.7")
-    annotationProcessor("org.spongepowered:mixin:0.8.7:processor")
+//    compileOnly("org.spongepowered:mixin:0.8.7")
+//    annotationProcessor("org.spongepowered:mixin:0.8.7:processor")
     // To change the versions see the gradle.properties file
     minecraft("com.mojang:minecraft:${project.property("minecraft_version")}")
     mappings("net.fabricmc:yarn:${project.property("yarn_mappings")}:v2")
@@ -119,6 +121,11 @@ tasks.jar {
     from("LICENSE") {
         rename { "${it}_${project.base.archivesName}" }
     }
+    manifest {
+        attributes(
+            "MixinConfigs" to "marmot.mixins.json"
+        )
+    }
 }
 
 // configure the maven publication
@@ -145,9 +152,9 @@ tasks.named<Jar>("sourcesJar") {
 tasks.withType<ProcessResources>().configureEach {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
-tasks.named<JavaCompile>("compileClientJava") {
-    options.annotationProcessorPath = configurations.annotationProcessor.get()
-}
-tasks.named<RemapJarTask>("remapJar") {
-    archiveFileName.set("${project.name}-${project.version}-yarn.jar")
-}
+//tasks.named<JavaCompile>("compileClientJava") {
+//    options.annotationProcessorPath = configurations.annotationProcessor.get()
+//}
+//tasks.named<RemapJarTask>("remapJar") {
+//    archiveFileName.set("${project.name}-${project.version}-yarn.jar")
+//}
