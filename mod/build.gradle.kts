@@ -40,6 +40,7 @@ loom {
 
     mixin {
         add(sourceSets.main.get(), "marmot.client.mixins.json")
+        useLegacyMixinAp = false
     }
 }
 
