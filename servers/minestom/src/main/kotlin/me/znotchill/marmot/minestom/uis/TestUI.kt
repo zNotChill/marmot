@@ -9,11 +9,11 @@ class TestUI : MarmotUI() {
         victim: String,
         method: String
     ) {
-        widget(
+        val widget = widget(
             KillFeedWidget(
-                "ZnCi",
-                "Noob",
-                "knifed"
+                killer = killer,
+                victim = victim,
+                method = method
             ),
             y = 20,
             anchor = Anchor.TOP_RIGHT

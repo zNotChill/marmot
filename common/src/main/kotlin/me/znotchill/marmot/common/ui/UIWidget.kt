@@ -6,9 +6,10 @@ import java.util.UUID
 @Serializable
 abstract class UIWidget(
     val name: String,
-) {
-    val id: String
-        get() = "${name}_${UUID.randomUUID()}"
+): UIGroup() {
+    init {
+        id = "${name}_${UUID.randomUUID()}"
+    }
 
     abstract fun build(): List<UIComponent>
 

@@ -11,9 +11,7 @@ class KillFeedWidget(
     val killer: String,
     val victim: String,
     val method: String
-) : UIWidget(
-    name = "kill_feed"
-) {
+) : UIWidget(name = "kill_feed") {
     override fun build(): List<UIComponent> {
         val victimLabel = text(victim) {
             x = 10
@@ -52,6 +50,7 @@ class KillFeedWidget(
             padding = Spacing(
                 x = 5, y = 3
             )
+            y = 50
             anchor = Anchor.TOP_RIGHT
         }
         group.add(victimLabel, killLabel, attackerLabel)

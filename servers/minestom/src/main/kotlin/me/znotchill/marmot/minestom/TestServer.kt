@@ -110,6 +110,9 @@ private class Server : BlossomServer(
                 syntax {
                     players.forEach { player ->
                         val ui = TestUI()
+                        ui.newKill("die", "die", "killed")
+                        ui.newKill("die", "die", "killed")
+                        ui.newKill("die", "die", "killed")
                         MarmotAPI.sendUI(player, ui)
                     }
                 }

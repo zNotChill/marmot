@@ -10,17 +10,16 @@ open class MarmotUI {
 
     fun build(): UIWindow = UIWindow(components)
 
-    fun widget(widget: UIWidget, x: Int = 0, y: Int = 0, anchor: Anchor) {
+    fun widget(widget: UIWidget, x: Int = 0, y: Int = 0, anchor: Anchor): UIComponentManager {
+        widget.x = x
+        widget.y = y
         val builtWidget = widget.build()
 
         builtWidget.forEach { component ->
-            if (component is UIGroup) {
-                component.x = x
-                component.y = y
-                component.anchor = anchor
-            }
             components.add(component)
         }
+
+        return UIComponentManager(widget)
     }
 
     /**

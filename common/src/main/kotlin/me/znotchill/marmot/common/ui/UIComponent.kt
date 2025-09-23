@@ -39,7 +39,7 @@ sealed class UIComponent() {
     var x: Int = 0
     var y: Int = 0
     var anchor: Anchor = Anchor.CENTER_CENTER
-    var id: String = UUID.randomUUID().toString()
+    open var id: String = UUID.randomUUID().toString()
 
     var relativeTo: String? = null
     var relativePosition: RelativePosition? = null
@@ -121,26 +121,31 @@ data class UIBox(
 
 @Serializable
 @SerialName("group")
-data class UIGroup(
+open class UIGroup(
     var backgroundColor: UIColor? = null,
     var width: Int = 0,
     var height: Int = 0,
 ) : UIComponent() {
-
     val children = mutableListOf<UIComponent>()
 
     fun add(vararg components: UIComponent): UIGroup {
+        components.forEach {
+            if (it.relativeTo == null) {
+                it.x += x
+                it.y += y
+            }
+        }
         children.addAll(components)
         return this
     }
 
     override fun width(): Int {
-        val childWidths = children.map { it.width() + it.x.toInt() }
+        val childWidths = children.map { it.width() + it.x }
         return (childWidths.maxOrNull() ?: 0) + padding.left + padding.right
     }
 
     override fun height(): Int {
-        val childHeights = children.map { it.height() + it.y.toInt() }
+        val childHeights = children.map { it.height() + it.y }
         return (childHeights.maxOrNull() ?: 0) + padding.top + padding.bottom
     }
 }
