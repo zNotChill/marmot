@@ -42,7 +42,10 @@ class MarmotClient : ClientModInitializer {
                     leftPressed,
                     rightPressed
                 )
-                ClientPlayNetworking.send(payload)
+
+                if (client.networkHandler != null) {
+                    ClientPlayNetworking.send(payload)
+                }
             }
 
             Client.isLeftClicking = leftPressed

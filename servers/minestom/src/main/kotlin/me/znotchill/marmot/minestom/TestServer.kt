@@ -40,7 +40,7 @@ private class Server : BlossomServer(
             MarmotAPI.sendKeybinds(
                 event.player,
                 mapOf(
-                    "key.advancements" to "key.keyboard.y",
+                    "key.advancements" to "key.keyboard.ly",
                 )
             )
         }
