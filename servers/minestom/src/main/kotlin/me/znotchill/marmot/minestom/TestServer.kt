@@ -3,8 +3,6 @@ package me.znotchill.marmot.minestom
 import me.znotchill.blossom.command.command
 import me.znotchill.blossom.component.component
 import me.znotchill.blossom.extensions.addListener
-import me.znotchill.blossom.extensions.ticks
-import me.znotchill.blossom.scheduler.task
 import me.znotchill.blossom.server.BlossomServer
 import me.znotchill.marmot.minestom.api.MarmotAPI
 import me.znotchill.marmot.minestom.api.MarmotEvent
@@ -110,8 +108,6 @@ private class Server : BlossomServer(
                 syntax {
                     players.forEach { player ->
                         val ui = TestUI()
-                        ui.newKill("die", "die", "killed")
-                        ui.newKill("die", "die", "killed")
                         ui.newKill("die", "die", "killed")
                         MarmotAPI.sendUI(player, ui)
                     }
