@@ -2,12 +2,20 @@ package me.znotchill.marmot.common.ui.components
 
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
+import me.znotchill.marmot.common.ui.UIEventQueue
+import me.znotchill.marmot.common.ui.UIWindow
 import me.znotchill.marmot.common.ui.classes.CompType
 import me.znotchill.marmot.common.ui.classes.RelativePosition
+import me.znotchill.marmot.common.ui.classes.Vec2
 import me.znotchill.marmot.common.ui.components.props.BaseProps
+import me.znotchill.marmot.common.ui.events.MoveEvent
+import me.znotchill.marmot.common.ui.events.UIEvent
 
 @Serializable
 sealed class Component {
+    @Transient
+    lateinit var window: UIWindow
+
     var id: String = ""
     var relativeTo: String? = null
     var relativePosition: RelativePosition? = null
@@ -21,6 +29,24 @@ sealed class Component {
     var screenX: Int = 0
     @Transient
     var screenY: Int = 0
+}
+
+fun Component.move(to: Vec2, duration: Double, easing: String = "linear"): MoveEvent {
+    val event = MoveEvent(
+        targetId = this.id,
+        delay = 0L,
+        to = to,
+        durationSeconds = duration,
+        easing = easing
+    )
+    event.window = this.window
+    return event
+}
+
+fun <T : Component> T.schedule(delay: Long, block: T.() -> UIEvent) {
+    UIEventQueue.enqueueDelayed(delay) {
+        this.block()
+    }
 }
 
 infix fun Component.relative(component: Component): Component {

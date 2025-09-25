@@ -10,7 +10,7 @@ import me.znotchill.marmot.common.ui.components.Component
 import me.znotchill.marmot.common.ui.components.GroupComponent
 
 @Serializable
-class UIWindow() {
+class UIWindow(val id: String) {
     var components = mutableMapOf<String, Component>()
     private val previousState = mutableMapOf<String, Component>()
 

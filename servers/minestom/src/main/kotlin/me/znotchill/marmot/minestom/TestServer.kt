@@ -20,6 +20,7 @@ private class Server : BlossomServer(
 
     override fun preLoad() {
         MarmotAPI.registerEvents(eventHandler)
+        MarmotAPI.registerTasks(scheduler)
 
         MarmotAPI.addEvent(MarmotEvent.LEFT_CLICK_BEGIN) { player ->
             player.sendMessage("began left click")
@@ -103,11 +104,11 @@ private class Server : BlossomServer(
             }
         )
 
+        val ui = TestUI()
         registerCommand(
             command("ui") {
                 syntax {
                     players.forEach { player ->
-                        val ui = TestUI()
                         ui.newKill("die", "die", "killed")
                         MarmotAPI.sendUI(player, ui)
                     }

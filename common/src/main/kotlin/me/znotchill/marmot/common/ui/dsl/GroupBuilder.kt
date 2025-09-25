@@ -1,5 +1,6 @@
 package me.znotchill.marmot.common.ui.dsl
 
+import me.znotchill.marmot.common.ui.UIWindow
 import me.znotchill.marmot.common.ui.classes.Vec2
 import me.znotchill.marmot.common.ui.components.Component
 import me.znotchill.marmot.common.ui.components.GroupComponent
@@ -10,6 +11,7 @@ import me.znotchill.marmot.common.ui.components.props.TextProps
 
 @UIDsl
 class GroupBuilder(
+    val window: UIWindow,
     val baseProps: BaseProps = BaseProps(
         Vec2(0f, 0f),
         Vec2(100f, 100f)
@@ -26,6 +28,7 @@ class GroupBuilder(
         val comp = TextComponent(
             props = props
         )
+        comp.window = window
         comp.id = id
         children += comp
         return comp
@@ -35,7 +38,7 @@ class GroupBuilder(
         id: String,
         init: GroupBuilder.() -> Unit
     ) {
-        val subGroup = GroupBuilder(baseProps)
+        val subGroup = GroupBuilder(window, baseProps)
         subGroup.init()
         val comp = GroupComponent(
             props = subGroup.groupProps,

@@ -4,27 +4,22 @@ import kotlinx.serialization.Polymorphic
 import me.znotchill.marmot.common.ui.components.Component
 import me.znotchill.marmot.common.ui.dsl.GroupBuilder
 
-open class MarmotUI {
+open class MarmotUI(val id: String) {
     private val components = mutableListOf<@Polymorphic Component>()
 
     fun build(): UIWindow {
-        val window = UIWindow()
+        val window = UIWindow(id)
         components.forEach {
             window.add(it)
         }
         return window
     }
 
-    fun tick() {
-        components.forEach { component ->
-        }
-    }
-
     fun group(
         id: String,
         init: GroupBuilder.() -> Unit
     ) {
-        val builder = GroupBuilder()
+        val builder = GroupBuilder(build())
         builder.init()
         val built = builder.build()
 

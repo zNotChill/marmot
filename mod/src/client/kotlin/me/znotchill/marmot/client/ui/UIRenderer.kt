@@ -2,46 +2,129 @@ package me.znotchill.marmot.client.ui
 
 import me.znotchill.marmot.common.ui.*
 import me.znotchill.marmot.common.ui.classes.RelativePosition
+import me.znotchill.marmot.common.ui.classes.Vec2
 import me.znotchill.marmot.common.ui.components.Component
 import me.znotchill.marmot.common.ui.components.GroupComponent
 import me.znotchill.marmot.common.ui.components.TextComponent
+import me.znotchill.marmot.common.ui.events.DestroyEvent
+import me.znotchill.marmot.common.ui.events.MoveEvent
+import me.znotchill.marmot.common.ui.events.PropertyAnimation
+import me.znotchill.marmot.common.ui.events.UIEvent
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback
 import net.minecraft.client.MinecraftClient
 import net.minecraft.client.gui.DrawContext
 
 object UIRenderer {
     private var currentWindow: UIWindow? = null
+    private val activeAnimations = mutableListOf<PropertyAnimation<Any>>()
+    private var lastTime: Long = System.nanoTime()
 
     fun setWindow(window: UIWindow?) {
         currentWindow = window
     }
 
-//    fun applyDiff(diff: UIDiff) {
-//        when (diff) {
-//            is UIDiff.Full -> setWindow(diff.window)
-//            is UIDiff.Update -> {
-//                val comp = currentWindow?.getComponentByIdDeep(diff.id)
-//                if (comp != null) {
-//                    println("updating")
-//                }
-//            }
-//            is UIDiff.Add -> {
-//                currentWindow?.components?.add(diff.component)
-//            }
-//            is UIDiff.Remove -> {
-//                currentWindow?.components?.removeIf { it.id == diff.id }
-//            }
-//        }
-//    }
-
     fun register() {
         HudRenderCallback.EVENT.register { context, _ ->
+            val now = System.nanoTime()
+            val deltaSeconds = (now - lastTime) / 1_000_000_000.0
+            lastTime = now
+
+            tickAnimations(deltaSeconds)
+
             currentWindow?.let { window ->
                 layout(window)
                 window.components.values.forEach { component ->
                     component.draw(context)
                 }
             }
+        }
+    }
+
+    fun applyEvent(event: UIEvent) {
+        val comp = currentWindow?.getComponentByIdDeep(event.targetId) ?: return
+
+        when (event) {
+            is MoveEvent -> {
+                val anim = PropertyAnimation(
+                    targetId = event.targetId,
+                    getter = { comp.props.pos },
+                    setter = { c, value -> c.props.pos = value },
+                    from = null,
+                    to = event.to,
+                    durationSeconds = event.durationSeconds,
+                    easing = event.easing
+                )
+                anim.window = event.window
+                enqueueAnimation(anim)
+            }
+
+            is PropertyAnimation<*> -> {
+                enqueueAnimation(event)
+            }
+
+            is DestroyEvent -> {
+                currentWindow?.components?.remove(event.targetId)
+            }
+
+            else -> {
+                println("Unknown event type: $event")
+            }
+        }
+    }
+
+    fun <T> enqueueAnimation(event: PropertyAnimation<T>) {
+        val comp = currentWindow?.getComponentByIdDeep(event.targetId)
+        if (comp != null && event.from == null) {
+            @Suppress("UNCHECKED_CAST")
+            event.from = event.getter(comp)
+        }
+        @Suppress("UNCHECKED_CAST")
+        activeAnimations += event as PropertyAnimation<Any>
+    }
+
+    fun tickAnimations(deltaSeconds: Double) {
+        val iterator = activeAnimations.iterator()
+        while (iterator.hasNext()) {
+            val anim = iterator.next()
+
+            val comp = currentWindow?.getComponentByIdDeep(anim.targetId) ?: continue
+            val start = anim.from ?: anim.getter(comp)
+
+            anim.elapsed += deltaSeconds
+            val t = (anim.elapsed / anim.durationSeconds).coerceIn(0.0, 1.0)
+            val easedT = applyEasing(t, anim.easing)
+
+            @Suppress("UNCHECKED_CAST")
+            when (start) {
+                is Float -> (anim as PropertyAnimation<Float>).setter(comp, lerp(start, anim.to, easedT))
+                is Int -> (anim as PropertyAnimation<Int>).setter(comp, lerp(start.toFloat(), anim.to.toFloat(), easedT).toInt())
+                is Vec2 -> {
+                    val target = anim.to as Vec2
+                    val result = Vec2(
+                        lerp(start.x, target.x, easedT),
+                        lerp(start.y, target.y, easedT)
+                    )
+                    (anim as PropertyAnimation<Vec2>).setter(comp, result)
+                }
+                else -> anim.setter(comp, anim.to)
+            }
+
+            if (t >= 1.0) iterator.remove()
+        }
+    }
+
+    fun lerp(start: Float, end: Float, t: Double): Float {
+        return start + ((end - start) * t).toFloat()
+    }
+
+    fun applyEasing(t: Double, easing: String): Double {
+        return when (easing.lowercase()) {
+            "linear" -> t
+            "easein" -> t * t
+            "easeout" -> 1 - (1 - t) * (1 - t)
+            "easeinout" -> if (t < 0.5) 2 * t * t
+                else 1 - 2 * (1 - t) * (1 - t)
+            else -> t
         }
     }
 
@@ -66,7 +149,6 @@ object UIRenderer {
             }
         }
     }
-
 
     /**
      * Resolve absolute screen position for a component.

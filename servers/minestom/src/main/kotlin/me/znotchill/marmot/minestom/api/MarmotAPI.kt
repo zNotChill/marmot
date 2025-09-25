@@ -4,15 +4,21 @@ import io.netty.buffer.ByteBuf
 import io.netty.buffer.ByteBufAllocator
 import io.netty.buffer.Unpooled
 import me.znotchill.blossom.extensions.addListener
+import me.znotchill.blossom.extensions.ticks
+import me.znotchill.blossom.scheduler.task
 import me.znotchill.marmot.common.networking.BufUtils
 import me.znotchill.marmot.common.ui.MarmotUI
+import me.znotchill.marmot.common.ui.UIEventQueue
+import me.znotchill.marmot.common.ui.UIEventSerializer
 import me.znotchill.marmot.common.ui.UIWindow
+import me.znotchill.marmot.common.ui.events.UIEvent
 import net.minestom.server.entity.Player
 import net.minestom.server.event.GlobalEventHandler
 import net.minestom.server.event.player.PlayerDisconnectEvent
 import net.minestom.server.event.player.PlayerLoadedEvent
 import net.minestom.server.event.player.PlayerPluginMessageEvent
 import net.minestom.server.network.packet.server.common.PluginMessagePacket
+import net.minestom.server.timer.SchedulerManager
 import java.nio.ByteBuffer
 import java.util.*
 
@@ -79,6 +85,36 @@ object MarmotAPI {
 
         eventHandler.addListener<PlayerDisconnectEvent> { event ->
             players.remove(event.player.uuid)
+        }
+    }
+
+    fun registerTasks(schedulerManager: SchedulerManager) {
+        schedulerManager.task {
+            repeat = 1.ticks
+            run = { task ->
+                val events = UIEventQueue.tick()
+
+                println(events)
+                if (events.isNotEmpty()) {
+                    val byWindow = events.groupBy { it.window?.id }
+
+                    for ((windowId, windowEvents) in byWindow) {
+                        val audience = players.values.filter { it.currentWindow?.id == windowId }
+                        if (audience.isEmpty()) continue
+
+                        val byComponent = windowEvents.groupBy { it.targetId }
+
+                        for ((componentId, compEvents) in byComponent) {
+                            // Group components together by ID, and send them to the relevant players that have this UIWindow rendered
+                            audience.forEach { marmotPlayer ->
+                                val player = marmotPlayer.player
+                                sendUIEvents(player, compEvents)
+                                println("Sent ${compEvents.size} updates for $componentId to ${player.username}")
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -204,5 +240,26 @@ object MarmotAPI {
 
         player.marmot?.currentWindow = uiWindow
         player.marmot?.previousWindow = uiWindow.deepCopy()
+    }
+
+    /**
+     * Send a UI update to the player.
+     * **Should not be used manually.**
+     * Only use when acknowledging events and flushing them immediately.
+     */
+    fun sendUIEvents(player: Player, events: List<UIEvent>) {
+        if (events.isEmpty()) return
+
+        val jsonString = UIEventSerializer.encode(events)
+        val buf = ByteBufAllocator.DEFAULT.buffer()
+        buf.writeBoolean(true)
+        BufUtils.writeString(buf, jsonString)
+
+        val bytes = ByteArray(buf.readableBytes())
+        buf.getBytes(buf.readerIndex(), bytes)
+
+        val packet = PluginMessagePacket("marmot:ui", bytes)
+        player.sendPacket(packet)
+        buf.release()
     }
 }
