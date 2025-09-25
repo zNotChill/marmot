@@ -1,5 +1,6 @@
 package me.znotchill.marmot.client.ui.screens
 
+import me.znotchill.marmot.client.MarmotClient
 import me.znotchill.marmot.client.packets.clientbound.payloads.ForceKeybindsPayload
 import net.minecraft.client.gui.DrawContext
 import net.minecraft.client.gui.screen.Screen
@@ -96,39 +97,45 @@ class ForceKeybindsScreen(
                 entryWidth: Int, entryHeight: Int, mouseX: Int, mouseY: Int,
                 hovered: Boolean, tickDelta: Float
             ) {
-                val fontHeight = textRenderer.fontHeight
-                val padding = 5
+                try {
+                    val fontHeight = textRenderer.fontHeight
+                    val padding = 5
 
-                val bindText = Text.translatable(bind.translationKey)
+                    val bindText = Text.translatable(bind.translationKey)
 
-                val keyText = InputUtil.fromTranslationKey(key)?.localizedText
-                    ?: Text.literal(key)
+                    val keyText = InputUtil.fromTranslationKey(key)?.localizedText
+                        ?: Text.literal(key)
 
-                val keyWidth = textRenderer.getWidth(keyText) + padding * 2
-                val keyHeight = fontHeight + padding
+                    val keyWidth = textRenderer.getWidth(keyText) + padding * 2
+                    val keyHeight = fontHeight + padding
 
-                val keyX = x + entryWidth - keyWidth - 5
-                val keyY = y + (entryHeight - keyHeight) / 2
+                    val keyX = x + entryWidth - keyWidth - 5
+                    val keyY = y + (entryHeight - keyHeight) / 2
 
-                context.fill(keyX, keyY, keyX + keyWidth, keyY + keyHeight, 0xFF555555.toInt())
+                    context.fill(keyX, keyY, keyX + keyWidth, keyY + keyHeight, 0xFF555555.toInt())
 
-                context.drawText(
-                    textRenderer,
-                    keyText,
-                    keyX + (keyWidth - textRenderer.getWidth(keyText)) / 2,
-                    keyY + (keyHeight - fontHeight) / 2,
-                    0xFFFFFFFF.toInt(),
-                    false
-                )
+                    context.drawText(
+                        textRenderer,
+                        keyText,
+                        keyX + (keyWidth - textRenderer.getWidth(keyText)) / 2,
+                        keyY + (keyHeight - fontHeight) / 2,
+                        0xFFFFFFFF.toInt(),
+                        false
+                    )
 
-                context.drawText(
-                    textRenderer,
-                    bindText,
-                    x + 5,
-                    y + (entryHeight - fontHeight) / 2,
-                    0xFFFFFFFF.toInt(),
-                    false
-                )
+                    context.drawText(
+                        textRenderer,
+                        bindText,
+                        x + 5,
+                        y + (entryHeight - fontHeight) / 2,
+                        0xFFFFFFFF.toInt(),
+                        false
+                    )
+                } catch (e: NumberFormatException) {
+                    MarmotClient.LOGGER.error("Server sent an invalid keybind! ${bind.translationKey} -> $key")
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
             }
         }
     }

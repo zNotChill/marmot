@@ -1,6 +1,7 @@
 package me.znotchill.marmot.client.packets.clientbound.handlers
 
 import me.znotchill.marmot.client.KeybindManager
+import me.znotchill.marmot.client.MarmotClient
 import me.znotchill.marmot.client.packets.clientbound.payloads.ForceKeybindsPayload
 import me.znotchill.marmot.client.ui.screens.ForceKeybindsScreen
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking
@@ -14,6 +15,16 @@ class ForceKeybindsHandler {
         ClientPlayNetworking.registerGlobalReceiver(ForceKeybindsPayload.ID) { payload, context ->
             val client = context.client()
             client.execute {
+                payload.binds.forEach { (bindName, forcedKeyTranslationKey) ->
+                    try {
+                        client.options.allKeys.firstOrNull { it.translationKey == bindName }
+                        InputUtil.fromTranslationKey(forcedKeyTranslationKey)
+                    } catch (e: NumberFormatException) {
+                        MarmotClient.LOGGER.error("Server sent an invalid keybind! $bindName -> $forcedKeyTranslationKey")
+                        MarmotClient.LOGGER.error("Ignoring ForceKeybinds packet!")
+                        return@execute
+                    }
+                }
                 client.setScreen(
                     ForceKeybindsScreen(
                         payload,
