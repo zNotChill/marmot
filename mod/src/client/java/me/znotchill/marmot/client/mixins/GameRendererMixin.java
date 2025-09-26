@@ -17,24 +17,29 @@ public class GameRendererMixin {
     void onGetFov(Camera camera, float tickDelta, boolean changingFov, CallbackInfoReturnable<Float> ci) {
         float vanillaFov = ci.getReturnValue();
 
-        if (Client.currentFov < 0f) {
-            Client.currentFov = vanillaFov;
-            Client.targetFov = Client.customFov > 0f ? Client.customFov : vanillaFov;
+        if (Client.targetFov > 0f) {
+            if (Client.currentFov < 0f) {
+                Client.currentFov = vanillaFov;
+            }
+
+            float speed = 0.2f;
+            Client.currentFov += (Client.targetFov - Client.currentFov) * speed;
+
+            ci.setReturnValue(Client.currentFov);
+        } else {
+            Client.currentFov = -1f;
+            ci.setReturnValue(vanillaFov);
         }
-
-        float speed = 0.2f;
-        Client.currentFov += (Client.targetFov - Client.currentFov) * speed;
-
-        ci.setReturnValue(Client.currentFov);
     }
 
-    @Inject(method = "bobView", at = @At("HEAD"), cancellable = true)
-    void applyCustomCamera(MatrixStack matrices, float tickProgress, CallbackInfo ci) {
-        if (Client.cameraLocked) {
-            matrices.multiply(new Quaternionf().rotateXYZ(Client.customPitch, Client.customYaw, 0f));
-            ci.cancel();
-            return;
+    @Inject(method = "tiltViewWhenHurt", at = @At("HEAD"))
+    private void applyCustomCamera(MatrixStack matrices, float f, CallbackInfo ci) {
+        if (Client.customPitch != 0f || Client.customYaw != 0f || Client.customRoll != 0f) {
+            float pitchRad = (float) Math.toRadians(Client.customPitch);
+            float yawRad   = (float) Math.toRadians(Client.customYaw);
+            float rollRad  = (float) Math.toRadians(Client.customRoll);
+
+            matrices.multiply(new Quaternionf().rotateXYZ(pitchRad, yawRad, rollRad));
         }
-        matrices.multiply(new Quaternionf().rotateXYZ(Client.customPitch, Client.customYaw, Client.customRoll));
     }
 }
