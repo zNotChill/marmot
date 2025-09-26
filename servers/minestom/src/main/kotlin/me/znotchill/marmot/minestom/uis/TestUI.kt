@@ -20,6 +20,7 @@ class TestUI : MarmotUI("kill_feed") {
                 shadow = true
                 pos = Vec2(10f, 10f)
                 backgroundColor = UIColor(255, 255, 255)
+                scale = Vec2(2f, 2f)
             }
 
             test.schedule(20) {

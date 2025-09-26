@@ -16,4 +16,5 @@ open class BaseProps(
     val zIndex: Int = 0,
     val padding: Spacing = Spacing(0),
     val margin: Spacing = Spacing(0),
+    var scale: Vec2 = Vec2(1f, 1f)
 )

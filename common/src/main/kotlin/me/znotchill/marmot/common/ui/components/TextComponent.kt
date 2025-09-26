@@ -14,11 +14,13 @@ open class TextComponent(
     override val compType: CompType = CompType.TEXT
 
     override fun width(): Int {
-        return props.text.mcWidth() + props.padding.left + props.padding.right
+        val baseWidth = props.text.mcWidth() + props.padding.left + props.padding.right
+        return (baseWidth * props.scale.x).toInt()
     }
 
     override fun height(): Int {
-        // todo: not hardcode this
-        return props.padding.top + props.padding.bottom + 7
+        val baseHeight = 7 + props.padding.top + props.padding.bottom
+        return (baseHeight * props.scale.y).toInt()
     }
+
 }

@@ -13,6 +13,7 @@ import me.znotchill.marmot.common.ui.events.UIEvent
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback
 import net.minecraft.client.MinecraftClient
 import net.minecraft.client.gui.DrawContext
+import org.joml.Matrix3x2f
 
 object UIRenderer {
     private var currentWindow: UIWindow? = null
@@ -140,12 +141,19 @@ object UIRenderer {
     /**
      * Layout a component.
      */
-    private fun layoutComponent(component: Component, window: UIWindow) {
+    private fun layoutComponent(component: Component, window: UIWindow, parentScale: Vec2 = Vec2(1f, 1f)) {
+        val effectiveScale = Vec2(
+            component.props.scale.x * parentScale.x,
+            component.props.scale.y * parentScale.y
+        )
+
+        component.computedScale = effectiveScale
+
         resolvePosition(component, window)
 
         if (component is GroupComponent) {
             component.props.components.forEach { child ->
-                resolvePosition(child, window)
+                layoutComponent(child, window, effectiveScale)
             }
         }
     }
@@ -209,14 +217,27 @@ private fun Component.draw(context: DrawContext) {
                 context.fill(screenX, screenY, screenX + this.width(), screenY + this.height(), bg.toArgb())
             }
 
+            context.matrices.pushMatrix()
+
+            val scale = props.scale
+
+            context.matrices.scale(scale.x, scale.y)
+
+            context.matrices.translate(
+                (screenX + props.padding.left) / scale.x,
+                (screenY + props.padding.top) / scale.y
+            )
+
             context.drawText(
                 renderer,
                 props.text,
-                screenX + props.padding.left,
-                screenY + props.padding.top,
+                0,
+                0,
                 props.color.toArgb(),
                 props.shadow
             )
+
+            context.matrices.popMatrix()
         }
 
 //        is BoxComponent -> {

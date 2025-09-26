@@ -3,4 +3,4 @@ package me.znotchill.marmot.common.ui.classes
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class Vec2(val x: Float = 0f, val y: Float = 0f)
+data class Vec2(var x: Float = 0f, var y: Float = 0f)
