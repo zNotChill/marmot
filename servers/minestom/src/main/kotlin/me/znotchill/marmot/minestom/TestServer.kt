@@ -74,6 +74,29 @@ private class Server : BlossomServer(
         )
 
         registerCommand(
+            command("camera") {
+                val pitch = argument<Float>("pitch")
+                val yaw = argument<Float>("yaw")
+                val roll = argument<Float>("roll")
+                val fov = argument<Float>("fov")
+                syntax(pitch, yaw, roll, fov) { pitchFloat, yawFloat, rollFloat, fovFloat ->
+                    MarmotAPI.sendCameraPacket(this, pitchFloat, yawFloat, rollFloat, fovFloat)
+                }
+            }
+        )
+
+        registerCommand(
+            command("camera_offset") {
+                val xArg = argument<Float>("x")
+                val yArg = argument<Float>("y")
+                val zArg = argument<Float>("z")
+                syntax(xArg, yArg, zArg) { x, y, z ->
+                    MarmotAPI.sendCameraOffset(this, x, y, z)
+                }
+            }
+        )
+
+        registerCommand(
             command("sendhealth") {
                 syntax {
                     MarmotAPI.sendHealthPacket(this)

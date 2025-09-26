@@ -156,6 +156,23 @@ object MarmotAPI {
     }
 
     /**
+     * Offset the player's camera.
+     */
+    fun sendCameraOffset(
+        player: Player,
+        x: Float,
+        y: Float,
+        z: Float,
+    ) {
+        val buffer = ByteBuffer.allocate(12)
+        buffer.putFloat(x)
+        buffer.putFloat(y)
+        buffer.putFloat(z)
+        val packet = PluginMessagePacket("marmot:camera_offset", buffer.array())
+        player.sendPacket(packet)
+    }
+
+    /**
      * Decides whether the player's camera should be locked
      * from moving.
      */

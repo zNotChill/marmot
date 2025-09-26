@@ -3,9 +3,13 @@
   "id": "marmot",
   "version": "${version}",
   "name": "marmot",
-  "description": "",
-  "authors": [],
-  "contact": {},
+  "description": "A Minecraft library to empower customization.",
+  "authors": ["zNotChill", "koloja"],
+  "contact": {
+    "homepage": "https://discord.com/invite/ukKbph9KFy",
+    "sources": "https://github.com/zNotChill/marmot"
+  },
+  "icon": "assets/marmot_512.png",
   "license": "All-Rights-Reserved",
   "environment": "client",
   "entrypoints": {
@@ -31,5 +35,15 @@
     "fabric-language-kotlin": ">=${kotlin_loader_version}",
     "fabric": "*",
     "minecraft": "${minecraft_version}"
+  },
+  "suggests": {
+    "modmenu": "*"
+  },
+  "custom": {
+    "modmenu": {
+      "links": {
+        "Discord": "https://discord.com/invite/ukKbph9KFy"
+      }
+    }
   }
 }
