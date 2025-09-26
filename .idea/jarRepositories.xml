@@ -66,5 +66,10 @@
       <option name="name" value="LoomGlobalMinecraft" />
       <option name="url" value="file:/$USER_HOME$/.gradle/caches/fabric-loom/minecraftMaven/" />
     </remote-repository>
+    <remote-repository>
+      <option name="id" value="Terraformers" />
+      <option name="name" value="Terraformers" />
+      <option name="url" value="https://maven.terraformersmc.com/" />
+    </remote-repository>
   </component>
 </project>
