@@ -1,6 +1,7 @@
 package me.znotchill.marmot.client.ui
 
 import me.znotchill.marmot.common.ui.*
+import me.znotchill.marmot.common.ui.classes.Easing
 import me.znotchill.marmot.common.ui.classes.RelativePosition
 import me.znotchill.marmot.common.ui.classes.Vec2
 import me.znotchill.marmot.common.ui.components.Component
@@ -9,6 +10,7 @@ import me.znotchill.marmot.common.ui.components.SpriteComponent
 import me.znotchill.marmot.common.ui.components.TextComponent
 import me.znotchill.marmot.common.ui.events.DestroyEvent
 import me.znotchill.marmot.common.ui.events.MoveEvent
+import me.znotchill.marmot.common.ui.events.OpacityEvent
 import me.znotchill.marmot.common.ui.events.PropertyAnimation
 import me.znotchill.marmot.common.ui.events.UIEvent
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback
@@ -60,7 +62,20 @@ object UIRenderer {
                     from = null,
                     to = event.to,
                     durationSeconds = event.durationSeconds,
-                    easing = event.easing
+                    easing = event.easing.toString()
+                )
+                anim.window = event.window
+                enqueueAnimation(anim)
+            }
+            is OpacityEvent -> {
+                val anim = PropertyAnimation(
+                    targetId = event.targetId,
+                    getter = { comp.props.opacity },
+                    setter = { c, value -> c.props.opacity = value },
+                    from = null,
+                    to = event.opacity,
+                    durationSeconds = event.durationSeconds,
+                    easing = event.easing.toString()
                 )
                 anim.window = event.window
                 enqueueAnimation(anim)
@@ -100,7 +115,7 @@ object UIRenderer {
 
             anim.elapsed += deltaSeconds
             val t = (anim.elapsed / anim.durationSeconds).coerceIn(0.0, 1.0)
-            val easedT = applyEasing(t, anim.easing)
+            val easedT = applyEasing(t, Easing.valueOf(anim.easing))
 
             @Suppress("UNCHECKED_CAST")
             when (start) {
@@ -125,12 +140,12 @@ object UIRenderer {
         return start + ((end - start) * t).toFloat()
     }
 
-    fun applyEasing(t: Double, easing: String): Double {
-        return when (easing.lowercase()) {
-            "linear" -> t
-            "easein" -> t * t
-            "easeout" -> 1 - (1 - t) * (1 - t)
-            "easeinout" -> if (t < 0.5) 2 * t * t
+    fun applyEasing(t: Double, easing: Easing): Double {
+        return when (easing) {
+            Easing.LINEAR -> t
+            Easing.EASE_IN -> t * t
+            Easing.EASE_OUT -> 1 - (1 - t) * (1 - t)
+            Easing.EASE_IN_OUT -> if (t < 0.5) 2 * t * t
                 else 1 - 2 * (1 - t) * (1 - t)
             else -> t
         }
@@ -291,16 +306,13 @@ private fun Component.draw(context: DrawContext) {
                 props.text,
                 0,
                 0,
-                props.color.toArgb(),
+                props.color.copy(a = (props.opacity * 255).toInt()).toArgb(),
                 props.shadow
             )
 
             context.matrices.popMatrix()
         }
 
-//        is BoxComponent -> {
-//            context.fill(screenX, screenY, screenX + width, screenY + height, color.toArgb())
-//        }
         is SpriteComponent -> {
             val texture = UIRenderer.getIdentifier(props.texturePath)
             val texWidth = computedSize?.x?.toInt() ?: 16
@@ -314,6 +326,8 @@ private fun Component.draw(context: DrawContext) {
             if (drawHeight == 0)
                 drawHeight = texHeight
 
+            val alpha = props.opacity / 255f
+
             context.drawTexture(
                 RenderPipelines.GUI_TEXTURED,
                 texture,
@@ -324,7 +338,6 @@ private fun Component.draw(context: DrawContext) {
                 drawWidth, drawHeight,
             )
         }
-
 
         is GroupComponent -> {
             props.backgroundColor?.let { bg ->

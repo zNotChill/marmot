@@ -5,6 +5,7 @@ import kotlinx.serialization.Transient
 import me.znotchill.marmot.common.ui.UIEventQueue
 import me.znotchill.marmot.common.ui.UIWindow
 import me.znotchill.marmot.common.ui.classes.CompType
+import me.znotchill.marmot.common.ui.classes.Easing
 import me.znotchill.marmot.common.ui.classes.RelativePosition
 import me.znotchill.marmot.common.ui.classes.Vec2
 import me.znotchill.marmot.common.ui.components.props.BaseProps
@@ -38,7 +39,7 @@ sealed class Component {
 fun Component.move(
     to: Vec2,
     duration: Double = 0.0,
-    easing: String = "linear"
+    easing: Easing = Easing.LINEAR
 ): MoveEvent {
     val event = MoveEvent(
         targetId = this.id,
@@ -62,25 +63,25 @@ infix fun Component.relative(component: Component): Component {
     return this
 }
 
-infix fun Component.rightOf(component: Component): Component {
+infix fun <T : Component> T.rightOf(component: Component): T {
     this.relativeTo = component.id
     this.relativePosition = RelativePosition.RIGHT_OF
     return this
 }
 
-infix fun Component.leftOf(component: Component): Component {
+infix fun <T : Component> T.leftOf(component: Component): T {
     this.relativeTo = component.id
     this.relativePosition = RelativePosition.LEFT_OF
     return this
 }
 
-infix fun Component.topOf(component: Component): Component {
+infix fun <T : Component> T.topOf(component: Component): T {
     this.relativeTo = component.id
     this.relativePosition = RelativePosition.ABOVE
     return this
 }
 
-infix fun Component.bottomOf(component: Component): Component {
+infix fun <T : Component> T.bottomOf(component: Component): T {
     this.relativeTo = component.id
     this.relativePosition = RelativePosition.BELOW
     return this

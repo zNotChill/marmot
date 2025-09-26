@@ -6,13 +6,13 @@ import kotlinx.serialization.Transient
 import me.znotchill.marmot.common.ui.classes.Easing
 
 @Serializable
-data class MoveEvent(
+data class OpacityEvent(
     override var delay: Long,
     override val targetId: String,
-    val to: Vec2,
+    val opacity: Float,
     val durationSeconds: Double,
     val easing: Easing,
 ) : UIEvent() {
     @Transient var elapsed = 0.0
-    @Transient var start: Vec2? = null
+    @Transient var start: Float? = null
 }

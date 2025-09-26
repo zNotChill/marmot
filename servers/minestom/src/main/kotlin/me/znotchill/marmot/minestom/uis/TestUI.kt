@@ -1,9 +1,11 @@
 package me.znotchill.marmot.minestom.uis
 
 import me.znotchill.marmot.common.ui.MarmotUI
+import me.znotchill.marmot.common.ui.classes.Easing
 import me.znotchill.marmot.common.ui.classes.UIColor
 import me.znotchill.marmot.common.ui.classes.Vec2
 import me.znotchill.marmot.common.ui.components.move
+import me.znotchill.marmot.common.ui.components.opacity
 import me.znotchill.marmot.common.ui.components.rightOf
 import me.znotchill.marmot.common.ui.components.schedule
 
@@ -39,13 +41,15 @@ class TestUI : MarmotUI("kill_feed") {
                 size = Vec2(32f, 32f)
                 pos = Vec2(20f, 20f)
             }
-            val test2 = sprite("test_sprite2") {
-                texturePath = "textures/item/red_candle.png"
-                size = Vec2(16f, 16f)
+            val test2 = text("test_text") {
+                text = "kys hi hi hi"
             } rightOf test1
 
-            test1.schedule(20) {
-                move(Vec2(50f, 10f), 0.2)
+            test2.schedule(20) {
+                opacity(0f, 1.0)
+            }
+            test2.schedule(40) {
+                opacity(1f, 1.0, easing = Easing.EASE_IN_OUT)
             }
         }
     }
