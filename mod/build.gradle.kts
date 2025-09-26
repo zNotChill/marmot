@@ -71,6 +71,10 @@ repositories {
     // See https://docs.gradle.org/current/userguide/declaring_repositories.html
     // for more information about repositories.
     maven("https://repo.spongepowered.org/repository/maven-public/")
+    maven {
+        name = "Terraformers"
+        url = uri("https://maven.terraformersmc.com/")
+    }
 }
 
 dependencies {
@@ -87,6 +91,7 @@ dependencies {
 
     modImplementation("net.fabricmc.fabric-api:fabric-api:${project.property("fabric_version")}")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
+    modImplementation("com.terraformersmc:modmenu:${project.property("modmenu_version")}")
 }
 
 tasks.processResources {

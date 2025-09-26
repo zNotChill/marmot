@@ -21,6 +21,7 @@ class MarmotClient : ClientModInitializer {
 
     override fun onInitializeClient() {
         PayloadTypeRegistry.playS2C().register(CameraPayload.ID, CameraPayload.CODEC)
+        PayloadTypeRegistry.playS2C().register(CameraOffsetPayload.ID, CameraOffsetPayload.CODEC)
         PayloadTypeRegistry.playS2C().register(CameraLockPayload.ID, CameraLockPayload.CODEC)
         PayloadTypeRegistry.playS2C().register(MousePayload.ID, MousePayload.CODEC)
         PayloadTypeRegistry.playS2C().register(ForceKeybindsPayload.ID, ForceKeybindsPayload.CODEC)
@@ -31,6 +32,7 @@ class MarmotClient : ClientModInitializer {
         PayloadTypeRegistry.playC2S().register(IsMarmotServerPayload.ID, IsMarmotServerPayload.CODEC)
 
         CameraHandler().register()
+        CameraOffsetHandler().register()
         CameraLockHandler().register()
         ForceKeybindsHandler().register()
         MouseHandler().register()
@@ -64,6 +66,9 @@ class MarmotClient : ClientModInitializer {
             Client.customYaw = 0f
             Client.customRoll = 0f
             Client.targetFov = client.options.fov.value.toFloat()
+            Client.cameraOffsetX = 0f
+            Client.cameraOffsetY = 0f
+            Client.cameraOffsetZ = 0f
             Client.cameraLocked = false
             Client.isLeftClicking = false
             Client.isRightClicking = false
