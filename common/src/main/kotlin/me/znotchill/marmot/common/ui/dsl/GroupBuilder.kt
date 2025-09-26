@@ -4,9 +4,11 @@ import me.znotchill.marmot.common.ui.UIWindow
 import me.znotchill.marmot.common.ui.classes.Vec2
 import me.znotchill.marmot.common.ui.components.Component
 import me.znotchill.marmot.common.ui.components.GroupComponent
+import me.znotchill.marmot.common.ui.components.SpriteComponent
 import me.znotchill.marmot.common.ui.components.TextComponent
 import me.znotchill.marmot.common.ui.components.props.BaseProps
 import me.znotchill.marmot.common.ui.components.props.GroupProps
+import me.znotchill.marmot.common.ui.components.props.SpriteProps
 import me.znotchill.marmot.common.ui.components.props.TextProps
 
 @UIDsl
@@ -26,6 +28,20 @@ class GroupBuilder(
     ): TextComponent {
         val props = TextProps().apply(block)
         val comp = TextComponent(
+            props = props
+        )
+        comp.window = window
+        comp.id = id
+        children += comp
+        return comp
+    }
+
+    fun sprite(
+        id: String,
+        block: (SpriteProps.() -> Unit)
+    ): SpriteComponent {
+        val props = SpriteProps().apply(block)
+        val comp = SpriteComponent(
             props = props
         )
         comp.window = window

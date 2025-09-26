@@ -8,7 +8,7 @@ import me.znotchill.marmot.common.ui.classes.Vec2
 @Serializable
 open class BaseProps(
     var pos: Vec2 = Vec2(0f, 0f),
-    val size: Vec2 = Vec2(0f, 0f),
+    var size: Vec2 = Vec2(0f, 0f),
     val anchor: Anchor = Anchor.CENTER_CENTER,
     val rotation: Float = 0f,
     val opacity: Float = 1f,

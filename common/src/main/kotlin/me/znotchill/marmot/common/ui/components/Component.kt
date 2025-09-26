@@ -31,9 +31,15 @@ sealed class Component {
     var screenY: Int = 0
     @Transient
     var computedScale: Vec2 = Vec2(0f, 0f)
+    @Transient
+    var computedSize: Vec2? = null
 }
 
-fun Component.move(to: Vec2, duration: Double, easing: String = "linear"): MoveEvent {
+fun Component.move(
+    to: Vec2,
+    duration: Double = 0.0,
+    easing: String = "linear"
+): MoveEvent {
     val event = MoveEvent(
         targetId = this.id,
         delay = 0L,

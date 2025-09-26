@@ -14,27 +14,39 @@ class TestUI : MarmotUI("kill_feed") {
         method: String
     ) {
         val group = group("die") {
-            val test = text("hi") {
-                text = "sigma"
-                color = UIColor(134, 196, 207)
-                shadow = true
-                pos = Vec2(10f, 10f)
-                backgroundColor = UIColor(255, 255, 255)
-                scale = Vec2(2f, 2f)
+//            val test = text("hi") {
+//                text = "sigma"
+//                color = UIColor(134, 196, 207)
+//                shadow = true
+//                pos = Vec2(10f, 10f)
+//                backgroundColor = UIColor(255, 255, 255)
+//                scale = Vec2(2f, 2f)
+//            }
+//
+//            test.schedule(20) {
+//                println("HELLO")
+//                move(Vec2(0f, -100f), 0.5)
+//            }
+//
+//            text("l") {
+//                text = "sigma2"
+//                color = UIColor(134, 196, 207)
+//                shadow = true
+//                backgroundColor = UIColor(255, 255, 255)
+//            } rightOf test
+            val test1 = sprite("test_sprite") {
+                texturePath = "textures/item/black_candle.png"
+                size = Vec2(32f, 32f)
+                pos = Vec2(20f, 20f)
             }
+            val test2 = sprite("test_sprite2") {
+                texturePath = "textures/item/red_candle.png"
+                size = Vec2(16f, 16f)
+            } rightOf test1
 
-            test.schedule(20) {
-                println("HELLO")
-                move(Vec2(0f, -100f), 0.5)
+            test1.schedule(20) {
+                move(Vec2(50f, 10f), 0.2)
             }
-
-            text("l") {
-                text = "sigma2"
-                color = UIColor(134, 196, 207)
-                shadow = true
-                backgroundColor = UIColor(255, 255, 255)
-            } rightOf test
-
         }
     }
 }

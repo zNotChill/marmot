@@ -5,6 +5,7 @@ import me.znotchill.marmot.common.ui.classes.RelativePosition
 import me.znotchill.marmot.common.ui.classes.Vec2
 import me.znotchill.marmot.common.ui.components.Component
 import me.znotchill.marmot.common.ui.components.GroupComponent
+import me.znotchill.marmot.common.ui.components.SpriteComponent
 import me.znotchill.marmot.common.ui.components.TextComponent
 import me.znotchill.marmot.common.ui.events.DestroyEvent
 import me.znotchill.marmot.common.ui.events.MoveEvent
@@ -12,10 +13,16 @@ import me.znotchill.marmot.common.ui.events.PropertyAnimation
 import me.znotchill.marmot.common.ui.events.UIEvent
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback
 import net.minecraft.client.MinecraftClient
+import net.minecraft.client.gl.RenderPipelines
 import net.minecraft.client.gui.DrawContext
-import org.joml.Matrix3x2f
+import net.minecraft.client.texture.NativeImage
+import net.minecraft.client.texture.NativeImageBackedTexture
+import net.minecraft.resource.Resource
+import net.minecraft.util.Identifier
+import java.io.IOException
 
 object UIRenderer {
+    val textureCache = mutableMapOf<String, NativeImageBackedTexture>()
     private var currentWindow: UIWindow? = null
     private val activeAnimations = mutableListOf<PropertyAnimation<Any>>()
     private var lastTime: Long = System.nanoTime()
@@ -142,6 +149,8 @@ object UIRenderer {
      * Layout a component.
      */
     private fun layoutComponent(component: Component, window: UIWindow, parentScale: Vec2 = Vec2(1f, 1f)) {
+        if (component is SpriteComponent) component.resolveTexture()
+
         val effectiveScale = Vec2(
             component.props.scale.x * parentScale.x,
             component.props.scale.y * parentScale.y
@@ -206,6 +215,55 @@ object UIRenderer {
         component.screenX = resolvedX.toInt()
         component.screenY = resolvedY.toInt()
     }
+
+    fun getTexture(path: String): NativeImageBackedTexture? {
+        val correctedPath = if (path.endsWith(".png")) path else "$path.png"
+        val id = if (':' in correctedPath) {
+            Identifier.of(correctedPath)
+        } else {
+            Identifier.of("minecraft", correctedPath)
+        }
+
+        return try {
+            val resourceManager = MinecraftClient.getInstance().resourceManager
+            val resourceOptional = resourceManager.getResource(id)
+
+            if (resourceOptional.isEmpty) return null
+
+            val resource: Resource = resourceOptional.get()
+            val image = NativeImage.read(resource.inputStream)
+            NativeImageBackedTexture({ "texture_$correctedPath" }, image)
+        } catch (e: IOException) {
+            e.printStackTrace()
+            null
+        }
+    }
+
+    fun getIdentifier(path: String): Identifier {
+        return if (':' in path) {
+            Identifier.of(path)
+        } else {
+            Identifier.of("minecraft", path)
+        }
+    }
+}
+
+/**
+ * Resolve the sprite's texture before we run any logic.
+ * This resolves relative positioning issues, since the server does
+ * not know what the height and width of the image is, since we do not
+ * know what texture pack the player is using.
+ */
+fun SpriteComponent.resolveTexture() {
+    if (props.texturePath != "") {
+        val texture = UIRenderer.getTexture(props.texturePath)
+        texture?.let {
+            computedSize = Vec2(
+                it.image?.width?.toFloat() ?: 0f,
+                it.image?.height?.toFloat() ?: 0f
+            )
+        }
+    }
 }
 
 private fun Component.draw(context: DrawContext) {
@@ -243,6 +301,30 @@ private fun Component.draw(context: DrawContext) {
 //        is BoxComponent -> {
 //            context.fill(screenX, screenY, screenX + width, screenY + height, color.toArgb())
 //        }
+        is SpriteComponent -> {
+            val texture = UIRenderer.getIdentifier(props.texturePath)
+            val texWidth = computedSize?.x?.toInt() ?: 16
+            val texHeight = computedSize?.y?.toInt() ?: 16
+
+            var drawWidth = props.size.x.toInt()
+            if (drawWidth == 0)
+                drawWidth = texWidth
+
+            var drawHeight = props.size.y.toInt()
+            if (drawHeight == 0)
+                drawHeight = texHeight
+
+            context.drawTexture(
+                RenderPipelines.GUI_TEXTURED,
+                texture,
+                screenX,
+                screenY,
+                0f, 0f,
+                drawWidth, drawHeight,
+                drawWidth, drawHeight,
+            )
+        }
+
 
         is GroupComponent -> {
             props.backgroundColor?.let { bg ->
