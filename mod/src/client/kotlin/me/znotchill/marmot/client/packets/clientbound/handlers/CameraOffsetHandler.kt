@@ -9,7 +9,6 @@ class CameraOffsetHandler {
         ClientPlayNetworking.registerGlobalReceiver(CameraOffsetPayload.ID) { payload, context ->
             val client = context.client()
             client.execute {
-                // Apply the camera offsets
                 Client.cameraOffsetX = payload.x
                 Client.cameraOffsetY = payload.y
                 Client.cameraOffsetZ = payload.z
