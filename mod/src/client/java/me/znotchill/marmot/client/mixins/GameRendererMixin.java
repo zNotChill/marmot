@@ -41,6 +41,12 @@ public class GameRendererMixin {
 
             matrices.multiply(new Quaternionf().rotateXYZ(pitchRad, yawRad, rollRad));
         }
-        matrices.translate(Client.cameraOffsetX, Client.cameraOffsetY, Client.cameraOffsetZ);
+
+        // Y and Z are swapped intentionally
+        matrices.translate(
+                Client.cameraOffsetX * -1,
+                Client.cameraOffsetZ * -1,
+                Client.cameraOffsetY * -1
+        );
     }
 }

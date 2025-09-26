@@ -86,6 +86,17 @@ private class Server : BlossomServer(
         )
 
         registerCommand(
+            command("camera_offset") {
+                val xArg = argument<Float>("x")
+                val yArg = argument<Float>("y")
+                val zArg = argument<Float>("z")
+                syntax(xArg, yArg, zArg) { x, y, z ->
+                    MarmotAPI.sendCameraOffset(this, x, y, z)
+                }
+            }
+        )
+
+        registerCommand(
             command("sendhealth") {
                 syntax {
                     MarmotAPI.sendHealthPacket(this)
