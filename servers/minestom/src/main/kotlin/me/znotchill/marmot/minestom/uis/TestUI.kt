@@ -2,7 +2,6 @@ package me.znotchill.marmot.minestom.uis
 
 import me.znotchill.marmot.common.ui.MarmotUI
 import me.znotchill.marmot.common.ui.classes.Easing
-import me.znotchill.marmot.common.ui.classes.UIColor
 import me.znotchill.marmot.common.ui.classes.Vec2
 import me.znotchill.marmot.common.ui.components.move
 import me.znotchill.marmot.common.ui.components.opacity
@@ -42,7 +41,7 @@ class TestUI : MarmotUI("kill_feed") {
                 pos = Vec2(20f, 20f)
             }
             val test2 = text("test_text") {
-                text = "kys hi hi hi"
+                text = "test test test"
             } rightOf test1
 
             test2.schedule(20) {

@@ -4,8 +4,14 @@ import me.znotchill.blossom.command.command
 import me.znotchill.blossom.component.component
 import me.znotchill.blossom.extensions.addListener
 import me.znotchill.blossom.server.BlossomServer
+import me.znotchill.marmot.common.api.MarmotEvent
 import me.znotchill.marmot.minestom.api.MarmotAPI
-import me.znotchill.marmot.minestom.api.MarmotEvent
+import me.znotchill.marmot.minestom.api.extensions.adjustCamera
+import me.znotchill.marmot.minestom.api.extensions.adjustCameraOffset
+import me.znotchill.marmot.minestom.api.extensions.configureMouse
+import me.znotchill.marmot.minestom.api.extensions.handshake
+import me.znotchill.marmot.minestom.api.extensions.lockCamera
+import me.znotchill.marmot.minestom.api.extensions.openUI
 import me.znotchill.marmot.minestom.uis.TestUI
 import net.minestom.server.entity.GameMode
 import net.minestom.server.event.player.AsyncPlayerConfigurationEvent
@@ -21,6 +27,7 @@ private class Server : BlossomServer(
     override fun preLoad() {
         MarmotAPI.registerEvents(eventHandler)
         MarmotAPI.registerTasks(scheduler)
+        MarmotAPI.debuggingEnabled = true
 
         MarmotAPI.addEvent(MarmotEvent.LEFT_CLICK_BEGIN) { player ->
             player.sendMessage("began left click")
@@ -57,7 +64,7 @@ private class Server : BlossomServer(
             command("lockcamera") {
                 val lock = argument<Boolean>("lock")
                 syntax(lock) { lockBool ->
-                    MarmotAPI.setCameraLock(this, lockBool)
+                    lockCamera(lockBool)
                 }
             }
         )
@@ -67,7 +74,7 @@ private class Server : BlossomServer(
                 val lock = argument<Boolean>("lock")
                 val emit = argument<Boolean>("emit")
                 syntax(lock, emit) { lockBool, emitBool ->
-                    MarmotAPI.setMouse(this, lockBool, emitBool)
+                    configureMouse(lockBool, emitBool)
                 }
             }
         )
@@ -79,7 +86,7 @@ private class Server : BlossomServer(
                 val roll = argument<Float>("roll")
                 val fov = argument<Float>("fov")
                 syntax(pitch, yaw, roll, fov) { pitchFloat, yawFloat, rollFloat, fovFloat ->
-                    MarmotAPI.sendCameraPacket(this, pitchFloat, yawFloat, rollFloat, fovFloat)
+                    adjustCamera(pitchFloat, yawFloat, rollFloat, fovFloat)
                 }
             }
         )
@@ -90,7 +97,7 @@ private class Server : BlossomServer(
                 val yArg = argument<Float>("y")
                 val zArg = argument<Float>("z")
                 syntax(xArg, yArg, zArg) { x, y, z ->
-                    MarmotAPI.sendCameraOffset(this, x, y, z)
+                    adjustCameraOffset(x, y, z)
                 }
             }
         )
@@ -98,7 +105,7 @@ private class Server : BlossomServer(
         registerCommand(
             command("sendhealth") {
                 syntax {
-                    MarmotAPI.sendHealthPacket(this)
+                    handshake()
                 }
             }
         )
@@ -133,7 +140,7 @@ private class Server : BlossomServer(
                 syntax {
                     players.forEach { player ->
                         ui.newKill("die", "die", "killed")
-                        MarmotAPI.sendUI(player, ui)
+                        player.openUI(ui)
                     }
                 }
             }

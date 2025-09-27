@@ -1,47 +1,62 @@
 package me.znotchill.marmot.minestom.api
 
+import ch.qos.logback.classic.Level
+import ch.qos.logback.classic.Logger
 import io.netty.buffer.ByteBuf
-import io.netty.buffer.ByteBufAllocator
 import io.netty.buffer.Unpooled
 import me.znotchill.blossom.extensions.addListener
 import me.znotchill.blossom.extensions.ticks
 import me.znotchill.blossom.scheduler.task
-import me.znotchill.marmot.common.networking.BufUtils
+import me.znotchill.marmot.common.api.MarmotEvent
 import me.znotchill.marmot.common.ui.MarmotUI
 import me.znotchill.marmot.common.ui.UIEventQueue
-import me.znotchill.marmot.common.ui.UIEventSerializer
 import me.znotchill.marmot.common.ui.UIWindow
 import me.znotchill.marmot.common.ui.events.UIEvent
+import me.znotchill.marmot.minestom.api.extensions.*
+import net.kyori.adventure.audience.Audience
 import net.minestom.server.entity.Player
 import net.minestom.server.event.GlobalEventHandler
 import net.minestom.server.event.player.PlayerDisconnectEvent
 import net.minestom.server.event.player.PlayerLoadedEvent
 import net.minestom.server.event.player.PlayerPluginMessageEvent
-import net.minestom.server.network.packet.server.common.PluginMessagePacket
 import net.minestom.server.timer.SchedulerManager
-import java.nio.ByteBuffer
+import org.slf4j.LoggerFactory
 import java.util.*
 
-enum class MarmotEvent {
-    LEFT_CLICK_BEGIN,
-    LEFT_CLICK_END,
-    RIGHT_CLICK_BEGIN,
-    RIGHT_CLICK_END
-}
-
 object MarmotAPI {
-    private val players: MutableMap<UUID, MarmotPlayer> = mutableMapOf()
+    val logger: Logger = LoggerFactory.getLogger("Marmot") as Logger
 
+    private val players: MutableMap<UUID, MarmotPlayer> = mutableMapOf()
     private val events: MutableMap<MarmotEvent, (player: Player) -> Unit> = mutableMapOf()
 
+    /**
+     * Whether Marmot should log debug statements to the console.
+     */
+    var debuggingEnabled: Boolean
+        get() = logger.isDebugEnabled
+        set(value) {
+            logger.level = if (value) Level.DEBUG else Level.INFO
+        }
+
+    /**
+     * Gets the callback for a given [MarmotEvent].
+     * Will return an empty callback object if the [MarmotEvent] does not
+     * have any callback registered to it.
+     */
     fun getEvent(event: MarmotEvent): (Player) -> Unit {
         return events[event] ?: {}
     }
 
+    /**
+     * Adds an event handler for a [MarmotEvent].
+     */
     fun addEvent(event: MarmotEvent, run: (Player) -> Unit) {
         events[event] = run
     }
 
+    /**
+     * Registers Marmot's server-wide events.
+     */
     fun registerEvents(eventHandler: GlobalEventHandler) {
         eventHandler.addListener<PlayerPluginMessageEvent> { event ->
             val player = event.player
@@ -68,19 +83,16 @@ object MarmotAPI {
 
                     playerMarmot.holdingLeftClick = leftHeld
                     playerMarmot.holdingRightClick = rightHeld
-
-                    println("Player ${event.player.username} leftHeld=$leftHeld rightHeld=$rightHeld")
                 }
                 "marmot:is_marmot" -> {
-                    println("received is_marmot health packet from client")
+                    logger.debug("Received Marmot health packet from {} ({})", event.player.username, event.player.uuid)
                     players[event.player.uuid] = MarmotPlayer.create(event.player)
                 }
             }
         }
 
         eventHandler.addListener<PlayerLoadedEvent> { event ->
-            println("sending is_marmot health packet to client")
-            sendHealthPacket(event.player)
+            event.player.handshake()
         }
 
         eventHandler.addListener<PlayerDisconnectEvent> { event ->
@@ -88,13 +100,14 @@ object MarmotAPI {
         }
     }
 
+    /**
+     * Registers Marmot's server-wide tasks.
+     */
     fun registerTasks(schedulerManager: SchedulerManager) {
         schedulerManager.task {
             repeat = 1.ticks
             run = { task ->
                 val events = UIEventQueue.tick()
-
-                events.forEach { println("Queued event: $it") }
 
                 if (events.isNotEmpty()) {
                     val byWindow = events.groupBy { it.window?.id }
@@ -109,8 +122,8 @@ object MarmotAPI {
                             // Group components together by ID, and send them to the relevant players that have this UIWindow rendered
                             audience.forEach { marmotPlayer ->
                                 val player = marmotPlayer.player
-                                sendUIEvents(player, compEvents)
-                                println("Sent ${compEvents.size} updates for $componentId to ${player.username}")
+                                updateUI(player, compEvents)
+                                logger.debug("Sending {} UI updates to {} ({})", compEvents.size, player.username, player.uuid)
                             }
                         }
                     }
@@ -119,165 +132,136 @@ object MarmotAPI {
         }
     }
 
+    /**
+     * Check if an online [Player] is using Marmot.
+     */
     fun isUsingMarmot(player: Player): Boolean {
         return players[player.uuid]?.isMarmot == true
     }
 
+    /**
+     * Get the [MarmotPlayer] for a [Player] if they are using Marmot.
+     */
     fun getMarmotPlayer(player: Player): MarmotPlayer? {
         return players[player.uuid]
     }
 
     /**
-     * Sends a basic health packet to the client.
-     * If the client is using Marmot, the client will automatically
-     * send back a confirmation health packet.
+     * @see Player.handshake
      */
-    fun sendHealthPacket(player: Player) {
-        val buf = ByteBufAllocator.DEFAULT.buffer()
-        buf.writeInt(1)
-
-        val bytes = ByteArray(buf.readableBytes())
-        val packet = PluginMessagePacket("marmot:is_marmot", bytes)
-        player.sendPacket(packet)
-    }
+    fun handshake(player: Player) = player.handshake()
 
     /**
-     * Send forced keybinds to the client.
-     * Opens a GUI on the client asking the user if they
-     * want to override their keybinds temporarily.
-     *
-     * Must use Minecraft translation keys, for example:
-     * ```kt
-     * sendKeybinds(
-     *  player,
-     *  mapOf(
-     *   "key.advancements" to "key.keyboard.y"
-     *  )
-     * )
-     * ```
+     * @see Player.sendKeybinds
      */
-    fun sendKeybinds(player: Player, binds: Map<String, String>) {
-        val buf = ByteBufAllocator.DEFAULT.buffer()
-
-        BufUtils.writeVarInt(buf, binds.size)
-        for ((bindName, keyName) in binds) {
-            BufUtils.writeString(buf, bindName)
-            BufUtils.writeString(buf, keyName)
+    fun sendKeybinds(audience: Audience, binds: Map<String, String>) {
+        audience.players().forEach { player ->
+            player.sendKeybinds(binds)
         }
-
-        val bytes = ByteArray(buf.readableBytes())
-        buf.readBytes(bytes)
-        buf.release()
-
-        val packet = PluginMessagePacket("marmot:force_keybinds", bytes)
-        player.sendPacket(packet)
     }
 
     /**
-     * Forcefully manipulate the client's camera.
+     * @see Player.sendKeybinds
      */
-    fun sendCameraPacket(
-        player: Player,
+    fun sendKeybinds(players: List<Player>, binds: Map<String, String>) {
+        players.forEach { player ->
+            player.sendKeybinds(binds)
+        }
+    }
+
+    /**
+     * @see Player.adjustCamera
+     */
+    fun adjustCamera(
+        audience: Audience,
         pitch: Float,
         yaw: Float,
         roll: Float,
         fov: Float
     ) {
-        val buffer = ByteBuffer.allocate(16)
-        buffer.putFloat(pitch)
-        buffer.putFloat(yaw)
-        buffer.putFloat(roll)
-        buffer.putFloat(fov)
-        val packet = PluginMessagePacket("marmot:camera", buffer.array())
-        player.sendPacket(packet)
+        audience.players().forEach { player ->
+            player.adjustCamera(pitch, yaw, roll, fov)
+        }
     }
 
     /**
-     * Offset the player's camera.
+     * @see Player.adjustCameraOffset
      */
-    fun sendCameraOffset(
-        player: Player,
+    fun adjustCameraOffset(
+        audience: Audience,
         x: Float,
         y: Float,
         z: Float,
     ) {
-        val buffer = ByteBuffer.allocate(12)
-        buffer.putFloat(x)
-        buffer.putFloat(y)
-        buffer.putFloat(z)
-        val packet = PluginMessagePacket("marmot:camera_offset", buffer.array())
-        player.sendPacket(packet)
+        audience.players().forEach { player ->
+            player.adjustCameraOffset(x, y, z)
+        }
     }
 
     /**
-     * Decides whether the player's camera should be locked
-     * from moving.
+     * @see Player.lockCamera
      */
-    fun setCameraLock(player: Player, locked: Boolean) {
-        val buffer = ByteBuffer.allocate(1)
-        buffer.put(if (locked) 1 else 0)
-        val packet = PluginMessagePacket("marmot:camera_lock", buffer.array())
-        player.sendPacket(packet)
+    fun lockCamera(audience: Audience, locked: Boolean) {
+        audience.players().forEach { player ->
+            player.lockCamera(locked)
+        }
     }
 
     /**
-     * Forcefully manipulate the player's mouse.
-     * Can be locked from clicking left or right click.
-     * Can be locked from emitting click events.
+     * @see Player.configureMouse
      */
-    fun setMouse(player: Player, locked: Boolean, emitEvents: Boolean) {
-        val buffer = ByteBuffer.allocate(2)
-        buffer.put(if (locked) 1 else 0)
-        buffer.put(if (emitEvents) 1 else 0)
-        val packet = PluginMessagePacket("marmot:mouse", buffer.array())
-        player.sendPacket(packet)
+    fun configureMouse(
+        audience: Audience,
+        locked: Boolean,
+        emitEvents: Boolean
+    ) {
+        audience.players().forEach { player ->
+            player.configureMouse(locked, emitEvents)
+        }
     }
 
     /**
-     * Send a constructed UI to display on the player's screen.
+     * @see Player.openUI
      */
-    fun sendUI(player: Player, marmotUI: MarmotUI) {
-        sendUI(player, marmotUI.build())
+    fun openUI(
+        audience: Audience,
+        marmotUI: MarmotUI
+    ) {
+        audience.players().forEach { player ->
+            player.openUI(marmotUI)
+        }
     }
 
     /**
-     * Send a constructed UI to display on the player's screen.
+     * @see Player.openUI
      */
-    fun sendUI(player: Player, uiWindow: UIWindow) {
-        val jsonString = uiWindow.encode()
-        val buf = ByteBufAllocator.DEFAULT.buffer()
-        buf.writeBoolean(false)
-        BufUtils.writeString(buf, jsonString)
-
-        val bytes = ByteArray(buf.readableBytes())
-        buf.getBytes(buf.readerIndex(), bytes)
-
-        val packet = PluginMessagePacket("marmot:ui", bytes)
-        player.sendPacket(packet)
-        buf.release()
-
-        player.marmot?.currentWindow = uiWindow
-        player.marmot?.previousWindow = uiWindow.deepCopy()
+    fun openUI(
+        audience: Audience,
+        uiWindow: UIWindow
+    ) {
+        audience.players().forEach { player ->
+            player.openUI(uiWindow)
+        }
     }
 
     /**
-     * Send a UI update to the player.
-     * **Should not be used manually.**
-     * Only use when acknowledging events and flushing them immediately.
+     * @see Player.updateUI
      */
-    fun sendUIEvents(player: Player, events: List<UIEvent>) {
-        if (events.isEmpty()) return
-
-        val jsonString = UIEventSerializer.encode(events)
-        val buf = ByteBufAllocator.DEFAULT.buffer()
-        buf.writeBoolean(true)
-        BufUtils.writeString(buf, jsonString)
-
-        val bytes = ByteArray(buf.readableBytes())
-        buf.getBytes(buf.readerIndex(), bytes)
-
-        val packet = PluginMessagePacket("marmot:ui", bytes)
-        player.sendPacket(packet)
-        buf.release()
+    fun updateUI(
+        audience: Audience,
+        events: List<UIEvent>
+    ) {
+        audience.players().forEach { player ->
+            player.updateUI(events)
+        }
     }
+
+}
+
+fun Audience.players(): List<Player> {
+    val result = mutableListOf<Player>()
+    forEachAudience {
+        if (it is Player) result += it
+    }
+    return result
 }
