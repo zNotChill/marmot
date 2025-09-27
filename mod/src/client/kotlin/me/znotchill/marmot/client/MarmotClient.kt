@@ -11,8 +11,14 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry
 import net.minecraft.client.MinecraftClient
+import org.apache.logging.log4j.LogManager
+import org.apache.logging.log4j.Logger
 
 class MarmotClient : ClientModInitializer {
+    companion object {
+        val LOGGER: Logger = LogManager.getLogger()
+    }
+
     override fun onInitializeClient() {
         PayloadTypeRegistry.playS2C().register(CameraPayload.ID, CameraPayload.CODEC)
         PayloadTypeRegistry.playS2C().register(CameraOffsetPayload.ID, CameraOffsetPayload.CODEC)
@@ -44,7 +50,10 @@ class MarmotClient : ClientModInitializer {
                     leftPressed,
                     rightPressed
                 )
-                ClientPlayNetworking.send(payload)
+
+                if (client.networkHandler != null) {
+                    ClientPlayNetworking.send(payload)
+                }
             }
 
             Client.isLeftClicking = leftPressed

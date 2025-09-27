@@ -3,15 +3,12 @@ package me.znotchill.marmot.common.ui
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
-import kotlinx.serialization.modules.subclass
+import me.znotchill.marmot.common.ui.components.Component
 
 object JsonUtil {
     val json = Json {
         serializersModule = SerializersModule {
-            polymorphic(UIComponent::class) {
-                subclass(UIText::class)
-                subclass(UIBox::class)
-                subclass(UIGroup::class)
+            polymorphic(Component::class) {
             }
         }
         classDiscriminator = "type"

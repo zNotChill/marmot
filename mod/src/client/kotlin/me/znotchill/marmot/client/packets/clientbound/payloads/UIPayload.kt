@@ -7,12 +7,14 @@ import net.minecraft.network.codec.PacketCodecs
 import net.minecraft.network.packet.CustomPayload
 
 class UIPayload(
+    val updated: Boolean,
     val json: String
 ) : CustomPayload {
     companion object {
         val ID = CustomPayload.Id<UIPayload>(ClientPackets.UI)
 
         val CODEC: PacketCodec<PacketByteBuf, UIPayload> = PacketCodec.tuple(
+            PacketCodecs.BOOLEAN, UIPayload::updated,
             PacketCodecs.STRING, UIPayload::json,
             ::UIPayload
         )

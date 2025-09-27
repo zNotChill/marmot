@@ -10,6 +10,7 @@ class MarmotPlayer(
     var holdingLeftClick: Boolean = false
     var holdingRightClick: Boolean = false
     var previousWindow: UIWindow? = null
+    var currentWindow: UIWindow? = null
 
     companion object {
         fun create(player: Player): MarmotPlayer {

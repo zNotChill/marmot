@@ -1,33 +1,47 @@
 package me.znotchill.marmot.common.ui
 
 import kotlinx.serialization.Polymorphic
+import me.znotchill.marmot.common.ui.components.Component
+import me.znotchill.marmot.common.ui.dsl.GroupBuilder
 
-open class MarmotUI {
-    private val components = mutableListOf<@Polymorphic UIComponent>()
+open class MarmotUI(val id: String) {
+    private val components = mutableListOf<@Polymorphic Component>()
 
-    fun text(value: String, block: UIText.() -> Unit): UIText {
-        val text = UIText(value)
-        text.block()
-        return text
+    fun build(): UIWindow {
+        val window = UIWindow(id)
+        components.forEach {
+            window.add(it)
+        }
+        return window
     }
 
-    fun box(block: UIBox.() -> Unit): UIBox {
-        val box = UIBox(0, 0, UIColor(255, 255, 255))
-        box.block()
-        return box
+    fun group(
+        id: String,
+        init: GroupBuilder.() -> Unit
+    ) {
+        val builder = GroupBuilder(build())
+        builder.init()
+        val built = builder.build()
+
+        built.forEach { comp -> components.add(comp) }
     }
 
-    fun group(block: UIGroup.() -> Unit): UIGroup {
-        val group = UIGroup().apply(block)
-        return group
-    }
-
-    fun build(): UIWindow = UIWindow(components)
+//    fun widget(widget: UIWidget, x: Int = 0, y: Int = 0, anchor: Anchor): UIComponentManager {
+//        widget.x = x
+//        widget.y = y
+//        val builtWidget = widget.build()
+//
+//        builtWidget.forEach { component ->
+//            components.add(component)
+//        }
+//
+//        return UIComponentManager(widget)
+//    }
 
     /**
-     * Add a vararg [UIComponent] to the window.
+     * Add a vararg [Component] to the window.
      */
-    fun add(vararg componentList: UIComponent) {
+    fun add(vararg componentList: Component) {
         componentList.forEach {
             components.add(it)
         }
