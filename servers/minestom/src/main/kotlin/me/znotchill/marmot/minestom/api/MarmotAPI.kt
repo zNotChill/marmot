@@ -166,8 +166,9 @@ object MarmotAPI {
     ) {
         val buffer = ByteBuffer.allocate(12)
         buffer.putFloat(x)
-        buffer.putFloat(y)
+        // flip z and y because of how the code is written
         buffer.putFloat(z)
+        buffer.putFloat(y)
         val packet = PluginMessagePacket("marmot:camera_offset", buffer.array())
         player.sendPacket(packet)
     }
@@ -180,6 +181,16 @@ object MarmotAPI {
         val buffer = ByteBuffer.allocate(1)
         buffer.put(if (locked) 1 else 0)
         val packet = PluginMessagePacket("marmot:camera_lock", buffer.array())
+        player.sendPacket(packet)
+    }
+
+    /**
+     * Decides whether the player's can use Zoom mods.
+     */
+    fun blockZoom(player: Player, locked: Boolean) {
+        val buffer = ByteBuffer.allocate(1)
+        buffer.put(if (locked) 1 else 0)
+        val packet = PluginMessagePacket("marmot:block_zoom", buffer.array())
         player.sendPacket(packet)
     }
 

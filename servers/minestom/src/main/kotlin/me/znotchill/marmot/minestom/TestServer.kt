@@ -64,6 +64,15 @@ private class Server : BlossomServer(
         )
 
         registerCommand(
+            command("blockzoom") {
+                val lock = argument<Boolean>("lock")
+                syntax(lock) { lockBool ->
+                    MarmotAPI.blockZoom(this, lockBool)
+                }
+            }
+        )
+
+        registerCommand(
             command("lockmouse") {
                 val lock = argument<Boolean>("lock")
                 val emit = argument<Boolean>("emit")

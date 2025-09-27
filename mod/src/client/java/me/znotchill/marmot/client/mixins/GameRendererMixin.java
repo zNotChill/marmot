@@ -15,20 +15,19 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class GameRendererMixin {
     @Inject(method = "getFov", at = @At("RETURN"), cancellable = true)
     void onGetFov(Camera camera, float tickDelta, boolean changingFov, CallbackInfoReturnable<Float> ci) {
-        float vanillaFov = ci.getReturnValue();
-
-        if (Client.targetFov > 0f) {
+        float baseFov = ci.getReturnValue();
+        if (Client.targetFov > 0f || Client.disableZoom) {
             if (Client.currentFov < 0f) {
-                Client.currentFov = vanillaFov;
+                Client.currentFov = baseFov;
             }
 
             float speed = 0.2f;
-            Client.currentFov += (Client.targetFov - Client.currentFov) * speed;
+            float target = Client.targetFov > 0f ? Client.targetFov : baseFov;
+            Client.currentFov += (target - Client.currentFov) * speed;
 
             ci.setReturnValue(Client.currentFov);
         } else {
             Client.currentFov = -1f;
-            ci.setReturnValue(vanillaFov);
         }
     }
 
@@ -42,7 +41,7 @@ public class GameRendererMixin {
             matrices.multiply(new Quaternionf().rotateXYZ(pitchRad, yawRad, rollRad));
         }
 
-        // Y and Z are swapped intentionally
+        // y and z are swapped intentionally
         matrices.translate(
                 Client.cameraOffsetX * -1,
                 Client.cameraOffsetZ * -1,
