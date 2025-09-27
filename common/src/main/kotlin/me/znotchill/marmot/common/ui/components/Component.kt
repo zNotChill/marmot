@@ -52,9 +52,11 @@ fun Component.move(
     return event
 }
 
-fun <T : Component> T.schedule(delay: Long, block: T.() -> UIEvent) {
-    UIEventQueue.enqueueDelayed(delay) {
-        this.block()
+fun <T : Component> T.schedule(delay: Long, block: T.() -> List<UIEvent>) {
+    this.block().forEach {
+        UIEventQueue.enqueueDelayed(delay) {
+            it
+        }
     }
 }
 

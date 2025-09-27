@@ -94,6 +94,8 @@ object MarmotAPI {
             run = { task ->
                 val events = UIEventQueue.tick()
 
+                events.forEach { println("Queued event: $it") }
+
                 if (events.isNotEmpty()) {
                     val byWindow = events.groupBy { it.window?.id }
 

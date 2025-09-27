@@ -46,10 +46,16 @@ class TestUI : MarmotUI("kill_feed") {
             } rightOf test1
 
             test2.schedule(20) {
-                opacity(0f, 1.0)
+                listOf(
+                    opacity(0f, 1.0),
+                    move(Vec2(50f, 50f), 1.0)
+                )
             }
             test2.schedule(40) {
-                opacity(1f, 1.0, easing = Easing.EASE_IN_OUT)
+                listOf(
+                    opacity(1f, 1.0, easing = Easing.EASE_IN_OUT),
+                    move(Vec2(0f, 0f), 1.0)
+                )
             }
         }
     }
