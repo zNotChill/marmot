@@ -2,6 +2,7 @@ package me.znotchill.marmot.client.packets.clientbound.handlers
 
 import me.znotchill.marmot.client.packets.clientbound.payloads.UIPayload
 import me.znotchill.marmot.client.ui.UIRenderer
+import me.znotchill.marmot.common.ui.JsonUtil
 import me.znotchill.marmot.common.ui.UIWindow
 import me.znotchill.marmot.common.ui.events.UIEvent
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking
@@ -13,21 +14,12 @@ class UIHandler {
             client.execute {
                 try {
                     if (!payload.updated) {
-                        // This is a fresh render of this UI
                         val window = UIWindow.decode(payload.json)
-                        UIRenderer.setWindow(window)
+                        UIRenderer.handleFreshRender(window)
                     } else {
-                        val json = kotlinx.serialization.json.Json {
-                            ignoreUnknownKeys = true
-                            classDiscriminator = "type"
-                        }
-
                         val events: List<UIEvent> =
-                            json.decodeFromString(payload.json)
-
-                        events.forEach { event ->
-                            UIRenderer.applyEvent(event)
-                        }
+                            JsonUtil.json.decodeFromString(payload.json)
+                        UIRenderer.handleUpdateRender(events)
                     }
                 } catch (e: Exception) {
                     println("Server returned malformed or invalid JSON: ${payload.json}")

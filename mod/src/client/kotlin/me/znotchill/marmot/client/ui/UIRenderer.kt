@@ -1,5 +1,13 @@
 package me.znotchill.marmot.client.ui
 
+import me.znotchill.marmot.client.MarmotClient
+import me.znotchill.marmot.client.ui.components.GroupRenderer
+import me.znotchill.marmot.client.ui.components.SpriteRenderer
+import me.znotchill.marmot.client.ui.components.TextRenderer
+import me.znotchill.marmot.client.ui.events.DestroyEventHandler
+import me.znotchill.marmot.client.ui.events.MoveEventHandler
+import me.znotchill.marmot.client.ui.events.OpacityEventHandler
+import me.znotchill.marmot.client.ui.events.UIEventContext
 import me.znotchill.marmot.common.ui.*
 import me.znotchill.marmot.common.ui.classes.Easing
 import me.znotchill.marmot.common.ui.classes.RelativePosition
@@ -15,7 +23,6 @@ import me.znotchill.marmot.common.ui.events.PropertyAnimation
 import me.znotchill.marmot.common.ui.events.UIEvent
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback
 import net.minecraft.client.MinecraftClient
-import net.minecraft.client.gl.RenderPipelines
 import net.minecraft.client.gui.DrawContext
 import net.minecraft.client.texture.NativeImage
 import net.minecraft.client.texture.NativeImageBackedTexture
@@ -24,10 +31,31 @@ import net.minecraft.util.Identifier
 import java.io.IOException
 
 object UIRenderer {
-    val textureCache = mutableMapOf<String, NativeImageBackedTexture>()
     private var currentWindow: UIWindow? = null
     private val activeAnimations = mutableListOf<PropertyAnimation<Any>>()
     private var lastTime: Long = System.nanoTime()
+
+    // TODO: improve this system somehow
+    // if it cannot be done, find a way to remove the ::class.java
+    val eventDispatcher = UIEventDispatcher(
+        handlers = mapOf(
+            MoveEvent::class.java to MoveEventHandler(),
+            OpacityEvent::class.java to OpacityEventHandler(),
+            DestroyEvent::class.java to DestroyEventHandler()
+        ),
+        context = UIEventContext(
+            currentWindow = { currentWindow },
+            enqueueAnimation = { anim -> enqueueAnimation(anim) }
+        )
+    )
+
+    val componentRenderer = UIComponentRenderer(
+        handlers = mapOf(
+            TextComponent::class.java to TextRenderer(),
+            SpriteComponent::class.java to SpriteRenderer(),
+            GroupComponent::class.java to GroupRenderer(),
+        )
+    )
 
     fun setWindow(window: UIWindow?) {
         currentWindow = window
@@ -50,48 +78,21 @@ object UIRenderer {
         }
     }
 
-    fun applyEvent(event: UIEvent) {
-        val comp = currentWindow?.getComponentByIdDeep(event.targetId) ?: return
+    /**
+     * Handles the first render or a re-render of a UI.
+     */
+    fun handleFreshRender(window: UIWindow) {
+        setWindow(window)
+    }
 
-        when (event) {
-            is MoveEvent -> {
-                val anim = PropertyAnimation(
-                    targetId = event.targetId,
-                    getter = { comp.props.pos },
-                    setter = { c, value -> c.props.pos = value },
-                    from = null,
-                    to = event.to,
-                    durationSeconds = event.durationSeconds,
-                    easing = event.easing.toString()
-                )
-                anim.window = event.window
-                enqueueAnimation(anim)
-            }
-            is OpacityEvent -> {
-                val anim = PropertyAnimation(
-                    targetId = event.targetId,
-                    getter = { comp.props.opacity },
-                    setter = { c, value -> c.props.opacity = value },
-                    from = null,
-                    to = event.opacity,
-                    durationSeconds = event.durationSeconds,
-                    easing = event.easing.toString()
-                )
-                anim.window = event.window
-                enqueueAnimation(anim)
-            }
-
-            is PropertyAnimation<*> -> {
-                enqueueAnimation(event)
-            }
-
-            is DestroyEvent -> {
-                currentWindow?.components?.remove(event.targetId)
-            }
-
-            else -> {
-                println("Unknown event type: $event")
-            }
+    /**
+     * Handles UI updates for an already rendered UI.
+     * Handles animations.
+     */
+    fun handleUpdateRender(events: List<UIEvent>) {
+        events.forEach { event ->
+            MarmotClient.LOGGER.info("Dispatching UI event ${event.javaClass}")
+            eventDispatcher.applyEvent(event)
         }
     }
 
@@ -281,84 +282,10 @@ fun SpriteComponent.resolveTexture() {
     }
 }
 
-private fun Component.draw(context: DrawContext) {
-    when (this) {
-        is TextComponent -> {
-            val renderer = MinecraftClient.getInstance().textRenderer
-
-            props.backgroundColor?.let { bg ->
-                context.fill(screenX, screenY, screenX + this.width(), screenY + this.height(), bg.toArgb())
-            }
-
-            context.matrices.pushMatrix()
-
-            val scale = props.scale
-
-            context.matrices.scale(scale.x, scale.y)
-
-            context.matrices.translate(
-                (screenX + props.padding.left) / scale.x,
-                (screenY + props.padding.top) / scale.y
-            )
-
-            context.drawText(
-                renderer,
-                props.text,
-                0,
-                0,
-                props.color.copy(a = (props.opacity * 255).toInt()).toArgb(),
-                props.shadow
-            )
-
-            context.matrices.popMatrix()
-        }
-
-        is SpriteComponent -> {
-            val texture = UIRenderer.getIdentifier(props.texturePath)
-            val texWidth = computedSize?.x?.toInt() ?: 16
-            val texHeight = computedSize?.y?.toInt() ?: 16
-
-            var drawWidth = props.size.x.toInt()
-            if (drawWidth == 0)
-                drawWidth = texWidth
-
-            var drawHeight = props.size.y.toInt()
-            if (drawHeight == 0)
-                drawHeight = texHeight
-
-            val alpha = props.opacity / 255f
-
-            context.drawTexture(
-                RenderPipelines.GUI_TEXTURED,
-                texture,
-                screenX,
-                screenY,
-                0f, 0f,
-                drawWidth, drawHeight,
-                drawWidth, drawHeight,
-            )
-        }
-
-        is GroupComponent -> {
-            props.backgroundColor?.let { bg ->
-                val components = props.components
-                val minX = components.minOfOrNull { it.screenX } ?: 0
-                val maxX = components.maxOfOrNull { it.screenX + it.width() } ?: 0
-                val minY = components.minOfOrNull { it.screenY } ?: 0
-                val maxY = components.maxOfOrNull { it.screenY + it.height() } ?: 0
-
-                context.fill(
-                    minX - props.padding.left,
-                    minY - props.padding.top,
-                    maxX + props.padding.right,
-                    maxY + props.padding.bottom,
-                    bg.toArgb()
-                )
-            }
-
-            props.components.forEach { child -> child.draw(context) }
-        }
-
-        else -> {}
-    }
+fun Component.draw(context: DrawContext) {
+    UIRenderer.componentRenderer.draw(
+        this,
+        context,
+        MinecraftClient.getInstance()
+    )
 }
