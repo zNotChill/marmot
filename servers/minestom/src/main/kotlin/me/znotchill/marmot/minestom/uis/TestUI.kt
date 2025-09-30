@@ -1,6 +1,7 @@
 package me.znotchill.marmot.minestom.uis
 
 import me.znotchill.marmot.common.ui.MarmotUI
+import me.znotchill.marmot.common.ui.classes.UIColor
 import me.znotchill.marmot.common.ui.classes.Vec2
 import me.znotchill.marmot.common.ui.components.rightOf
 import me.znotchill.marmot.common.ui.components.rotate
@@ -13,6 +14,7 @@ class TestUI : MarmotUI("kill_feed") {
         method: String
     ) {
         group("test_group") {
+            backgroundColor = UIColor(150, 150, 150)
             val test1 = sprite("test_sprite") {
                 texturePath = "textures/item/black_candle.png"
                 size = Vec2(32f, 32f)

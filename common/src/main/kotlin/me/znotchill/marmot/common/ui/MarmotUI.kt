@@ -2,6 +2,7 @@ package me.znotchill.marmot.common.ui
 
 import kotlinx.serialization.Polymorphic
 import me.znotchill.marmot.common.ui.components.Component
+import me.znotchill.marmot.common.ui.components.GroupComponent
 import me.znotchill.marmot.common.ui.dsl.GroupBuilder
 
 open class MarmotUI(val id: String) {
@@ -21,9 +22,14 @@ open class MarmotUI(val id: String) {
     ) {
         val builder = GroupBuilder(build())
         builder.init()
-        val built = builder.build()
+        val group = builder.build()
 
-        built.forEach { comp -> components.add(comp) }
+        builder.groupProps.components = group
+        components.add(
+            GroupComponent(
+                props = builder.groupProps
+            )
+        )
     }
 
 //    fun widget(widget: UIWidget, x: Int = 0, y: Int = 0, anchor: Anchor): UIComponentManager {

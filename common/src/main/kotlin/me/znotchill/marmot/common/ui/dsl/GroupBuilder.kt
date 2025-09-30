@@ -1,6 +1,7 @@
 package me.znotchill.marmot.common.ui.dsl
 
 import me.znotchill.marmot.common.ui.UIWindow
+import me.znotchill.marmot.common.ui.classes.UIColor
 import me.znotchill.marmot.common.ui.classes.Vec2
 import me.znotchill.marmot.common.ui.components.Component
 import me.znotchill.marmot.common.ui.components.GroupComponent
@@ -20,7 +21,13 @@ class GroupBuilder(
     )
 ) {
     private val children = mutableListOf<Component>()
-    private var groupProps: GroupProps = GroupProps()
+    var groupProps: GroupProps = GroupProps()
+
+    var backgroundColor: UIColor?
+        get() = groupProps.backgroundColor
+        set(value) {
+            groupProps.backgroundColor = value
+        }
 
     fun text(
         id: String,
