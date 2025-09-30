@@ -1,11 +1,11 @@
 package me.znotchill.marmot.minestom.uis
 
+import me.znotchill.marmot.common.ui.Anchor
 import me.znotchill.marmot.common.ui.MarmotUI
+import me.znotchill.marmot.common.ui.classes.Spacing
 import me.znotchill.marmot.common.ui.classes.UIColor
 import me.znotchill.marmot.common.ui.classes.Vec2
-import me.znotchill.marmot.common.ui.components.rightOf
-import me.znotchill.marmot.common.ui.components.rotate
-import me.znotchill.marmot.common.ui.components.schedule
+import me.znotchill.marmot.common.ui.components.leftOf
 
 class TestUI : MarmotUI("kill_feed") {
     fun newKill(
@@ -15,25 +15,35 @@ class TestUI : MarmotUI("kill_feed") {
     ) {
         group("test_group") {
             backgroundColor = UIColor(150, 150, 150)
-            val test1 = sprite("test_sprite") {
-                texturePath = "textures/item/black_candle.png"
-                size = Vec2(32f, 32f)
-                pos = Vec2(20f, 20f)
-            }
-            val test2 = text("test_text") {
-                text = "test test test"
-            } rightOf test1
+            padding = Spacing(x = 5)
 
-            test1.schedule(20) {
-                listOf(
-                    rotate(360, 0.5)
+            val victim = text("victim") {
+                text = victim
+                color = UIColor(132, 194, 205)
+                shadow = true
+                anchor = Anchor.TOP_RIGHT
+                pos = Vec2(10f, 10f)
+                padding = Spacing(
+                    y = 5
                 )
             }
-            test2.schedule(20) {
-                listOf(
-                    rotate(-360, 0.5)
+
+            val method = text("method") {
+                text = method
+                shadow = false
+                padding = Spacing(
+                    x = 5, y = 5
                 )
-            }
+            } leftOf victim
+
+            text("killer") {
+                text = killer
+                color = UIColor(236, 125, 107)
+                shadow = true
+                padding = Spacing(
+                    y = 5
+                )
+            } leftOf method
         }
     }
 }

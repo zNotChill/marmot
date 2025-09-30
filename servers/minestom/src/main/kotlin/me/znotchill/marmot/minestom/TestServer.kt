@@ -139,7 +139,7 @@ private class Server : BlossomServer(
             command("ui") {
                 syntax {
                     players.forEach { player ->
-                        ui.newKill("die", "die", "killed")
+                        ui.newKill("pro", "noob", "killed")
                         player.openUI(ui)
                     }
                 }

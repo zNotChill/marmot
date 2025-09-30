@@ -1,6 +1,7 @@
 package me.znotchill.marmot.common.ui.dsl
 
 import me.znotchill.marmot.common.ui.UIWindow
+import me.znotchill.marmot.common.ui.classes.Spacing
 import me.znotchill.marmot.common.ui.classes.UIColor
 import me.znotchill.marmot.common.ui.classes.Vec2
 import me.znotchill.marmot.common.ui.components.Component
@@ -20,13 +21,19 @@ class GroupBuilder(
         Vec2(100f, 100f)
     )
 ) {
-    private val children = mutableListOf<Component>()
+    var children = mutableListOf<Component>()
     var groupProps: GroupProps = GroupProps()
 
     var backgroundColor: UIColor?
         get() = groupProps.backgroundColor
         set(value) {
             groupProps.backgroundColor = value
+        }
+
+    var padding: Spacing
+        get() = groupProps.padding
+        set(value) {
+            groupProps.padding = value
         }
 
     fun text(
