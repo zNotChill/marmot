@@ -12,7 +12,7 @@ export default defineConfig({
 				"./src/styles/custom.css",
 			],
 			title: 'Marmot Developer API',
-			social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/withastro/starlight' }],
+			social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/zNotChill/marmot' }],
 			sidebar: [
 				{
 					label: 'Guides',
