@@ -7,6 +7,7 @@ import me.znotchill.marmot.client.ui.components.TextRenderer
 import me.znotchill.marmot.client.ui.events.DestroyEventHandler
 import me.znotchill.marmot.client.ui.events.MoveEventHandler
 import me.znotchill.marmot.client.ui.events.OpacityEventHandler
+import me.znotchill.marmot.client.ui.events.RotateEventHandler
 import me.znotchill.marmot.client.ui.events.UIEventContext
 import me.znotchill.marmot.common.ui.*
 import me.znotchill.marmot.common.ui.classes.Easing
@@ -20,6 +21,7 @@ import me.znotchill.marmot.common.ui.events.DestroyEvent
 import me.znotchill.marmot.common.ui.events.MoveEvent
 import me.znotchill.marmot.common.ui.events.OpacityEvent
 import me.znotchill.marmot.common.ui.events.PropertyAnimation
+import me.znotchill.marmot.common.ui.events.RotateEvent
 import me.znotchill.marmot.common.ui.events.UIEvent
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback
 import net.minecraft.client.MinecraftClient
@@ -28,6 +30,7 @@ import net.minecraft.client.texture.NativeImage
 import net.minecraft.client.texture.NativeImageBackedTexture
 import net.minecraft.resource.Resource
 import net.minecraft.util.Identifier
+import org.joml.Matrix3x2f
 import java.io.IOException
 
 object UIRenderer {
@@ -41,7 +44,8 @@ object UIRenderer {
         handlers = mapOf(
             MoveEvent::class.java to MoveEventHandler(),
             OpacityEvent::class.java to OpacityEventHandler(),
-            DestroyEvent::class.java to DestroyEventHandler()
+            DestroyEvent::class.java to DestroyEventHandler(),
+            RotateEvent::class.java to RotateEventHandler(),
         ),
         context = UIEventContext(
             currentWindow = { currentWindow },
@@ -181,6 +185,33 @@ object UIRenderer {
                 layoutComponent(child, window, effectiveScale)
             }
         }
+    }
+
+    /**
+     * Manipulate the matrices of the component to apply scale and rotation.
+     */
+    fun applyComponentMatrices(context: DrawContext, component: Component) {
+        context.matrices.pushMatrix()
+        val props = component.props
+        val scale = props.scale
+        val rotation = component.props.rotation
+
+        val width = component.width().toFloat()
+        val height = component.height().toFloat()
+
+        val pivotX = width / 2f
+        val pivotY = height / 2f
+
+        context.matrices.translate(
+            (component.screenX + props.padding.left).toFloat(),
+            (component.screenY + props.padding.top).toFloat(),
+        )
+
+        context.matrices.scale(scale.x, scale.y)
+
+        context.matrices.translate(pivotX, pivotY)
+        context.matrices.mul(Matrix3x2f().rotation(Math.toRadians(rotation.toDouble()).toFloat()))
+        context.matrices.translate(-pivotX, -pivotY)
     }
 
     /**

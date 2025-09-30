@@ -2,7 +2,6 @@ package me.znotchill.marmot.client.ui.components
 
 import me.znotchill.marmot.client.ui.UIRenderer
 import me.znotchill.marmot.common.ui.components.SpriteComponent
-import me.znotchill.marmot.common.ui.components.TextComponent
 import net.minecraft.client.MinecraftClient
 import net.minecraft.client.gl.RenderPipelines
 import net.minecraft.client.gui.DrawContext
@@ -22,14 +21,18 @@ class SpriteRenderer : UIComponent<SpriteComponent> {
         if (drawHeight == 0)
             drawHeight = texHeight
 
+        UIRenderer.applyComponentMatrices(context, component)
+
         context.drawTexture(
             RenderPipelines.GUI_TEXTURED,
             texture,
-            component.screenX,
-            component.screenY,
+            0,
+            0,
             0f, 0f,
             drawWidth, drawHeight,
             drawWidth, drawHeight,
         )
+
+        context.matrices.popMatrix()
     }
 }

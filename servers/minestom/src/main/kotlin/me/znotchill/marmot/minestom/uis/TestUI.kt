@@ -1,11 +1,9 @@
 package me.znotchill.marmot.minestom.uis
 
 import me.znotchill.marmot.common.ui.MarmotUI
-import me.znotchill.marmot.common.ui.classes.Easing
 import me.znotchill.marmot.common.ui.classes.Vec2
-import me.znotchill.marmot.common.ui.components.move
-import me.znotchill.marmot.common.ui.components.opacity
 import me.znotchill.marmot.common.ui.components.rightOf
+import me.znotchill.marmot.common.ui.components.rotate
 import me.znotchill.marmot.common.ui.components.schedule
 
 class TestUI : MarmotUI("kill_feed") {
@@ -14,27 +12,7 @@ class TestUI : MarmotUI("kill_feed") {
         victim: String,
         method: String
     ) {
-        val group = group("die") {
-//            val test = text("hi") {
-//                text = "sigma"
-//                color = UIColor(134, 196, 207)
-//                shadow = true
-//                pos = Vec2(10f, 10f)
-//                backgroundColor = UIColor(255, 255, 255)
-//                scale = Vec2(2f, 2f)
-//            }
-//
-//            test.schedule(20) {
-//                println("HELLO")
-//                move(Vec2(0f, -100f), 0.5)
-//            }
-//
-//            text("l") {
-//                text = "sigma2"
-//                color = UIColor(134, 196, 207)
-//                shadow = true
-//                backgroundColor = UIColor(255, 255, 255)
-//            } rightOf test
+        group("test_group") {
             val test1 = sprite("test_sprite") {
                 texturePath = "textures/item/black_candle.png"
                 size = Vec2(32f, 32f)
@@ -44,16 +22,14 @@ class TestUI : MarmotUI("kill_feed") {
                 text = "test test test"
             } rightOf test1
 
-            test2.schedule(20) {
+            test1.schedule(20) {
                 listOf(
-                    opacity(0f, 1.0),
-                    move(Vec2(50f, 50f), 1.0)
+                    rotate(360, 0.5)
                 )
             }
-            test2.schedule(40) {
+            test2.schedule(20) {
                 listOf(
-                    opacity(1f, 1.0, easing = Easing.EASE_IN_OUT),
-                    move(Vec2(0f, 0f), 1.0)
+                    rotate(-360, 0.5)
                 )
             }
         }

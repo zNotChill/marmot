@@ -10,6 +10,7 @@ import me.znotchill.marmot.common.ui.classes.RelativePosition
 import me.znotchill.marmot.common.ui.classes.Vec2
 import me.znotchill.marmot.common.ui.components.props.BaseProps
 import me.znotchill.marmot.common.ui.events.MoveEvent
+import me.znotchill.marmot.common.ui.events.RotateEvent
 import me.znotchill.marmot.common.ui.events.UIEvent
 
 @Serializable
@@ -44,7 +45,23 @@ fun Component.move(
     val event = MoveEvent(
         targetId = this.id,
         delay = 0L,
-        to = to,
+        position = to,
+        durationSeconds = duration,
+        easing = easing
+    )
+    event.window = this.window
+    return event
+}
+
+fun Component.rotate(
+    rotation: Int,
+    duration: Double = 0.0,
+    easing: Easing = Easing.LINEAR
+): RotateEvent {
+    val event = RotateEvent(
+        targetId = this.id,
+        delay = 0L,
+        rotation = rotation,
         durationSeconds = duration,
         easing = easing
     )

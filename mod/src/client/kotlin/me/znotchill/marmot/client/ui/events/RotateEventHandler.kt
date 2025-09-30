@@ -1,17 +1,17 @@
 package me.znotchill.marmot.client.ui.events
 
 import me.znotchill.marmot.common.ui.components.Component
-import me.znotchill.marmot.common.ui.events.MoveEvent
 import me.znotchill.marmot.common.ui.events.PropertyAnimation
+import me.znotchill.marmot.common.ui.events.RotateEvent
 
-class MoveEventHandler : UIEventHandler<MoveEvent> {
-    override fun handle(event: MoveEvent, component: Component, context: UIEventContext) {
+class RotateEventHandler : UIEventHandler<RotateEvent> {
+    override fun handle(event: RotateEvent, component: Component, context: UIEventContext) {
         val anim = PropertyAnimation(
             targetId = event.targetId,
-            getter = { component.props.pos },
-            setter = { c, value -> c.props.pos = value },
+            getter = { component.props.rotation },
+            setter = { c, value -> c.props.rotation = value },
             from = null,
-            to = event.position,
+            to = event.rotation,
             durationSeconds = event.durationSeconds,
             easing = event.easing.toString()
         )
