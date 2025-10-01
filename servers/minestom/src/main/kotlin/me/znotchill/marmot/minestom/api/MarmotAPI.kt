@@ -7,6 +7,7 @@ import io.netty.buffer.Unpooled
 import me.znotchill.blossom.extensions.addListener
 import me.znotchill.blossom.extensions.ticks
 import me.znotchill.blossom.scheduler.task
+import me.znotchill.marmot.common.ClientPerspective
 import me.znotchill.marmot.common.api.MarmotEvent
 import me.znotchill.marmot.common.ui.MarmotUI
 import me.znotchill.marmot.common.ui.UIEventQueue
@@ -253,6 +254,29 @@ object MarmotAPI {
     ) {
         audience.players().forEach { player ->
             player.updateUI(events)
+        }
+    }
+
+    /**
+     * @see Player.lockPerspective
+     */
+    fun lockPerspective(
+        audience: Audience,
+        locked: Boolean
+    ) {
+        audience.players().forEach { player ->
+            player.lockPerspective(locked)
+        }
+    }
+    /**
+     * @see Player.setPerspective
+     */
+    fun setPerspective(
+        audience: Audience,
+        perspective: ClientPerspective
+    ) {
+        audience.players().forEach { player ->
+            player.setPerspective(perspective)
         }
     }
 

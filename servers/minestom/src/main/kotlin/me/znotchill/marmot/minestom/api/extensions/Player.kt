@@ -1,6 +1,7 @@
 package me.znotchill.marmot.minestom.api.extensions
 
 import io.netty.buffer.ByteBufAllocator
+import me.znotchill.marmot.common.ClientPerspective
 import me.znotchill.marmot.common.networking.BufUtils
 import me.znotchill.marmot.common.ui.MarmotUI
 import me.znotchill.marmot.common.ui.UIEventSerializer
@@ -121,6 +122,33 @@ fun Player.configureMouse(
     buffer.put(if (locked) 1 else 0)
     buffer.put(if (emitEvents) 1 else 0)
     val packet = PluginMessagePacket("marmot:mouse", buffer.array())
+    sendPacket(packet)
+}
+
+/**
+ * Forcefully lock a player's perspective.
+ */
+fun Player.lockPerspective(locked: Boolean) {
+    val buffer = ByteBuffer.allocate(1)
+
+    buffer.put(if (locked) 1 else 0)
+    val packet = PluginMessagePacket("marmot:perspective_lock", buffer.array())
+    sendPacket(packet)
+}
+
+/**
+ * Force a player's perspective.
+ */
+fun Player.setPerspective(perspective: ClientPerspective) {
+    val buf = ByteBufAllocator.DEFAULT.buffer()
+
+    BufUtils.writeString(buf, perspective.toString())
+
+    val bytes = ByteArray(buf.readableBytes())
+    buf.readBytes(bytes)
+    buf.release()
+
+    val packet = PluginMessagePacket("marmot:perspective", bytes)
     sendPacket(packet)
 }
 

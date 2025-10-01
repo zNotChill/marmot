@@ -4,8 +4,8 @@ plugins {
     `java-library`
 }
 
-group = "me.znotchill.marmot"
-version = "1.0-SNAPSHOT"
+group = property("maven_group") as String
+version = property("common_version") as String
 
 repositories {
     mavenCentral()

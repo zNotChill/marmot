@@ -1,6 +1,7 @@
 package me.znotchill.marmot.client
 
 import net.minecraft.client.MinecraftClient
+import net.minecraft.client.option.Perspective
 
 object Client {
     @JvmField
@@ -9,14 +10,6 @@ object Client {
     var customYaw = 0f
     @JvmField
     var customRoll = 0f
-    @JvmField
-    var customFov = 0f
-
-    var fov: Float
-        get() = customFov
-        set(value) {
-            this.customFov = value
-        }
 
     @JvmField
     var targetFov: Float = -1f
@@ -41,4 +34,12 @@ object Client {
     var isLeftClicking: Boolean = false
     @JvmField
     var isRightClicking: Boolean = false
+
+    @JvmField
+    var perspectiveLocked: Boolean = false
+    var currentPerspective: Perspective
+        get() = MinecraftClient.getInstance().options.perspective
+        set(value) {
+            MinecraftClient.getInstance().options.perspective = value
+        }
 }

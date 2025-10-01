@@ -4,8 +4,8 @@ plugins {
     kotlin("plugin.serialization") version "2.2.20"
 }
 
-group = "me.znotchill.marmot"
-version = "1.0-SNAPSHOT"
+group = property("maven_group") as String
+version = property("minestom_api_version") as String
 
 repositories {
     mavenLocal()

@@ -4,6 +4,7 @@ import me.znotchill.blossom.command.command
 import me.znotchill.blossom.component.component
 import me.znotchill.blossom.extensions.addListener
 import me.znotchill.blossom.server.BlossomServer
+import me.znotchill.marmot.common.ClientPerspective
 import me.znotchill.marmot.common.api.MarmotEvent
 import me.znotchill.marmot.minestom.api.MarmotAPI
 import me.znotchill.marmot.minestom.api.extensions.adjustCamera
@@ -11,7 +12,9 @@ import me.znotchill.marmot.minestom.api.extensions.adjustCameraOffset
 import me.znotchill.marmot.minestom.api.extensions.configureMouse
 import me.znotchill.marmot.minestom.api.extensions.handshake
 import me.znotchill.marmot.minestom.api.extensions.lockCamera
+import me.znotchill.marmot.minestom.api.extensions.lockPerspective
 import me.znotchill.marmot.minestom.api.extensions.openUI
+import me.znotchill.marmot.minestom.api.extensions.setPerspective
 import me.znotchill.marmot.minestom.uis.TestUI
 import net.minestom.server.entity.GameMode
 import net.minestom.server.event.player.AsyncPlayerConfigurationEvent
@@ -106,6 +109,23 @@ private class Server : BlossomServer(
             command("sendhealth") {
                 syntax {
                     handshake()
+                }
+            }
+        )
+
+        registerCommand(
+            command("perspective") {
+                syntax {
+                    setPerspective(ClientPerspective.THIRD_PERSON_BACK)
+                }
+            }
+        )
+
+        registerCommand(
+            command("lockperspective") {
+                val lock = argument<Boolean>("lock")
+                syntax(lock) { lockBool ->
+                    lockPerspective(lockBool)
                 }
             }
         )
