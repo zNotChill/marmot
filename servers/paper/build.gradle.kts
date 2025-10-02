@@ -2,30 +2,29 @@ plugins {
     `maven-publish`
     kotlin("jvm") version "2.2.20"
     kotlin("plugin.serialization") version "2.2.20"
-    `java-library`
 }
 
 val mavenGroup = property("maven_group") as String
 group = mavenGroup
-version = property("common_version") as String
+version = property("paper_api_version") as String
 
 repositories {
+    mavenLocal()
     mavenCentral()
+    maven("https://repo.papermc.io/repository/maven-public/")
 }
 
 dependencies {
+    implementation(project(":common"))
     testImplementation(kotlin("test"))
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
-    implementation("io.netty:netty-buffer:4.1.111.Final")
-    implementation("io.netty:netty-common:4.1.111.Final")
-    implementation("net.kyori:adventure-api:4.24.0")
+    compileOnly("io.papermc.paper:paper-api:1.21.8-R0.1-SNAPSHOT")
 }
 
 tasks.test {
     useJUnitPlatform()
 }
 kotlin {
-    jvmToolchain(21)
+    jvmToolchain(23)
 }
 
 publishing {
@@ -34,7 +33,7 @@ publishing {
             from(components["java"])
 
             groupId = mavenGroup
-            artifactId = "common"
+            artifactId = "paper-api"
             version
         }
     }

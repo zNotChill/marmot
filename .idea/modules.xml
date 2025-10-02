@@ -3,11 +3,15 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/marmot.iml" filepath="$PROJECT_DIR$/.idea/modules/marmot.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/common/marmot.common.main.iml" filepath="$PROJECT_DIR$/.idea/modules/common/marmot.common.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/common/marmot.common.test.iml" filepath="$PROJECT_DIR$/.idea/modules/common/marmot.common.test.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/mod/marmot.mod.client.iml" filepath="$PROJECT_DIR$/.idea/modules/mod/marmot.mod.client.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/mod/marmot.mod.main.iml" filepath="$PROJECT_DIR$/.idea/modules/mod/marmot.mod.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/mod/marmot.mod.test.iml" filepath="$PROJECT_DIR$/.idea/modules/mod/marmot.mod.test.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/servers/minestom/marmot.servers.minestom.main.iml" filepath="$PROJECT_DIR$/.idea/modules/servers/minestom/marmot.servers.minestom.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/servers/minestom/marmot.servers.minestom.test.iml" filepath="$PROJECT_DIR$/.idea/modules/servers/minestom/marmot.servers.minestom.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/servers/paper/marmot.servers.paper.main.iml" filepath="$PROJECT_DIR$/.idea/modules/servers/paper/marmot.servers.paper.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/servers/paper/marmot.servers.paper.test.iml" filepath="$PROJECT_DIR$/.idea/modules/servers/paper/marmot.servers.paper.test.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/mod/me.znotchill.marmot.marmot.mod.client.iml" filepath="$PROJECT_DIR$/.idea/modules/mod/me.znotchill.marmot.marmot.mod.client.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/mod/me.znotchill.marmot.marmot.mod.main.iml" filepath="$PROJECT_DIR$/.idea/modules/mod/me.znotchill.marmot.marmot.mod.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/mod/me.znotchill.marmot.marmot.mod.test.iml" filepath="$PROJECT_DIR$/.idea/modules/mod/me.znotchill.marmot.marmot.mod.test.iml" />

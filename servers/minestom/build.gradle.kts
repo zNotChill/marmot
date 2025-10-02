@@ -4,7 +4,8 @@ plugins {
     kotlin("plugin.serialization") version "2.2.20"
 }
 
-group = property("maven_group") as String
+val mavenGroup = property("maven_group") as String
+group = mavenGroup
 version = property("minestom_api_version") as String
 
 repositories {
@@ -40,13 +41,21 @@ publishing {
         create<MavenPublication>("mavenJava") {
             from(components["java"])
 
-            groupId = "me.znotchill.marmot"
-            artifactId = "marmot-api-minestom"
+            groupId = mavenGroup
+            artifactId = "minestom-api"
             version
         }
     }
 
     repositories {
+        maven {
+            name = "znotchill"
+            url = uri("https://repo.znotchill.me/repository/maven-releases/")
+            credentials {
+                username = findProperty("marmotRepoUsername") as String? ?: System.getenv("MAVEN_USER")
+                password = findProperty("marmotRepoPassword") as String? ?: System.getenv("MAVEN_PASS")
+            }
+        }
         mavenLocal()
     }
 }

@@ -1,10 +1,9 @@
-package me.znotchill.marmot.minestom.api
+package me.znotchill.marmot.common.api
 
 import me.znotchill.marmot.common.ui.UIWindow
-import net.minestom.server.entity.Player
 
-class MarmotPlayer(
-    var player: Player
+class MarmotPlayer<P>(
+    val player: P
 ) {
     val isMarmot: Boolean = true
     var holdingLeftClick: Boolean = false
@@ -13,7 +12,7 @@ class MarmotPlayer(
     var currentWindow: UIWindow? = null
 
     companion object {
-        fun create(player: Player): MarmotPlayer {
+        fun <P> create(player: P): MarmotPlayer<P> {
             return MarmotPlayer(player)
         }
     }

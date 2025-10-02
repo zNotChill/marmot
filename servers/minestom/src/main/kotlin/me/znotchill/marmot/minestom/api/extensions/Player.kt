@@ -7,7 +7,7 @@ import me.znotchill.marmot.common.ui.MarmotUI
 import me.znotchill.marmot.common.ui.UIEventSerializer
 import me.znotchill.marmot.common.ui.UIWindow
 import me.znotchill.marmot.common.ui.events.UIEvent
-import me.znotchill.marmot.minestom.api.MarmotPlayer
+import me.znotchill.marmot.common.api.MarmotPlayer
 import me.znotchill.marmot.minestom.api.marmot
 import net.minestom.server.entity.Player
 import net.minestom.server.network.packet.server.common.PluginMessagePacket

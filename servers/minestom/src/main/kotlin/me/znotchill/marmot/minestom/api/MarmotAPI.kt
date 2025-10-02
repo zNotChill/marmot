@@ -8,7 +8,9 @@ import me.znotchill.blossom.extensions.addListener
 import me.znotchill.blossom.extensions.ticks
 import me.znotchill.blossom.scheduler.task
 import me.znotchill.marmot.common.ClientPerspective
+import me.znotchill.marmot.common.api.BaseMarmotAPI
 import me.znotchill.marmot.common.api.MarmotEvent
+import me.znotchill.marmot.common.api.MarmotPlayer
 import me.znotchill.marmot.common.ui.MarmotUI
 import me.znotchill.marmot.common.ui.UIEventQueue
 import me.znotchill.marmot.common.ui.UIWindow
@@ -24,10 +26,11 @@ import net.minestom.server.timer.SchedulerManager
 import org.slf4j.LoggerFactory
 import java.util.*
 
-object MarmotAPI {
+object MarmotAPI : BaseMarmotAPI<Player, MarmotPlayer<Player>> {
+    override val players: MutableMap<UUID, MarmotPlayer<Player>> = mutableMapOf()
+
     val logger: Logger = LoggerFactory.getLogger("Marmot") as Logger
 
-    private val players: MutableMap<UUID, MarmotPlayer> = mutableMapOf()
     private val events: MutableMap<MarmotEvent, (player: Player) -> Unit> = mutableMapOf()
 
     /**
@@ -39,19 +42,11 @@ object MarmotAPI {
             logger.level = if (value) Level.DEBUG else Level.INFO
         }
 
-    /**
-     * Gets the callback for a given [MarmotEvent].
-     * Will return an empty callback object if the [MarmotEvent] does not
-     * have any callback registered to it.
-     */
-    fun getEvent(event: MarmotEvent): (Player) -> Unit {
+    override fun getEvent(event: MarmotEvent): (Player) -> Unit {
         return events[event] ?: {}
     }
 
-    /**
-     * Adds an event handler for a [MarmotEvent].
-     */
-    fun addEvent(event: MarmotEvent, run: (Player) -> Unit) {
+    override fun addEvent(event: MarmotEvent, run: (Player) -> Unit) {
         events[event] = run
     }
 
@@ -133,29 +128,23 @@ object MarmotAPI {
         }
     }
 
-    /**
-     * Check if an online [Player] is using Marmot.
-     */
-    fun isUsingMarmot(player: Player): Boolean {
+    override fun isUsingMarmot(player: Player): Boolean {
         return players[player.uuid]?.isMarmot == true
     }
 
-    /**
-     * Get the [MarmotPlayer] for a [Player] if they are using Marmot.
-     */
-    fun getMarmotPlayer(player: Player): MarmotPlayer? {
+    override fun getMarmotPlayer(player: Player): MarmotPlayer<Player>? {
         return players[player.uuid]
     }
 
     /**
      * @see Player.handshake
      */
-    fun handshake(player: Player) = player.handshake()
+    override fun handshake(player: Player) = player.handshake()
 
     /**
      * @see Player.sendKeybinds
      */
-    fun sendKeybinds(audience: Audience, binds: Map<String, String>) {
+    override fun sendKeybinds(audience: Audience, binds: Map<String, String>) {
         audience.players().forEach { player ->
             player.sendKeybinds(binds)
         }
@@ -173,7 +162,7 @@ object MarmotAPI {
     /**
      * @see Player.adjustCamera
      */
-    fun adjustCamera(
+    override fun adjustCamera(
         audience: Audience,
         pitch: Float,
         yaw: Float,
@@ -188,7 +177,7 @@ object MarmotAPI {
     /**
      * @see Player.adjustCameraOffset
      */
-    fun adjustCameraOffset(
+    override fun adjustCameraOffset(
         audience: Audience,
         x: Float,
         y: Float,
@@ -202,7 +191,7 @@ object MarmotAPI {
     /**
      * @see Player.lockCamera
      */
-    fun lockCamera(audience: Audience, locked: Boolean) {
+    override fun lockCamera(audience: Audience, locked: Boolean) {
         audience.players().forEach { player ->
             player.lockCamera(locked)
         }
@@ -211,7 +200,7 @@ object MarmotAPI {
     /**
      * @see Player.configureMouse
      */
-    fun configureMouse(
+    override fun configureMouse(
         audience: Audience,
         locked: Boolean,
         emitEvents: Boolean
@@ -224,7 +213,7 @@ object MarmotAPI {
     /**
      * @see Player.openUI
      */
-    fun openUI(
+    override fun openUI(
         audience: Audience,
         marmotUI: MarmotUI
     ) {
@@ -236,7 +225,7 @@ object MarmotAPI {
     /**
      * @see Player.openUI
      */
-    fun openUI(
+    override fun openUI(
         audience: Audience,
         uiWindow: UIWindow
     ) {
@@ -248,7 +237,7 @@ object MarmotAPI {
     /**
      * @see Player.updateUI
      */
-    fun updateUI(
+    override fun updateUI(
         audience: Audience,
         events: List<UIEvent>
     ) {
@@ -260,7 +249,7 @@ object MarmotAPI {
     /**
      * @see Player.lockPerspective
      */
-    fun lockPerspective(
+    override fun lockPerspective(
         audience: Audience,
         locked: Boolean
     ) {
@@ -271,7 +260,7 @@ object MarmotAPI {
     /**
      * @see Player.setPerspective
      */
-    fun setPerspective(
+    override fun setPerspective(
         audience: Audience,
         perspective: ClientPerspective
     ) {
