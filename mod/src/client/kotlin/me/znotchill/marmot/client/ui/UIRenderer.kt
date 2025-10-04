@@ -1,7 +1,9 @@
 package me.znotchill.marmot.client.ui
 
 import me.znotchill.marmot.client.MarmotClient
+import me.znotchill.marmot.client.ui.components.GradientRenderer
 import me.znotchill.marmot.client.ui.components.GroupRenderer
+import me.znotchill.marmot.client.ui.components.LineRenderer
 import me.znotchill.marmot.client.ui.components.SpriteRenderer
 import me.znotchill.marmot.client.ui.components.TextRenderer
 import me.znotchill.marmot.client.ui.events.DestroyEventHandler
@@ -14,7 +16,9 @@ import me.znotchill.marmot.common.ui.classes.Easing
 import me.znotchill.marmot.common.ui.classes.RelativePosition
 import me.znotchill.marmot.common.ui.classes.Vec2
 import me.znotchill.marmot.common.ui.components.Component
+import me.znotchill.marmot.common.ui.components.GradientComponent
 import me.znotchill.marmot.common.ui.components.GroupComponent
+import me.znotchill.marmot.common.ui.components.LineComponent
 import me.znotchill.marmot.common.ui.components.SpriteComponent
 import me.znotchill.marmot.common.ui.components.TextComponent
 import me.znotchill.marmot.common.ui.events.DestroyEvent
@@ -58,6 +62,8 @@ object UIRenderer {
             TextComponent::class.java to TextRenderer(),
             SpriteComponent::class.java to SpriteRenderer(),
             GroupComponent::class.java to GroupRenderer(),
+            LineComponent::class.java to LineRenderer(),
+            GradientComponent::class.java to GradientRenderer()
         )
     )
 

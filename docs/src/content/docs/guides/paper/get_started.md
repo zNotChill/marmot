@@ -1,6 +1,6 @@
 ---
-title: Get Started with Minestom
-description: Add Marmot to your Minestom server.
+title: Get Started with Paper
+description: Add Marmot to your Paper server.
 ---
 
 ## Installation
@@ -19,23 +19,28 @@ repositories {
 
 Add the library:
 ```
-me.znotchill.marmot:minestom-api:LATEST
+me.znotchill.marmot:paper-api:LATEST
 me.znotchill.marmot:common:LATEST
 ```
 
 Replace `LATEST` with whichever version is latest according to the [GitHub](https://github.com/zNotChill/marmot). Currently, it is `1.2.9`.
 
 ## Usage
-Once you have finished installation, you can add the Marmot API to your Minestom server:
+Once you have finished installation, you can add the Marmot API to your Paper server:
 ```kt
-MarmotAPI.registerEvents(MinecraftServer.getGlobalEventHandler())
-MarmotAPI.registerTasks(MinecraftServer.getSchedulerManager())
+MarmotAPI.registerEvents(JavaPlugin)
+MarmotAPI.registerTasks(JavaPlugin)
 ```
 
-Or, alternatively, if you are using [Blossom](https://github.com/zNotChill/blossom):
+Full example:
 ```kt
-MarmotAPI.registerEvents(eventHandler)
-MarmotAPI.registerTasks(scheduler)
+class MarmotPaperTest : JavaPlugin() {
+    override fun onEnable() {
+        MarmotAPI.registerEvents(this)
+        MarmotAPI.registerTasks(this)
+    }
+}
+
 ```
 
 Now, the Marmot API is hooked into your server and everything is good to go!

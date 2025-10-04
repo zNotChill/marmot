@@ -5,11 +5,15 @@ import me.znotchill.marmot.common.ui.classes.Spacing
 import me.znotchill.marmot.common.ui.classes.UIColor
 import me.znotchill.marmot.common.ui.classes.Vec2
 import me.znotchill.marmot.common.ui.components.Component
+import me.znotchill.marmot.common.ui.components.GradientComponent
 import me.znotchill.marmot.common.ui.components.GroupComponent
+import me.znotchill.marmot.common.ui.components.LineComponent
 import me.znotchill.marmot.common.ui.components.SpriteComponent
 import me.znotchill.marmot.common.ui.components.TextComponent
 import me.znotchill.marmot.common.ui.components.props.BaseProps
+import me.znotchill.marmot.common.ui.components.props.GradientProps
 import me.znotchill.marmot.common.ui.components.props.GroupProps
+import me.znotchill.marmot.common.ui.components.props.LineProps
 import me.znotchill.marmot.common.ui.components.props.SpriteProps
 import me.znotchill.marmot.common.ui.components.props.TextProps
 
@@ -56,6 +60,34 @@ class GroupBuilder(
     ): SpriteComponent {
         val props = SpriteProps().apply(block)
         val comp = SpriteComponent(
+            props = props
+        )
+        comp.window = window
+        comp.id = id
+        children += comp
+        return comp
+    }
+
+    fun line(
+        id: String,
+        block: (LineProps.() -> Unit)
+    ): LineComponent {
+        val props = LineProps().apply(block)
+        val comp = LineComponent(
+            props = props
+        )
+        comp.window = window
+        comp.id = id
+        children += comp
+        return comp
+    }
+
+    fun gradient(
+        id: String,
+        block: (GradientProps.() -> Unit)
+    ): GradientComponent {
+        val props = GradientProps().apply(block)
+        val comp = GradientComponent(
             props = props
         )
         comp.window = window

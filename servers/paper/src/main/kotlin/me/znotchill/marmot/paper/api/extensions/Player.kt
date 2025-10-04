@@ -1,4 +1,4 @@
-package me.znotchill.marmot.paper.extensions
+package me.znotchill.marmot.paper.api.extensions
 
 import me.znotchill.marmot.common.ClientPerspective
 import me.znotchill.marmot.common.ui.MarmotUI
@@ -22,7 +22,7 @@ fun buildPacket(block: DataOutputStream.() -> Unit): ByteArray {
     }
 }
 
-private fun DataOutputStream.writeVarInt(value: Int) {
+fun DataOutputStream.writeVarInt(value: Int) {
     var v = value
     while (true) {
         if ((v and 0x7F.inv()) == 0) {
@@ -120,6 +120,9 @@ fun Player.openUI(uiWindow: UIWindow) {
         writeString(json)
     }
     sendPluginMessage(MarmotAPI.plugin, "marmot:ui", bytes)
+
+    marmot?.currentWindow = uiWindow
+    marmot?.previousWindow = uiWindow.deepCopy()
 }
 
 fun Player.updateUI(events: List<UIEvent>) {
@@ -131,3 +134,6 @@ fun Player.updateUI(events: List<UIEvent>) {
     }
     sendPluginMessage(MarmotAPI.plugin, "marmot:ui", bytes)
 }
+
+val Player.marmot
+    get() = MarmotAPI.getMarmotPlayer(this)

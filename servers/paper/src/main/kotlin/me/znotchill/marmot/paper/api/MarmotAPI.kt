@@ -1,14 +1,14 @@
 package me.znotchill.marmot.paper.api
 
-import me.znotchill.marmot.paper.extensions.adjustCamera
-import me.znotchill.marmot.paper.extensions.adjustCameraOffset
-import me.znotchill.marmot.paper.extensions.configureMouse
-import me.znotchill.marmot.paper.extensions.lockCamera
-import me.znotchill.marmot.paper.extensions.lockPerspective
-import me.znotchill.marmot.paper.extensions.openUI
-import me.znotchill.marmot.paper.extensions.sendKeybinds
-import me.znotchill.marmot.paper.extensions.setPerspective
-import me.znotchill.marmot.paper.extensions.updateUI
+import me.znotchill.marmot.paper.api.extensions.adjustCamera
+import me.znotchill.marmot.paper.api.extensions.adjustCameraOffset
+import me.znotchill.marmot.paper.api.extensions.configureMouse
+import me.znotchill.marmot.paper.api.extensions.lockCamera
+import me.znotchill.marmot.paper.api.extensions.lockPerspective
+import me.znotchill.marmot.paper.api.extensions.openUI
+import me.znotchill.marmot.paper.api.extensions.sendKeybinds
+import me.znotchill.marmot.paper.api.extensions.setPerspective
+import me.znotchill.marmot.paper.api.extensions.updateUI
 import me.znotchill.marmot.common.ClientPerspective
 import me.znotchill.marmot.common.api.BaseMarmotAPI
 import me.znotchill.marmot.common.api.MarmotEvent
@@ -26,6 +26,8 @@ import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.plugin.java.JavaPlugin
 import org.slf4j.LoggerFactory
+import java.io.ByteArrayOutputStream
+import java.io.DataOutputStream
 import java.util.UUID
 import kotlin.collections.iterator
 
@@ -109,7 +111,13 @@ object MarmotAPI : BaseMarmotAPI<Player, MarmotPlayer<Player>> {
 
     override fun handshake(player: Player) {
         try {
-            player.sendPluginMessage(plugin, "marmot:is_marmot", ByteArray(0))
+            println("sending handshake")
+            val output = ByteArrayOutputStream()
+            val data = DataOutputStream(output)
+            data.writeInt(1)
+            data.flush()
+            val bytes = output.toByteArray()
+            player.sendPluginMessage(plugin, "marmot:is_marmot", bytes)
         } catch (ex: IllegalArgumentException) {
             logger.debug("Failed to send handshake plugin message to ${player.name}: ${ex.message}")
         }

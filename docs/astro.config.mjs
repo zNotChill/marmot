@@ -25,6 +25,12 @@ export default defineConfig({
 							]
 						},
 						{
+							label: 'Paper',
+							items: [
+								{ label: 'Get Started', slug: 'guides/paper/get_started' },
+							]
+						},
+						{
 							label: 'API',
 							items: [
 								{ label: 'Keybinds', slug: 'guides/api/keybinds' },

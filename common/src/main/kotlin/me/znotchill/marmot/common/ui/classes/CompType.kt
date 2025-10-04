@@ -4,5 +4,7 @@ enum class CompType {
     GROUP,
     TEXT,
     SPRITE,
-    WIDGET
+    LINE,
+    GRADIENT,
+    WIDGET,
 }
