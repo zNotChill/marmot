@@ -6,5 +6,6 @@ enum class CompType {
     SPRITE,
     LINE,
     GRADIENT,
+    BOX,
     WIDGET,
 }

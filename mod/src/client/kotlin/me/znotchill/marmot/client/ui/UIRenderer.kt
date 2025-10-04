@@ -1,6 +1,7 @@
 package me.znotchill.marmot.client.ui
 
 import me.znotchill.marmot.client.MarmotClient
+import me.znotchill.marmot.client.ui.components.BoxRenderer
 import me.znotchill.marmot.client.ui.components.GradientRenderer
 import me.znotchill.marmot.client.ui.components.GroupRenderer
 import me.znotchill.marmot.client.ui.components.LineRenderer
@@ -15,6 +16,7 @@ import me.znotchill.marmot.common.ui.*
 import me.znotchill.marmot.common.ui.classes.Easing
 import me.znotchill.marmot.common.ui.classes.RelativePosition
 import me.znotchill.marmot.common.ui.classes.Vec2
+import me.znotchill.marmot.common.ui.components.BoxComponent
 import me.znotchill.marmot.common.ui.components.Component
 import me.znotchill.marmot.common.ui.components.GradientComponent
 import me.znotchill.marmot.common.ui.components.GroupComponent
@@ -66,7 +68,8 @@ object UIRenderer {
             SpriteComponent::class.java to SpriteRenderer(),
             GroupComponent::class.java to GroupRenderer(),
             LineComponent::class.java to LineRenderer(),
-            GradientComponent::class.java to GradientRenderer()
+            GradientComponent::class.java to GradientRenderer(),
+            BoxComponent::class.java to BoxRenderer()
         )
     )
 

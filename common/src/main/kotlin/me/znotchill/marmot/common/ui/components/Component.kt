@@ -10,6 +10,7 @@ import me.znotchill.marmot.common.ui.classes.RelativePosition
 import me.znotchill.marmot.common.ui.classes.Vec2
 import me.znotchill.marmot.common.ui.components.props.BaseProps
 import me.znotchill.marmot.common.ui.events.MoveEvent
+import me.znotchill.marmot.common.ui.events.OpacityEvent
 import me.znotchill.marmot.common.ui.events.RotateEvent
 import me.znotchill.marmot.common.ui.events.UIEvent
 
@@ -62,6 +63,26 @@ fun Component.rotate(
         targetId = this.id,
         delay = 0L,
         rotation = rotation,
+        durationSeconds = duration,
+        easing = easing
+    )
+    event.window = this.window
+    return event
+}
+
+
+fun Component.opacity(
+    /**
+     * Opacity between 0-1
+     */
+    opacity: Float,
+    duration: Double = 0.0,
+    easing: Easing = Easing.LINEAR
+): OpacityEvent {
+    val event = OpacityEvent(
+        targetId = this.id,
+        delay = 0L,
+        opacity = opacity,
         durationSeconds = duration,
         easing = easing
     )

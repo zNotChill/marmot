@@ -13,13 +13,14 @@ class SpriteRenderer : UIComponent<SpriteComponent> {
         val texWidth = component.computedSize?.x?.toInt() ?: 16
         val texHeight = component.computedSize?.y?.toInt() ?: 16
 
-        var drawWidth = props.size.x.toInt()
-        if (drawWidth == 0)
-            drawWidth = texWidth
+        var drawWidth = props.size.x.toInt().takeIf { it > 0 } ?: texWidth
+        var drawHeight = props.size.y.toInt().takeIf { it > 0 } ?: texHeight
 
-        var drawHeight = props.size.y.toInt()
-        if (drawHeight == 0)
-            drawHeight = texHeight
+        if (props.fillScreen) {
+            val window = instance.window
+            drawWidth = window.scaledWidth
+            drawHeight = window.scaledHeight
+        }
 
         UIRenderer.applyComponentMatrices(context, component)
 

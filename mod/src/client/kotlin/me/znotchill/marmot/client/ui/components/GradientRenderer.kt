@@ -11,10 +11,21 @@ class GradientRenderer : UIComponent<GradientComponent> {
 
         UIRenderer.applyComponentMatrices(context, component)
 
+        val x = props.pos.x.toInt()
+        val y = props.pos.y.toInt()
+        var width = props.size.x.toInt()
+        var height = props.size.y.toInt()
+
+        if (props.fillScreen) {
+            val window = instance.window
+            width = window.scaledWidth
+            height = window.scaledHeight
+        }
+
         context.fillGradient(
-            0, 0,
-            (props.pos.x + props.size.x).toInt(),
-            (props.pos.y + props.size.y).toInt(),
+            x, y,
+            x + width,
+            y + height,
             props.from.toArgb(),
             props.to.toArgb()
         )
