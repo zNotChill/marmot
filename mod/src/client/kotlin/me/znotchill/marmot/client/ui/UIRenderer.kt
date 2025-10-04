@@ -36,6 +36,9 @@ import net.minecraft.resource.Resource
 import net.minecraft.util.Identifier
 import org.joml.Matrix3x2f
 import java.io.IOException
+import kotlin.math.cos
+import kotlin.math.pow
+import kotlin.math.sin
 
 object UIRenderer {
     private var currentWindow: UIWindow? = null
@@ -81,9 +84,12 @@ object UIRenderer {
 
             currentWindow?.let { window ->
                 layout(window)
-                window.components.values.forEach { component ->
-                    component.draw(context)
-                }
+
+                window.components.values
+                    .sortedBy { it.props.zIndex }
+                    .forEach { component ->
+                        component.draw(context)
+                    }
             }
         }
     }
@@ -152,13 +158,86 @@ object UIRenderer {
     }
 
     fun applyEasing(t: Double, easing: Easing): Double {
+        val c1 = 1.70158
+        val c2 = c1 * 1.525
+        val c3 = c1 + 1
+        val c4 = (2 * Math.PI) / 3
+        val c5 = (2 * Math.PI) / 4.5
+
         return when (easing) {
             Easing.LINEAR -> t
+
             Easing.EASE_IN -> t * t
             Easing.EASE_OUT -> 1 - (1 - t) * (1 - t)
-            Easing.EASE_IN_OUT -> if (t < 0.5) 2 * t * t
-                else 1 - 2 * (1 - t) * (1 - t)
-            else -> t
+            Easing.EASE_IN_OUT -> if (t < 0.5) 2 * t * t else 1 - (-2 * t + 2).pow(2.0) / 2
+
+            Easing.EASE_IN_CUBIC -> t * t * t
+            Easing.EASE_OUT_CUBIC -> 1 - (1 - t).pow(3.0)
+            Easing.EASE_IN_OUT_CUBIC ->
+                if (t < 0.5) 4 * t * t * t else 1 - (-2 * t + 2).pow(3.0) / 2
+
+            Easing.EASE_IN_QUINT -> t * t * t * t * t
+            Easing.EASE_OUT_QUINT -> 1 - (1 - t).pow(5.0)
+            Easing.EASE_IN_OUT_QUINT ->
+                if (t < 0.5) 16 * t * t * t * t * t else 1 - (-2 * t + 2).pow(5.0) / 2
+
+            Easing.EASE_IN_BACK -> c3 * t * t * t - c1 * t * t
+            Easing.EASE_OUT_BACK -> 1 + c3 * (t - 1).pow(3.0) + c1 * (t - 1).pow(2.0)
+            Easing.EASE_IN_OUT_BACK ->
+                if (t < 0.5)
+                    ((2 * t).pow(2.0) * ((c2 + 1) * 2 * t - c2)) / 2
+                else
+                    ((2 * t - 2).pow(2.0) * ((c2 + 1) * (t * 2 - 2) + c2) + 2) / 2
+
+            Easing.EASE_IN_ELASTIC ->
+                when (t) {
+                    0.0 -> 0.0
+                    1.0 -> 1.0
+                    else -> (-2.0).pow(10 * t - 10) * sin((t * 10 - 10.75) * c4)
+                }
+            Easing.EASE_OUT_ELASTIC ->
+                when (t) {
+                    0.0 -> 0.0
+                    1.0 -> 1.0
+                    else -> 2.0.pow(-10 * t) * sin((t * 10 - 0.75) * c4) + 1
+                }
+            Easing.EASE_IN_OUT_ELASTIC ->
+                if (t == 0.0) 0.0 else if (t == 1.0) 1.0
+                else if (t < 0.5)
+                    -(2.0.pow(20 * t - 10) * sin((20 * t - 11.125) * c5)) / 2
+                else
+                    (2.0.pow(-20 * t + 10) * sin((20 * t - 11.125) * c5)) / 2 + 1
+
+            Easing.EASE_OUT_BOUNCE -> {
+                val n1 = 7.5625
+                val d1 = 2.75
+                when {
+                    t < 1 / d1 -> n1 * t * t
+                    t < 2 / d1 -> n1 * (t - 1.5 / d1) * (t - 1.5 / d1) + 0.75
+                    t < 2.5 / d1 -> n1 * (t - 2.25 / d1) * (t - 2.25 / d1) + 0.9375
+                    else -> n1 * (t - 2.625 / d1) * (t - 2.625 / d1) + 0.984375
+                }
+            }
+            Easing.EASE_IN_BOUNCE -> 1 - applyEasing(1 - t, Easing.EASE_OUT_BOUNCE)
+            Easing.EASE_IN_OUT_BOUNCE ->
+                if (t < 0.5)
+                    (1 - applyEasing(1 - 2 * t, Easing.EASE_OUT_BOUNCE)) / 2
+                else
+                    (1 + applyEasing(2 * t - 1, Easing.EASE_OUT_BOUNCE)) / 2
+
+            Easing.EASE_IN_SINE -> 1 - cos((t * Math.PI) / 2)
+            Easing.EASE_OUT_SINE -> sin((t * Math.PI) / 2)
+            Easing.EASE_IN_OUT_SINE -> -(cos(Math.PI * t) - 1) / 2
+
+            Easing.EASE_IN_EXPO -> if (t == 0.0) 0.0 else 2.0.pow(10 * t - 10)
+            Easing.EASE_OUT_EXPO -> if (t == 1.0) 1.0 else 1 - 2.0.pow(-10 * t)
+            Easing.EASE_IN_OUT_EXPO ->
+                when {
+                    t == 0.0 -> 0.0
+                    t == 1.0 -> 1.0
+                    t < 0.5 -> 2.0.pow(20 * t - 10) / 2
+                    else -> (2 - 2.0.pow(-20 * t + 10)) / 2
+                }
         }
     }
 
