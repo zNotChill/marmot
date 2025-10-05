@@ -23,7 +23,7 @@ me.znotchill.marmot:minestom-api:LATEST
 me.znotchill.marmot:common:LATEST
 ```
 
-Replace `LATEST` with whichever version is latest according to the [GitHub](https://github.com/zNotChill/marmot). Currently, it is `1.2.10`.
+Replace `LATEST` with whichever version is latest according to the [GitHub](https://github.com/zNotChill/marmot). Currently, it is `1.2.12`.
 
 ## Usage
 Once you have finished installation, you can add the Marmot API to your Minestom server:
