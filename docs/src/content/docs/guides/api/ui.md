@@ -13,8 +13,8 @@ class TestUI : MarmotUI("test_ui") {
   fun new() {}
 }
 ```
-| ‼️ | Because of the layout-based nature of Marmot's UI system, you must add components into groups.
-|-|-|
+| ‼️ | Because of the layout-based nature of Marmot's UI system, you must add components into groups. |
+|----|------------------------------------------------------------------------------------------------|
 
 Most of the time, a component expects an ID in its first parameter.
 Using duplicate IDs **will** cause issues, so make sure to look out for that.
@@ -75,12 +75,27 @@ class TestUI : MarmotUI("test_ui") {
 }
 ```
 
+You can also nest schedulers inside each other, which could look something like this: (**before 1.2.12, this functionality was broken!**)
+```kt
+text1.schedule(20) { // 20 ticks from now
+    text2.schedule(5) { // 25 ticks from now
+        text3.schedule(50) { // 75 ticks from now
+            
+        }
+        
+        text4.schedule(10) { // 35 ticks from now
+            
+        }
+    }
+}
+```
+
 ## Relative Positioning
 
-Components can be placed relatively to eachother in Marmot.
+Components can be placed relatively to each other in Marmot.
 
-| ⚠️ | Due to Marmot's age, relative positioning is still a work in progress, however, left and right positioning are functional.
-|-|-|
+| ⚠️ | Due to Marmot's age, relative positioning is still a work in progress, however, left and right positioning are functional. |
+|----|----------------------------------------------------------------------------------------------------------------------------|
 
 When components are relative, the `pos` still works as expected, adding the `pos` onto the relative position.
 
@@ -151,11 +166,11 @@ class TestUI : MarmotUI("test_ui") {
   }
 }
 ```
-| ‼️ | As of now, the `.png` is still required, but will definitely be optional in a future update.
-|-|-|
+| ‼️ | As of now, the `.png` is still required, but will definitely be optional in a future update. |
+|----|----------------------------------------------------------------------------------------------|
 
-| ℹ️ | The `texturePath` is simply a path to a resource. You can add a custom namespace like `my_pack:textures/item/something_cool.png` from a resource pack. The namespace defaults to `minecraft` if one is not found.
-|-|-|
+| ℹ️ | The `texturePath` is simply a path to a resource. You can add a custom namespace like `my_pack:textures/item/something_cool.png` from a resource pack. The namespace defaults to `minecraft` if one is not found. |
+|----|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 
 The result:
 ![UI Sprite Example](ui_sprite_example.png)
