@@ -7,8 +7,12 @@ object UIEventQueue {
     private var tick = 0L
     private val readyEvents = mutableListOf<UIEvent>()
 
-    fun enqueueDelayed(delay: Long, block: () -> UIEvent) {
+    fun enqueueDelayed(delay: Long, block: () -> Unit) {
         tasks += ScheduledTask(tick + delay, block)
+    }
+
+    fun enqueueNow(event: UIEvent) {
+        readyEvents += event
     }
 
     fun tick(): List<UIEvent> {
@@ -16,10 +20,7 @@ object UIEventQueue {
         val due = tasks.filter { it.dueTick <= tick }
         tasks.removeAll(due)
 
-        // run tasks and enqueue results
-        due.forEach { task ->
-            readyEvents += task.block()
-        }
+        due.forEach { it.block() }
 
         val events = readyEvents.toList()
         readyEvents.clear()
@@ -28,6 +29,6 @@ object UIEventQueue {
 
     private data class ScheduledTask(
         val dueTick: Long,
-        val block: () -> UIEvent
+        val block: () -> Unit
     )
 }

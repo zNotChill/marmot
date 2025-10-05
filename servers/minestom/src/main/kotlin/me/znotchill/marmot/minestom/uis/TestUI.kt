@@ -1,60 +1,131 @@
 package me.znotchill.marmot.minestom.uis
 
+import me.znotchill.blossom.sound.sound
 import me.znotchill.marmot.common.ui.Anchor
 import me.znotchill.marmot.common.ui.MarmotUI
+import me.znotchill.marmot.common.ui.classes.Easing
 import me.znotchill.marmot.common.ui.classes.Spacing
 import me.znotchill.marmot.common.ui.classes.UIColor
 import me.znotchill.marmot.common.ui.classes.Vec2
-import me.znotchill.marmot.common.ui.components.leftOf
+import me.znotchill.marmot.common.ui.components.move
+import me.znotchill.marmot.common.ui.components.opacity
+import me.znotchill.marmot.common.ui.components.schedule
+import me.znotchill.marmot.common.ui.components.topOf
+import net.kyori.adventure.sound.Sound
+import net.minestom.server.entity.Player
+import kotlin.collections.forEach
 
-class TestUI : MarmotUI("kill_feed") {
-    fun newKill(
-        killer: String,
-        victim: String,
-        method: String
+
+class MapChangeUI : MarmotUI("map_change") {
+    fun new(
+        /**
+         * Load time in ticks
+         */
+        loadTime: Long = 60,
+        /**
+         * Lag time in ticks
+         */
+        lagTime: Long = 5,
+        backgroundFadeTime: Long = 10,
+        swipeInSound: Sound = sound("entity.breeze.shoot"),
+        swipeOutSound: Sound = sound("entity.breeze.land"),
+        completeSound: Sound = sound("entity.experience_orb.pickup"),
+
+        players: List<Player>
     ) {
-//        group("test_group") {
-//            backgroundColor = UIColor(150, 150, 150)
-//            padding = Spacing(x = 5)
-//
-//            val victim = text("victim") {
-//                text = victim
-//                color = UIColor(132, 194, 205)
-//                shadow = true
-//                anchor = Anchor.TOP_RIGHT
-//                pos = Vec2(10f, 10f)
-//                padding = Spacing(
-//                    y = 5
-//                )
-//            }
-//
-//            val method = text("method") {
-//                text = method
-//                shadow = false
-//                padding = Spacing(
-//                    x = 5, y = 5
-//                )
-//            } leftOf victim
-//
-//            text("killer") {
-//                text = killer
-//                color = UIColor(236, 125, 107)
-//                shadow = true
-//                padding = Spacing(
-//                    y = 5
-//                )
-//            } leftOf method
-//        }
-        group("test") {
-            gradient("test_gradient") {
-                pos = Vec2(50f, 50f)
-                size = Vec2(50f, 100f)
+        group("group") {
+            val background = box("background") {
+                fillScreen = true
+                anchor = Anchor.TOP_LEFT
+                color = UIColor(0, 0, 0)
+                opacity = 0f
             }
-            line("test_line") {
-                from = Vec2(0f, 0f)
-                to = Vec2(20f, 50f)
-                pointSize = Vec2(1f, 1f)
-                anchor = Anchor.CENTER_CENTER
+            val mapName = text("map_name") {
+                text = "byue bye"
+                scale = Vec2(1.5f, 1.5f)
+                shadow = true
+                anchor = Anchor.TOP_RIGHT
+                opacity = 1f
+                zIndex = 1000
+                pos = Vec2(-200f, 30f)
+            }
+            val mapChanging = text("map_changing") {
+                text = "LOADING MAP..."
+                color = UIColor(0, 0, 0)
+                backgroundColor = UIColor(255, 255, 255)
+                anchor = Anchor.TOP_RIGHT
+                opacity = 1f
+                zIndex = 1000
+                padding = Spacing(
+                    x = 3, y = 3
+                )
+                pos = Vec2(0f, -5f)
+            } topOf mapName
+
+            val map = text("map") {
+                text = "ID: hi"
+                color = UIColor(230, 230, 230)
+                shadow = true
+                opacity = 0f
+                anchor = Anchor.TOP_RIGHT
+                pos = Vec2(-200f, 50f)
+                zIndex = 100
+            }
+
+            background.schedule(0) {
+                players.forEach { it.playSound(swipeInSound) }
+                listOf(
+                    opacity(1f, 0.25)
+                )
+            }
+
+            map.schedule(backgroundFadeTime) {
+                listOf(
+                    opacity(1f, 0.5),
+                    move(
+                        Vec2(20f, 50f),
+                        1.0,
+                        easing = Easing.EASE_OUT_BACK
+                    )
+                )
+            }
+            mapName.schedule(0) {
+                listOf(
+                    opacity(1f, 1.5),
+                    move(
+                        Vec2(20f, 30f),
+                        1.0,
+                        easing = Easing.EASE_OUT_BACK
+                    )
+                )
+            }
+
+            mapName.schedule(loadTime) {
+                players.forEach { it.playSound(swipeOutSound) }
+                players.forEach { it.playSound(completeSound) }
+                background.schedule(backgroundFadeTime) {
+                    listOf(
+                        opacity(0f, 0.25)
+                    )
+                }
+                map.schedule(lagTime) {
+                    listOf(
+                        opacity(0f, 0.5),
+                        move(
+                            Vec2(-200f, 50f),
+                            1.0,
+                            easing = Easing.EASE_OUT_BACK
+                        )
+                    )
+                }
+                listOf(
+                    opacity(0f, 0.5),
+                    move(
+                        Vec2(-200f, 30f),
+                        1.0,
+                        easing = Easing.EASE_OUT_BACK
+                    )
+                )
             }
         }
     }

@@ -12,7 +12,6 @@ import me.znotchill.marmot.common.ui.components.props.BaseProps
 import me.znotchill.marmot.common.ui.events.MoveEvent
 import me.znotchill.marmot.common.ui.events.OpacityEvent
 import me.znotchill.marmot.common.ui.events.RotateEvent
-import me.znotchill.marmot.common.ui.events.UIEvent
 
 @Serializable
 sealed class Component {
@@ -41,7 +40,8 @@ sealed class Component {
 fun Component.move(
     to: Vec2,
     duration: Double = 0.0,
-    easing: Easing = Easing.LINEAR
+    easing: Easing = Easing.LINEAR,
+    delay: Long = 0L
 ): MoveEvent {
     val event = MoveEvent(
         targetId = this.id,
@@ -49,15 +49,17 @@ fun Component.move(
         position = to,
         durationSeconds = duration,
         easing = easing
-    )
-    event.window = this.window
+    ).also { it.window = this.window }
+
+    UIEventQueue.enqueueNow(event)
     return event
 }
 
 fun Component.rotate(
     rotation: Int,
     duration: Double = 0.0,
-    easing: Easing = Easing.LINEAR
+    easing: Easing = Easing.LINEAR,
+    delay: Long = 0L
 ): RotateEvent {
     val event = RotateEvent(
         targetId = this.id,
@@ -65,8 +67,9 @@ fun Component.rotate(
         rotation = rotation,
         durationSeconds = duration,
         easing = easing
-    )
-    event.window = this.window
+    ).also { it.window = this.window }
+
+    UIEventQueue.enqueueNow(event)
     return event
 }
 
@@ -77,7 +80,8 @@ fun Component.opacity(
      */
     opacity: Float,
     duration: Double = 0.0,
-    easing: Easing = Easing.LINEAR
+    easing: Easing = Easing.LINEAR,
+    delay: Long = 0L
 ): OpacityEvent {
     val event = OpacityEvent(
         targetId = this.id,
@@ -85,16 +89,15 @@ fun Component.opacity(
         opacity = opacity,
         durationSeconds = duration,
         easing = easing
-    )
-    event.window = this.window
+    ).also { it.window = this.window }
+
+    UIEventQueue.enqueueNow(event)
     return event
 }
 
-fun <T : Component> T.schedule(delay: Long, block: T.() -> List<UIEvent>) {
-    this.block().forEach {
-        UIEventQueue.enqueueDelayed(delay) {
-            it
-        }
+fun <T : Component> T.schedule(delay: Long, block: T.() -> Unit) {
+    UIEventQueue.enqueueDelayed(delay) {
+        this.block()
     }
 }
 
