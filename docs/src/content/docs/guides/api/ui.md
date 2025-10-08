@@ -232,3 +232,55 @@ val sprite = sprite("test_sprite") {
 
 The result:
 ![UI Sprite Correct Size Example](ui_sprite_correct_size_example.png)
+
+## Gradients
+
+In Marmot, you can create a UI Gradient using two UIColors.
+At this moment, gradients do not support custom angles.
+
+Example:
+```kt
+gradient("gradient") {
+    fillScreen = true // size the component to the client's viewport
+    anchor = Anchor.TOP_LEFT // anchor the component to the TOP_LEFT, required for fillScreen components
+    from = UIColor(255, 255, 255)
+    to = UIColor(0, 0, 0)
+}
+```
+
+## Boxes
+
+In Marmot, you can create a UI Box using one solid UIColor.
+
+Example:
+```kt
+box("box") {
+    fillScreen = true // size the component to the client's viewport
+    anchor = Anchor.TOP_LEFT // anchor the component to the TOP_LEFT, required for fillScreen components
+    color = UIColor(100, 100, 100)
+}
+```
+```kt
+box("box") {
+    color = UIColor(100, 100, 100)
+    size = Vec2(50f, 50f)
+}
+```
+
+## Lines
+
+In Marmot, you can create a UI Line, which displays a straight line.
+
+Example:
+```kt
+line("line") {
+    from = Vec2(-20f, 0f)
+    to = Vec2(20f, 0f)
+    pointSize = Vec2(2f, 2f) // the size of each sample point in the line
+    pos = Vec2(0f, 20f)
+    anchor = Anchor.BOTTOM_CENTER
+    color = UIColor(255, 0, 0)
+}
+```
+
+This should result in a red line directly above the hotbar.

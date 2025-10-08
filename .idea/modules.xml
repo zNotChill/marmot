@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/marmot.iml" filepath="$PROJECT_DIR$/.idea/modules/marmot.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/common/marmot.common.main.iml" filepath="$PROJECT_DIR$/.idea/modules/common/marmot.common.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/common/marmot.common.test.iml" filepath="$PROJECT_DIR$/.idea/modules/common/marmot.common.test.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/mod/marmot.mod.client.iml" filepath="$PROJECT_DIR$/.idea/modules/mod/marmot.mod.client.iml" />

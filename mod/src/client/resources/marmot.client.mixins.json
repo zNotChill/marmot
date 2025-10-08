@@ -4,11 +4,11 @@
   "package": "me.znotchill.marmot.client.mixins",
   "compatibilityLevel": "JAVA_21",
   "client": [
+    "ClientPlayerEntityMixin",
+    "GameOptionsMixin",
     "GameRendererMixin",
-    "MouseMixin",
     "HeldItemRendererMixin",
-    "HeldItemRendererMixin",
-    "GameOptionsMixin"
+    "MouseMixin"
   ],
   "injectors": {
     "defaultRequire": 1
