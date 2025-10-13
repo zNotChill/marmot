@@ -1,14 +1,5 @@
 package me.znotchill.marmot.paper.api
 
-import me.znotchill.marmot.paper.api.extensions.adjustCamera
-import me.znotchill.marmot.paper.api.extensions.adjustCameraOffset
-import me.znotchill.marmot.paper.api.extensions.configureMouse
-import me.znotchill.marmot.paper.api.extensions.lockCamera
-import me.znotchill.marmot.paper.api.extensions.lockPerspective
-import me.znotchill.marmot.paper.api.extensions.openUI
-import me.znotchill.marmot.paper.api.extensions.sendKeybinds
-import me.znotchill.marmot.paper.api.extensions.setPerspective
-import me.znotchill.marmot.paper.api.extensions.updateUI
 import me.znotchill.marmot.common.ClientPerspective
 import me.znotchill.marmot.common.api.BaseMarmotAPI
 import me.znotchill.marmot.common.api.MarmotEvent
@@ -17,6 +8,7 @@ import me.znotchill.marmot.common.ui.MarmotUI
 import me.znotchill.marmot.common.ui.UIEventQueue
 import me.znotchill.marmot.common.ui.UIWindow
 import me.znotchill.marmot.common.ui.events.UIEvent
+import me.znotchill.marmot.paper.api.extensions.*
 import net.kyori.adventure.audience.Audience
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
@@ -26,10 +18,7 @@ import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.plugin.java.JavaPlugin
 import org.slf4j.LoggerFactory
-import java.io.ByteArrayOutputStream
-import java.io.DataOutputStream
-import java.util.UUID
-import kotlin.collections.iterator
+import java.util.*
 
 object MarmotAPI : BaseMarmotAPI<Player, MarmotPlayer<Player>> {
     val logger = LoggerFactory.getLogger("Marmot")!!
@@ -46,16 +35,6 @@ object MarmotAPI : BaseMarmotAPI<Player, MarmotPlayer<Player>> {
 
     fun registerEvents(plugin: JavaPlugin) {
         this@MarmotAPI.plugin = plugin
-        plugin.server.pluginManager.registerEvents(object : Listener {
-            @EventHandler
-            fun onJoin(event: PlayerJoinEvent) {
-                handshake(event.player)
-            }
-            @EventHandler
-            fun onQuit(event: PlayerQuitEvent) {
-                players.remove(event.player.uniqueId)
-            }
-        }, plugin)
 
         val messenger = plugin.server.messenger
         messenger.registerIncomingPluginChannel(plugin, "marmot:click_update", MarmotMessageListener)
@@ -74,6 +53,22 @@ object MarmotAPI : BaseMarmotAPI<Player, MarmotPlayer<Player>> {
             "marmot:perspective_lock"
         )
         outgoing.forEach { messenger.registerOutgoingPluginChannel(plugin, it) }
+
+        plugin.server.pluginManager.registerEvents(object : Listener {
+            @EventHandler
+            fun onJoin(event: PlayerJoinEvent) {
+                Bukkit.getScheduler().runTaskLater(plugin, Runnable {
+                    handshake(event.player)
+                }, 5L)
+                Bukkit.getScheduler().runTaskLater(plugin, Runnable {
+                    println("${event.player.name} listening channels: ${event.player.listeningPluginChannels}")
+                }, 20L)
+            }
+            @EventHandler
+            fun onQuit(event: PlayerQuitEvent) {
+                players.remove(event.player.uniqueId)
+            }
+        }, plugin)
     }
 
     fun registerTasks(plugin: JavaPlugin) {
@@ -112,11 +107,9 @@ object MarmotAPI : BaseMarmotAPI<Player, MarmotPlayer<Player>> {
     override fun handshake(player: Player) {
         try {
             println("sending handshake")
-            val output = ByteArrayOutputStream()
-            val data = DataOutputStream(output)
-            data.writeInt(1)
-            data.flush()
-            val bytes = output.toByteArray()
+            val bytes = buildPacket {
+                writeInt(1)
+            }
             player.sendPluginMessage(plugin, "marmot:is_marmot", bytes)
         } catch (ex: IllegalArgumentException) {
             logger.debug("Failed to send handshake plugin message to ${player.name}: ${ex.message}")

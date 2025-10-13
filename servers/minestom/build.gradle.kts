@@ -11,7 +11,7 @@ version = property("minestom_api_version") as String
 repositories {
     mavenLocal()
     mavenCentral()
-    maven { url = uri("https://jitpack.io") }
+    maven { url = uri("https://repo.znotchill.me/repository/maven-releases/") }
 }
 
 dependencies {
@@ -20,7 +20,7 @@ dependencies {
     implementation("io.netty:netty-buffer:4.1.111.Final")
     implementation("io.netty:netty-common:4.1.111.Final")
     implementation("net.minestom:minestom:2025.09.13-1.21.8")
-    implementation("me.znotchill:blossom:1.4.3")
+    implementation("me.znotchill:blossom:1.4.4")
     implementation("io.github.xn32:json5k:0.3.0")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("net.kyori:adventure-text-minimessage:4.24.0")
@@ -52,8 +52,8 @@ publishing {
             name = "znotchill"
             url = uri("https://repo.znotchill.me/repository/maven-releases/")
             credentials {
-                username = findProperty("marmotRepoUsername") as String? ?: System.getenv("MAVEN_USER")
-                password = findProperty("marmotRepoPassword") as String? ?: System.getenv("MAVEN_PASS")
+                username = findProperty("zRepoUsername") as String? ?: System.getenv("MAVEN_USER")
+                password = findProperty("zRepoPassword") as String? ?: System.getenv("MAVEN_PASS")
             }
         }
         mavenLocal()

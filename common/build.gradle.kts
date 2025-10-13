@@ -44,8 +44,8 @@ publishing {
             name = "znotchill"
             url = uri("https://repo.znotchill.me/repository/maven-releases/")
             credentials {
-                username = findProperty("marmotRepoUsername") as String? ?: System.getenv("MAVEN_USER")
-                password = findProperty("marmotRepoPassword") as String? ?: System.getenv("MAVEN_PASS")
+                username = findProperty("zRepoUsername") as String? ?: System.getenv("MAVEN_USER")
+                password = findProperty("zRepoPassword") as String? ?: System.getenv("MAVEN_PASS")
             }
         }
         mavenLocal()

@@ -39,6 +39,7 @@ export default defineConfig({
 								{ label: 'Camera', slug: 'guides/api/camera' },
 								{ label: 'Camera Offset', slug: 'guides/api/camera_offset' },
 								{ label: 'Marmot Player Data', slug: 'guides/api/marmot_player_data' },
+								{ label: 'Perspective', slug: 'guides/api/perspective' },
 							]
 						},
 					],
