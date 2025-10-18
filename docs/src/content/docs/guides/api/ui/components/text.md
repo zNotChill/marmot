@@ -19,7 +19,7 @@ class TestUI : MarmotUI("test_ui") {
 
             val text2 = text("test_text_2") {
                 text = "Test text"
-                padding = Spacing(5)
+                padding = Spacing(5f)
                 backgroundColor = UIColor(255, 255, 255)
                 color = UIColor(0, 0, 0)
             } rightOf text1

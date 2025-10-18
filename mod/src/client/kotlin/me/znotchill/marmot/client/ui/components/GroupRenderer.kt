@@ -16,10 +16,10 @@ class GroupRenderer : UIComponent<GroupComponent> {
             val maxY = components.maxOfOrNull { it.screenY + it.height() } ?: 0
 
             context.fill(
-                minX - props.padding.left,
-                minY - props.padding.top,
-                maxX + props.padding.right,
-                maxY + props.padding.bottom,
+                (minX - props.padding.left).toInt(),
+                (minY - props.padding.top).toInt(),
+                maxX.toInt() + props.padding.right.toInt(),
+                maxY.toInt() + props.padding.bottom.toInt(),
                 bg.toArgb()
             )
         }

@@ -10,11 +10,13 @@ import me.znotchill.marmot.client.ui.components.TextRenderer
 import me.znotchill.marmot.client.ui.events.DestroyEventHandler
 import me.znotchill.marmot.client.ui.events.MoveEventHandler
 import me.znotchill.marmot.client.ui.events.OpacityEventHandler
+import me.znotchill.marmot.client.ui.events.PaddingEventHandler
 import me.znotchill.marmot.client.ui.events.RotateEventHandler
 import me.znotchill.marmot.client.ui.events.UIEventContext
 import me.znotchill.marmot.common.ui.*
 import me.znotchill.marmot.common.ui.classes.Easing
 import me.znotchill.marmot.common.ui.classes.RelativePosition
+import me.znotchill.marmot.common.ui.classes.Spacing
 import me.znotchill.marmot.common.ui.classes.Vec2
 import me.znotchill.marmot.common.ui.components.BoxComponent
 import me.znotchill.marmot.common.ui.components.Component
@@ -26,6 +28,7 @@ import me.znotchill.marmot.common.ui.components.TextComponent
 import me.znotchill.marmot.common.ui.events.DestroyEvent
 import me.znotchill.marmot.common.ui.events.MoveEvent
 import me.znotchill.marmot.common.ui.events.OpacityEvent
+import me.znotchill.marmot.common.ui.events.PaddingEvent
 import me.znotchill.marmot.common.ui.events.PropertyAnimation
 import me.znotchill.marmot.common.ui.events.RotateEvent
 import me.znotchill.marmot.common.ui.events.UIEvent
@@ -55,6 +58,7 @@ object UIRenderer {
             OpacityEvent::class.java to OpacityEventHandler(),
             DestroyEvent::class.java to DestroyEventHandler(),
             RotateEvent::class.java to RotateEventHandler(),
+            PaddingEvent::class.java to PaddingEventHandler()
         ),
         context = UIEventContext(
             currentWindow = { currentWindow },
@@ -148,6 +152,14 @@ object UIRenderer {
                         lerp(start.y, target.y, easedT)
                     )
                     (anim as PropertyAnimation<Vec2>).setter(comp, result)
+                }
+                is Spacing -> {
+                    val target = anim.to as Spacing
+                    val result = Spacing(
+                        x = lerp(start.x, target.x, easedT),
+                        y = lerp(start.y, target.y, easedT)
+                    )
+                    (anim as PropertyAnimation<Spacing>).setter(comp, result)
                 }
                 else -> anim.setter(comp, anim.to)
             }
@@ -282,24 +294,22 @@ object UIRenderer {
         context.matrices.pushMatrix()
         val props = component.props
         val scale = props.scale
-        val rotation = component.props.rotation
+        val rotation = props.rotation
 
-        val width = component.width().toFloat()
-        val height = component.height().toFloat()
-
+        val width = component.width()
+        val height = component.height()
         val pivotX = width / 2f
         val pivotY = height / 2f
 
-        context.matrices.translate(
-            (component.screenX + props.padding.left).toFloat(),
-            (component.screenY + props.padding.top).toFloat(),
-        )
+        context.matrices.translate(component.screenX.toFloat(), component.screenY.toFloat())
 
         context.matrices.scale(scale.x, scale.y)
 
         context.matrices.translate(pivotX, pivotY)
         context.matrices.mul(Matrix3x2f().rotation(Math.toRadians(rotation.toDouble()).toFloat()))
         context.matrices.translate(-pivotX, -pivotY)
+
+        context.matrices.translate(props.padding.left, props.padding.top)
     }
 
     /**
@@ -324,8 +334,8 @@ object UIRenderer {
             if (relativeTo != null) {
                 baseX = relativeTo.screenX.toFloat()
                 baseY = relativeTo.screenY.toFloat()
-                baseWidth = relativeTo.width().toFloat()
-                baseHeight = relativeTo.height().toFloat()
+                baseWidth = relativeTo.width()
+                baseHeight = relativeTo.height()
             }
         }
 

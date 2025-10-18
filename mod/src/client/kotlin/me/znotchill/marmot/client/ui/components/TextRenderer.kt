@@ -14,8 +14,8 @@ class TextRenderer : UIComponent<TextComponent> {
             context.fill(
                 component.screenX,
                 component.screenY,
-                component.screenX + component.width(),
-                component.screenY + component.height(),
+                (component.screenX + component.width()).toInt(),
+                (component.screenY + component.height()).toInt(),
                 bg.toArgb()
             )
         }

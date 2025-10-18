@@ -12,11 +12,11 @@ open class LineComponent(
 ) : Component() {
     override val compType: CompType = CompType.LINE
 
-    override fun width(): Int {
-        return 1
+    override fun width(): Float {
+        return 1f
     }
 
-    override fun height(): Int {
-        return 1
+    override fun height(): Float {
+        return 1f
     }
 }

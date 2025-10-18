@@ -12,12 +12,12 @@ data class GroupComponent(
 ) : Component() {
     override val compType: CompType = CompType.GROUP
 
-    override fun width(): Int {
+    override fun width(): Float {
         val childWidths = props.components.map { it.width() + it.props.pos.x }
         return (childWidths.maxOrNull() ?: 0).toInt() + props.padding.left + props.padding.right
     }
 
-    override fun height(): Int {
+    override fun height(): Float {
         val childHeights = props.components.map { it.height() + it.props.pos.y }
         return (childHeights.maxOrNull() ?: 0).toInt() + props.padding.top + props.padding.bottom
     }

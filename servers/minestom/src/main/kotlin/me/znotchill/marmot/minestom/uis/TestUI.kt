@@ -57,7 +57,7 @@ class MapChangeUI : MarmotUI("map_change") {
                 opacity = 1f
                 zIndex = 1000
                 padding = Spacing(
-                    x = 3, y = 3
+                    x = 3f, y = 3f
                 )
                 pos = Vec2(0f, -5f)
             } topOf mapName

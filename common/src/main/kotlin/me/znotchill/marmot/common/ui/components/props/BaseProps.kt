@@ -14,7 +14,7 @@ open class BaseProps(
     var opacity: Float = 1f,
     var visible: Boolean = true,
     var zIndex: Int = 0,
-    var padding: Spacing = Spacing(0),
-    var margin: Spacing = Spacing(0),
+    var padding: Spacing = Spacing(0f),
+    var margin: Spacing = Spacing(0f),
     var scale: Vec2 = Vec2(1f, 1f)
 )

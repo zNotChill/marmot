@@ -4,21 +4,21 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class Spacing(
-    var left: Int = 0,
-    var top: Int = 0,
-    var right: Int = 0,
-    var bottom: Int = 0,
-    var x: Int? = null,
-    var y: Int? = null
+    var left: Float = 0f,
+    var top: Float = 0f,
+    var right: Float = 0f,
+    var bottom: Float = 0f,
+    var x: Float = 0f,
+    var y: Float = 0f
 ) {
     init {
-        x?.let { left = it; right = it }
-        y?.let { top = it; bottom = it }
+        x.let { left = it; right = it }
+        y.let { top = it; bottom = it }
     }
 
     companion object {
-        fun uniform(all: Int) = Spacing(all, all, all, all)
-        fun horizontal(vertical: Int, horizontal: Int) =
+        fun uniform(all: Float) = Spacing(all, all, all, all)
+        fun horizontal(vertical: Float, horizontal: Float) =
             Spacing(horizontal, vertical, horizontal, vertical)
     }
 }

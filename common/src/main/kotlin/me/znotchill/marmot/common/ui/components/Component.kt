@@ -7,10 +7,12 @@ import me.znotchill.marmot.common.ui.UIWindow
 import me.znotchill.marmot.common.ui.classes.CompType
 import me.znotchill.marmot.common.ui.classes.Easing
 import me.znotchill.marmot.common.ui.classes.RelativePosition
+import me.znotchill.marmot.common.ui.classes.Spacing
 import me.znotchill.marmot.common.ui.classes.Vec2
 import me.znotchill.marmot.common.ui.components.props.BaseProps
 import me.znotchill.marmot.common.ui.events.MoveEvent
 import me.znotchill.marmot.common.ui.events.OpacityEvent
+import me.znotchill.marmot.common.ui.events.PaddingEvent
 import me.znotchill.marmot.common.ui.events.RotateEvent
 
 @Serializable
@@ -24,8 +26,8 @@ sealed class Component {
     abstract val compType: CompType
     abstract val props: BaseProps
 
-    abstract fun width(): Int
-    abstract fun height(): Int
+    abstract fun width(): Float
+    abstract fun height(): Float
 
     @Transient
     var screenX: Int = 0
@@ -87,6 +89,24 @@ fun Component.opacity(
         targetId = this.id,
         delay = 0L,
         opacity = opacity,
+        durationSeconds = duration,
+        easing = easing
+    ).also { it.window = this.window }
+
+    UIEventQueue.enqueueNow(event)
+    return event
+}
+
+fun Component.padding(
+    padding: Spacing,
+    duration: Double = 0.0,
+    easing: Easing = Easing.LINEAR,
+    delay: Long = 0L
+): PaddingEvent {
+    val event = PaddingEvent(
+        targetId = this.id,
+        delay = 0L,
+        padding = padding,
         durationSeconds = duration,
         easing = easing
     ).also { it.window = this.window }

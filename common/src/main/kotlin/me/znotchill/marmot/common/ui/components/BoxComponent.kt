@@ -12,11 +12,11 @@ open class BoxComponent(
 ) : Component() {
     override val compType: CompType = CompType.BOX
 
-    override fun width(): Int {
-        return props.size.x.toInt()
+    override fun width(): Float {
+        return props.size.x
     }
 
-    override fun height(): Int {
-        return props.size.y.toInt()
+    override fun height(): Float {
+        return props.size.y
     }
 }

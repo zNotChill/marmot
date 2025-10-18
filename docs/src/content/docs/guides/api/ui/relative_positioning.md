@@ -76,13 +76,13 @@ class TestUI : MarmotUI("test_ui") {
         /* 
           You can control the padding more strictly.
           For example:
-          padding = Spacing(x = 5) // applies 5 pixels of padding on the left and right
-          padding = Spacing(left = 5, right = 5) // works the same as x = 5
+          padding = Spacing(x = 5f) // applies 5 pixels of padding on the left and right
+          padding = Spacing(left = 5f, right = 5f) // works the same as x = 5
 
-          padding = Spacing(y = 5) // applies 5 pixels of padding on the top and bottom
-          padding = Spacing(top = 5, bottom = 5) // works the same as y = 5
+          padding = Spacing(y = 5f) // applies 5 pixels of padding on the top and bottom
+          padding = Spacing(top = 5f, bottom = 5f) // works the same as y = 5
         */
-        padding = Spacing(5) // applies 5 pixels of padding on every axis
+        padding = Spacing(5f) // applies 5 pixels of padding on every axis
         
         backgroundColor = UIColor(255, 255, 255)
         color = UIColor(0, 0, 0)
