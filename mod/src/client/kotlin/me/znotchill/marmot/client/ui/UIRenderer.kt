@@ -312,18 +312,43 @@ object UIRenderer {
         val width = component.width()
         val height = component.height()
 
+        // default relative positioning: the screen
+        var baseX = 0f
+        var baseY = 0f
+        var baseWidth = screenWidth.toFloat()
+        var baseHeight = screenHeight.toFloat()
+
+        // if the component is relative to another, use that component's bounds as the base
+        component.relativeTo?.let { relId ->
+            val relativeTo = window.getComponentByIdDeep(relId)
+            if (relativeTo != null) {
+                baseX = relativeTo.screenX.toFloat()
+                baseY = relativeTo.screenY.toFloat()
+                baseWidth = relativeTo.width().toFloat()
+                baseHeight = relativeTo.height().toFloat()
+            }
+        }
+
+        // base anchor logic (works for screen or relative component)
         var resolvedX = when (component.props.anchor) {
-            Anchor.TOP_LEFT, Anchor.CENTER_LEFT, Anchor.BOTTOM_LEFT -> component.props.pos.x
-            Anchor.TOP_CENTER, Anchor.CENTER_CENTER, Anchor.BOTTOM_CENTER -> (screenWidth / 2f + component.props.pos.x - width / 2f)
-            Anchor.TOP_RIGHT, Anchor.CENTER_RIGHT, Anchor.BOTTOM_RIGHT -> (screenWidth - component.props.pos.x - width)
+            Anchor.TOP_LEFT, Anchor.CENTER_LEFT, Anchor.BOTTOM_LEFT ->
+                baseX + component.props.pos.x
+            Anchor.TOP_CENTER, Anchor.CENTER_CENTER, Anchor.BOTTOM_CENTER ->
+                baseX + baseWidth / 2f + component.props.pos.x - width / 2f
+            Anchor.TOP_RIGHT, Anchor.CENTER_RIGHT, Anchor.BOTTOM_RIGHT ->
+                baseX + baseWidth - component.props.pos.x - width
         }
 
         var resolvedY = when (component.props.anchor) {
-            Anchor.TOP_LEFT, Anchor.TOP_CENTER, Anchor.TOP_RIGHT -> component.props.pos.y
-            Anchor.CENTER_LEFT, Anchor.CENTER_CENTER, Anchor.CENTER_RIGHT -> (screenHeight / 2f + component.props.pos.y - height / 2f)
-            Anchor.BOTTOM_LEFT, Anchor.BOTTOM_CENTER, Anchor.BOTTOM_RIGHT -> (screenHeight - component.props.pos.y - height)
+            Anchor.TOP_LEFT, Anchor.TOP_CENTER, Anchor.TOP_RIGHT ->
+                baseY + component.props.pos.y
+            Anchor.CENTER_LEFT, Anchor.CENTER_CENTER, Anchor.CENTER_RIGHT ->
+                baseY + baseHeight / 2f + component.props.pos.y - height / 2f
+            Anchor.BOTTOM_LEFT, Anchor.BOTTOM_CENTER, Anchor.BOTTOM_RIGHT ->
+                baseY + baseHeight - component.props.pos.y - height
         }
 
+        // apply relative positioning (overrides anchor)
         component.relativeTo?.let { relId ->
             val relativeTo = window.getComponentByIdDeep(relId) ?: return@let
             when (component.relativePosition) {
