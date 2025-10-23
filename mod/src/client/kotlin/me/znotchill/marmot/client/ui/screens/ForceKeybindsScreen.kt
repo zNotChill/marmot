@@ -37,7 +37,7 @@ class ForceKeybindsScreen(
             rowHeight
         )
         payload.binds.forEach { (bindName, keyString) ->
-            val keyBinding = client!!.options.allKeys.firstOrNull { it.translationKey.endsWith(bindName) }
+            val keyBinding = client!!.options.allKeys.firstOrNull { it.boundKeyTranslationKey.endsWith(bindName) }
             if (keyBinding != null) {
                 keybindList.addKeybind(keyBinding, keyString)
             }
@@ -93,15 +93,20 @@ class ForceKeybindsScreen(
 
         inner class KeybindEntry(val bind: KeyBinding, val key: String) : Entry<KeybindEntry>() {
             override fun render(
-                context: DrawContext, index: Int, y: Int, x: Int,
-                entryWidth: Int, entryHeight: Int, mouseX: Int, mouseY: Int,
-                hovered: Boolean, tickDelta: Float
+                context: DrawContext?,
+                mouseX: Int,
+                mouseY: Int,
+                hovered: Boolean,
+                deltaTicks: Float
             ) {
                 try {
                     val fontHeight = textRenderer.fontHeight
                     val padding = 5
+                    // @TODO test
+                    val entryWidth = width - padding * 2
+                    val entryHeight = height + padding * 2
 
-                    val bindText = Text.translatable(bind.translationKey)
+                    val bindText = Text.translatable(bind.boundKeyTranslationKey)
 
                     val keyText = InputUtil.fromTranslationKey(key)?.localizedText
                         ?: Text.literal(key)
@@ -112,9 +117,9 @@ class ForceKeybindsScreen(
                     val keyX = x + entryWidth - keyWidth - 5
                     val keyY = y + (entryHeight - keyHeight) / 2
 
-                    context.fill(keyX, keyY, keyX + keyWidth, keyY + keyHeight, 0xFF555555.toInt())
+                    context?.fill(keyX, keyY, keyX + keyWidth, keyY + keyHeight, 0xFF555555.toInt())
 
-                    context.drawText(
+                    context?.drawText(
                         textRenderer,
                         keyText,
                         keyX + (keyWidth - textRenderer.getWidth(keyText)) / 2,
@@ -123,7 +128,7 @@ class ForceKeybindsScreen(
                         false
                     )
 
-                    context.drawText(
+                    context?.drawText(
                         textRenderer,
                         bindText,
                         x + 5,
@@ -132,11 +137,12 @@ class ForceKeybindsScreen(
                         false
                     )
                 } catch (e: NumberFormatException) {
-                    MarmotClient.LOGGER.error("Server sent an invalid keybind! ${bind.translationKey} -> $key")
+                    MarmotClient.LOGGER.error("Server sent an invalid keybind! ${bind.boundKeyTranslationKey} -> $key")
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
             }
+
         }
     }
 }
