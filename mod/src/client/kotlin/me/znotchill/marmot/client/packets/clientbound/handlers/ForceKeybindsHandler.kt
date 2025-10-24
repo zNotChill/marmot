@@ -43,7 +43,7 @@ class ForceKeybindsHandler {
     fun onKeybindsAccept(payload: ForceKeybindsPayload, context: ClientPlayNetworking.Context) {
         val client = context.client()
         payload.binds.forEach { (bindName, forcedKeyTranslationKey) ->
-            val keyBinding = client.options.allKeys.firstOrNull { it.boundKeyTranslationKey == bindName }
+            val keyBinding = client.options.allKeys.firstOrNull { it.id == bindName }
                 ?: return@forEach println("Unknown bind name: $bindName")
 
             val forcedKey = InputUtil.fromTranslationKey(forcedKeyTranslationKey)
@@ -51,7 +51,7 @@ class ForceKeybindsHandler {
 
             println("RECEIVED KEYBIND $keyBinding -> $forcedKey")
             KeybindManager.overrideKeybind(keyBinding, forcedKey)
-            println("Set ${keyBinding.boundKeyTranslationKey} to $forcedKeyTranslationKey")
+            println("Set ${keyBinding.id} to $forcedKeyTranslationKey")
         }
 
         KeyBinding.updateKeysByCode()

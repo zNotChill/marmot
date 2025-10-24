@@ -37,7 +37,9 @@ class ForceKeybindsScreen(
             rowHeight
         )
         payload.binds.forEach { (bindName, keyString) ->
-            val keyBinding = client!!.options.allKeys.firstOrNull { it.boundKeyTranslationKey.endsWith(bindName) }
+            val keyBinding = client!!.options.allKeys.firstOrNull {
+                it.id.endsWith(bindName)
+            }
             if (keyBinding != null) {
                 keybindList.addKeybind(keyBinding, keyString)
             }
@@ -102,11 +104,10 @@ class ForceKeybindsScreen(
                 try {
                     val fontHeight = textRenderer.fontHeight
                     val padding = 5
-                    // @TODO test
                     val entryWidth = width - padding * 2
                     val entryHeight = height + padding * 2
 
-                    val bindText = Text.translatable(bind.boundKeyTranslationKey)
+                    val bindText = Text.translatable(bind.id)
 
                     val keyText = InputUtil.fromTranslationKey(key)?.localizedText
                         ?: Text.literal(key)
@@ -119,6 +120,8 @@ class ForceKeybindsScreen(
 
                     context?.fill(keyX, keyY, keyX + keyWidth, keyY + keyHeight, 0xFF555555.toInt())
 
+                    println(keyX + (keyWidth - textRenderer.getWidth(keyText)) / 2)
+                    println(keyY + (keyHeight - fontHeight) / 2)
                     context?.drawText(
                         textRenderer,
                         keyText,

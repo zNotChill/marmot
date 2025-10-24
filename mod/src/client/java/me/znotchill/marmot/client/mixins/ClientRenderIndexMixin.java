@@ -13,16 +13,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(RenderSystem.class)
 public abstract class ClientRenderIndexMixin {
-
-
     @Inject(method = "bindDefaultUniforms", at = @At("HEAD"))
     private static void bindDefaultUniforms(RenderPass pass, CallbackInfo ci) {
         ShaderManager.INSTANCE.createBuffers();
         for (Pair<@NotNull String, @NotNull GpuBufferSlice> stringGpuBufferSlicePair : ShaderManager.INSTANCE.getAllSlicesList()) {
             pass.setUniform(stringGpuBufferSlicePair.component1(), stringGpuBufferSlicePair.component2());
         }
-
-
     }
-
 }
