@@ -18,6 +18,7 @@ public abstract class HeldItemRendererMixin {
     @Inject(method = "updateHeldItems", at = @At("HEAD"), cancellable = true)
     void forceEquip(CallbackInfo ci) {
         if (Client.mouseButtonsLocked) {
+            // force reset the player's swing
             equipProgressMainHand = 1f;
             lastEquipProgressMainHand = 1f;
             equipProgressOffHand = 1f;

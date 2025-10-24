@@ -1,6 +1,7 @@
 pluginManagement {
     repositories {
         maven("https://maven.fabricmc.net/") { name = "Fabric" }
+        maven("https://redirector.kotlinlang.org/maven/bootstrap")
         gradlePluginPortal()
         mavenCentral()
     }
