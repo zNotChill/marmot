@@ -1,11 +1,11 @@
 package me.znotchill.marmot.minestom.uis
 
+import me.znotchill.marmot.common.classes.Vec2
 import me.znotchill.marmot.common.ui.Anchor
 import me.znotchill.marmot.common.ui.MarmotUI
 import me.znotchill.marmot.common.ui.classes.Easing
 import me.znotchill.marmot.common.ui.classes.Spacing
 import me.znotchill.marmot.common.ui.classes.UIColor
-import me.znotchill.marmot.common.ui.classes.Vec2
 import me.znotchill.marmot.common.ui.components.padding
 import me.znotchill.marmot.common.ui.components.relative
 import me.znotchill.marmot.common.ui.components.schedule

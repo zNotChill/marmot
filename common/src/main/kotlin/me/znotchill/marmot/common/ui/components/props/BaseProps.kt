@@ -1,9 +1,9 @@
 package me.znotchill.marmot.common.ui.components.props
 
 import kotlinx.serialization.Serializable
+import me.znotchill.marmot.common.classes.Vec2
 import me.znotchill.marmot.common.ui.Anchor
 import me.znotchill.marmot.common.ui.classes.Spacing
-import me.znotchill.marmot.common.ui.classes.Vec2
 
 @Serializable
 open class BaseProps(

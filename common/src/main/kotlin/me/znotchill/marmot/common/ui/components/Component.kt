@@ -2,13 +2,13 @@ package me.znotchill.marmot.common.ui.components
 
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
+import me.znotchill.marmot.common.classes.Vec2
 import me.znotchill.marmot.common.ui.UIEventQueue
 import me.znotchill.marmot.common.ui.UIWindow
 import me.znotchill.marmot.common.ui.classes.CompType
 import me.znotchill.marmot.common.ui.classes.Easing
 import me.znotchill.marmot.common.ui.classes.RelativePosition
 import me.znotchill.marmot.common.ui.classes.Spacing
-import me.znotchill.marmot.common.ui.classes.Vec2
 import me.znotchill.marmot.common.ui.components.props.BaseProps
 import me.znotchill.marmot.common.ui.events.MoveEvent
 import me.znotchill.marmot.common.ui.events.OpacityEvent

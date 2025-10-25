@@ -1,9 +1,9 @@
 package me.znotchill.marmot.common.ui.dsl
 
+import me.znotchill.marmot.common.classes.Vec2
 import me.znotchill.marmot.common.ui.UIWindow
 import me.znotchill.marmot.common.ui.classes.Spacing
 import me.znotchill.marmot.common.ui.classes.UIColor
-import me.znotchill.marmot.common.ui.classes.Vec2
 import me.znotchill.marmot.common.ui.components.BoxComponent
 import me.znotchill.marmot.common.ui.components.Component
 import me.znotchill.marmot.common.ui.components.GradientComponent

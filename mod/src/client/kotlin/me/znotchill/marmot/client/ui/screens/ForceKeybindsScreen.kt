@@ -106,7 +106,7 @@ class ForceKeybindsScreen(
                     val entryWidth = width - padding * 2
                     val entryHeight = height + padding * 2
 
-                    val bindText = Text.translatable(bind.boundKeyTranslationKey)
+                    val bindText = Text.translatable(bind.id)
 
                     val keyText = InputUtil.fromTranslationKey(key)?.localizedText
                         ?: Text.literal(key)
@@ -137,7 +137,7 @@ class ForceKeybindsScreen(
                         false
                     )
                 } catch (e: NumberFormatException) {
-                    MarmotClient.LOGGER.error("Server sent an invalid keybind! ${bind.boundKeyTranslationKey} -> $key")
+                    MarmotClient.LOGGER.error("Server sent an invalid keybind! ${bind.id} -> $key")
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }

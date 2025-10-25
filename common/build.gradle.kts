@@ -19,6 +19,7 @@ dependencies {
     implementation("io.netty:netty-buffer:4.1.111.Final")
     implementation("io.netty:netty-common:4.1.111.Final")
     implementation("net.kyori:adventure-api:4.24.0")
+    implementation("org.joml:joml:1.10.8")
 }
 
 tasks.test {

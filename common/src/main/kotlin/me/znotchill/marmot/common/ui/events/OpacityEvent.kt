@@ -1,7 +1,6 @@
 package me.znotchill.marmot.common.ui.events
 
 import kotlinx.serialization.Serializable
-import me.znotchill.marmot.common.ui.classes.Vec2
 import kotlinx.serialization.Transient
 import me.znotchill.marmot.common.ui.classes.Easing
 

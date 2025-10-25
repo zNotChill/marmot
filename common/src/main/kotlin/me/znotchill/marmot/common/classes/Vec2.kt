@@ -1,9 +1,14 @@
-package me.znotchill.marmot.common.ui.classes
+package me.znotchill.marmot.common.classes
 
 import kotlinx.serialization.Serializable
+import org.joml.Vector2f
+import org.joml.Vector2fc
 
 @Serializable
-data class Vec2(var x: Float = 0f, var y: Float = 0f) {
+data class Vec2(val x: Float = 0f, val y: Float = 0f) {
+    fun toJoml(): Vector2f = Vector2f(x, y)
+    companion object { fun fromJoml(v: Vector2fc) = Vec2(v.x(), v.y()) }
+
     fun lineTo(to: Vec2): List<Vec2> {
         val points = mutableListOf<Vec2>()
 
