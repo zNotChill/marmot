@@ -1,12 +1,12 @@
 package me.znotchill.marmot.client.ui.components
 
+import me.znotchill.marmot.client.ui.draw
+import me.znotchill.marmot.common.ui.components.FlowContainer
 import net.minecraft.client.MinecraftClient
 import net.minecraft.client.gui.DrawContext
-import me.znotchill.marmot.client.ui.draw
-import me.znotchill.marmot.common.ui.components.Group
 
-class GroupRenderer : UIComponent<Group>() {
-    override fun drawContent(component: Group, context: DrawContext, instance: MinecraftClient) {
+class FlowContainerRenderer : UIComponent<FlowContainer>() {
+    override fun drawContent(component: FlowContainer, context: DrawContext, instance: MinecraftClient) {
         val props = component.props
 
         props.backgroundColor?.let { bg ->

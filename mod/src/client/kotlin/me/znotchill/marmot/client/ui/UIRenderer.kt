@@ -2,33 +2,40 @@ package me.znotchill.marmot.client.ui
 
 import me.znotchill.marmot.client.MarmotClient
 import me.znotchill.marmot.client.ui.components.BoxRenderer
+import me.znotchill.marmot.client.ui.components.FlowContainerRenderer
 import me.znotchill.marmot.client.ui.components.GradientRenderer
 import me.znotchill.marmot.client.ui.components.GroupRenderer
 import me.znotchill.marmot.client.ui.components.LineRenderer
+import me.znotchill.marmot.client.ui.components.ProgressBarRenderer
 import me.znotchill.marmot.client.ui.components.SpriteRenderer
 import me.znotchill.marmot.client.ui.components.TextRenderer
 import me.znotchill.marmot.client.ui.events.DestroyEventHandler
 import me.znotchill.marmot.client.ui.events.MoveEventHandler
 import me.znotchill.marmot.client.ui.events.OpacityEventHandler
 import me.znotchill.marmot.client.ui.events.PaddingEventHandler
+import me.znotchill.marmot.client.ui.events.ProgressEventHandler
 import me.znotchill.marmot.client.ui.events.RotateEventHandler
 import me.znotchill.marmot.client.ui.events.UIEventContext
 import me.znotchill.marmot.common.classes.Vec2
 import me.znotchill.marmot.common.ui.*
 import me.znotchill.marmot.common.ui.classes.Easing
+import me.znotchill.marmot.common.ui.classes.FlowDirection
 import me.znotchill.marmot.common.ui.classes.RelativePosition
 import me.znotchill.marmot.common.ui.classes.Spacing
-import me.znotchill.marmot.common.ui.components.BoxComponent
+import me.znotchill.marmot.common.ui.components.Box
 import me.znotchill.marmot.common.ui.components.Component
-import me.znotchill.marmot.common.ui.components.GradientComponent
-import me.znotchill.marmot.common.ui.components.GroupComponent
-import me.znotchill.marmot.common.ui.components.LineComponent
-import me.znotchill.marmot.common.ui.components.SpriteComponent
-import me.znotchill.marmot.common.ui.components.TextComponent
+import me.znotchill.marmot.common.ui.components.FlowContainer
+import me.znotchill.marmot.common.ui.components.Gradient
+import me.znotchill.marmot.common.ui.components.Group
+import me.znotchill.marmot.common.ui.components.Line
+import me.znotchill.marmot.common.ui.components.ProgressBar
+import me.znotchill.marmot.common.ui.components.Sprite
+import me.znotchill.marmot.common.ui.components.Text
 import me.znotchill.marmot.common.ui.events.DestroyEvent
 import me.znotchill.marmot.common.ui.events.MoveEvent
 import me.znotchill.marmot.common.ui.events.OpacityEvent
 import me.znotchill.marmot.common.ui.events.PaddingEvent
+import me.znotchill.marmot.common.ui.events.ProgressEvent
 import me.znotchill.marmot.common.ui.events.PropertyAnimation
 import me.znotchill.marmot.common.ui.events.RotateEvent
 import me.znotchill.marmot.common.ui.events.UIEvent
@@ -41,10 +48,11 @@ import net.minecraft.resource.Resource
 import net.minecraft.util.Identifier
 import org.joml.Matrix3x2f
 import java.io.IOException
+import kotlin.to
 
 object UIRenderer {
     private var currentWindow: UIWindow? = null
-    private val activeAnimations = mutableListOf<PropertyAnimation<Any>>()
+    private var activeAnimations = mutableListOf<PropertyAnimation<*, *>>()
     private var lastTime: Long = System.nanoTime()
 
     // TODO: improve this system somehow
@@ -55,7 +63,8 @@ object UIRenderer {
             OpacityEvent::class.java to OpacityEventHandler(),
             DestroyEvent::class.java to DestroyEventHandler(),
             RotateEvent::class.java to RotateEventHandler(),
-            PaddingEvent::class.java to PaddingEventHandler()
+            PaddingEvent::class.java to PaddingEventHandler(),
+            ProgressEvent::class.java to ProgressEventHandler()
         ),
         context = UIEventContext(
             currentWindow = { currentWindow },
@@ -65,17 +74,20 @@ object UIRenderer {
 
     val componentRenderer = UIComponentRenderer(
         handlers = mapOf(
-            TextComponent::class.java to TextRenderer(),
-            SpriteComponent::class.java to SpriteRenderer(),
-            GroupComponent::class.java to GroupRenderer(),
-            LineComponent::class.java to LineRenderer(),
-            GradientComponent::class.java to GradientRenderer(),
-            BoxComponent::class.java to BoxRenderer()
+            Text::class.java to TextRenderer(),
+            Sprite::class.java to SpriteRenderer(),
+            Group::class.java to GroupRenderer(),
+            Line::class.java to LineRenderer(),
+            Gradient::class.java to GradientRenderer(),
+            Box::class.java to BoxRenderer(),
+            ProgressBar::class.java to ProgressBarRenderer(),
+            FlowContainer::class.java to FlowContainerRenderer()
         )
     )
 
     fun setWindow(window: UIWindow?) {
         currentWindow = window
+        activeAnimations = mutableListOf()
     }
 
     fun register() {
@@ -116,14 +128,14 @@ object UIRenderer {
         }
     }
 
-    fun <T> enqueueAnimation(event: PropertyAnimation<T>) {
+    fun <C : Component, T> enqueueAnimation(event: PropertyAnimation<C, T>) {
         val comp = currentWindow?.getComponentByIdDeep(event.targetId)
         if (comp != null && event.from == null) {
             @Suppress("UNCHECKED_CAST")
-            event.from = event.getter(comp)
+            event.from = (event.getter as (Component) -> T)(comp)
         }
         @Suppress("UNCHECKED_CAST")
-        activeAnimations += event as PropertyAnimation<Any>
+        activeAnimations += event as PropertyAnimation<*, *>
     }
 
     fun tickAnimations(deltaSeconds: Double) {
@@ -132,35 +144,39 @@ object UIRenderer {
             val anim = iterator.next()
 
             val comp = currentWindow?.getComponentByIdDeep(anim.targetId) ?: continue
-            val start = anim.from ?: anim.getter(comp)
-
             anim.elapsed += deltaSeconds
+
             val t = (anim.elapsed / anim.durationSeconds).coerceIn(0.0, 1.0)
             val easedT = Easing.valueOf(anim.easing).getValue(t)
 
             @Suppress("UNCHECKED_CAST")
-            when (start) {
-                is Float -> (anim as PropertyAnimation<Float>).setter(comp, lerp(start, anim.to, easedT))
-                is Int -> (anim as PropertyAnimation<Int>).setter(comp, lerp(start.toFloat(), anim.to.toFloat(), easedT).toInt())
-                is Vec2 -> {
-                    val target = anim.to as Vec2
-                    val result = Vec2(
-                        lerp(start.x, target.x, easedT),
-                        lerp(start.y, target.y, easedT)
-                    )
-                    (anim as PropertyAnimation<Vec2>).setter(comp, result)
-                }
+            val typedGetter = anim.getter as (Component) -> Any?
+            @Suppress("UNCHECKED_CAST")
+            val typedSetter = anim.setter as (Component, Any?) -> Unit
+
+//            MarmotClient.LOGGER.info("deltaSeconds=$deltaSeconds elapsed=${anim.elapsed} t=$t easedT=$easedT")
+
+            val start = anim.from ?: typedGetter(comp)
+            val end = anim.to
+            val result = when (start) {
+                is Float -> lerp(start, end as Float, easedT)
+                is Int -> lerp(start.toFloat(), (end as Int).toFloat(), easedT).toInt()
+                is Vec2 -> Vec2(
+                    lerp(start.x, (end as Vec2).x, easedT),
+                    lerp(start.y, end.y, easedT)
+                )
                 is Spacing -> {
                     val target = anim.to as Spacing
-                    val result = Spacing(
+                    Spacing(
                         x = lerp(start.x, target.x, easedT),
                         y = lerp(start.y, target.y, easedT)
                     )
-                    (anim as PropertyAnimation<Spacing>).setter(comp, result)
                 }
-                else -> anim.setter(comp, anim.to)
+
+                else -> end
             }
 
+            typedSetter(comp, result)
             if (t >= 1.0) iterator.remove()
         }
     }
@@ -179,26 +195,78 @@ object UIRenderer {
     }
 
     /**
-     * Layout a component.
+     * Layout a component and all its children.
      */
-    private fun layoutComponent(component: Component, window: UIWindow, parentScale: Vec2 = Vec2(1f, 1f)) {
-        if (component is SpriteComponent) component.resolveTexture()
+    private fun layoutComponent(
+        component: Component,
+        window: UIWindow,
+        parentScale: Vec2 = Vec2(1f, 1f)
+    ) {
+        // handle textures early so width and height are accurate
+        if (component is Sprite) component.resolveTexture()
 
-        val effectiveScale = Vec2(
-            component.props.scale.x * parentScale.x,
-            component.props.scale.y * parentScale.y
-        )
+        when (component) {
+            is Group -> {
+                component.props.components.forEach { child ->
+                    layoutComponent(child, window, component.computedScale)
+                }
+                return
+            }
 
-        component.computedScale = effectiveScale
+            is FlowContainer -> {
+                val props = component.props
+                var cursorX = props.padding.left
+                var cursorY = props.padding.top
 
-        resolvePosition(component, window)
+                // apply inherited scale (very important for nested layouts)
+                val effectiveScale = Vec2(
+                    props.scale.x * parentScale.x,
+                    props.scale.y * parentScale.y
+                )
+                component.computedScale = effectiveScale
 
-        if (component is GroupComponent) {
-            component.props.components.forEach { child ->
-                layoutComponent(child, window, effectiveScale)
+                props.components.forEach { child ->
+                    val margin = child.props.margin
+                    val x = component.screenX.toFloat()
+                    val y = component.screenY.toFloat()
+
+                    when (props.direction) {
+                        FlowDirection.HORIZONTAL -> {
+                            val childX = x + cursorX + margin.left
+                            val childY = y + props.padding.top + margin.top
+
+                            cursorX += child.width() + margin.left + margin.right + props.gap
+                            child.screenX = cursorX.toInt()
+                            child.screenY = cursorY.toInt()
+                        }
+
+                        FlowDirection.VERTICAL -> {
+                            val childX = x + props.padding.left + margin.left
+                            val childY = y + cursorY + margin.top
+
+                            cursorY += child.height() + margin.top + margin.bottom + props.gap
+                            child.screenX = cursorX.toInt()
+                            child.screenY = cursorY.toInt()
+                        }
+                    }
+
+                    layoutComponent(child, window, effectiveScale)
+                }
+                return
+            }
+
+            else -> {
+                val effectiveScale = Vec2(
+                    component.props.scale.x * parentScale.x,
+                    component.props.scale.y * parentScale.y
+                )
+                component.computedScale = effectiveScale
+
+                resolvePosition(component, window)
             }
         }
     }
+
 
     /**
      * Manipulate the matrices of the component to apply scale and rotation.
@@ -215,29 +283,26 @@ object UIRenderer {
         val pivotY = height / 2f
 
         context.matrices.translate(component.screenX.toFloat(), component.screenY.toFloat())
-
-        context.matrices.scale(scale.x, scale.y)
-
         context.matrices.translate(pivotX, pivotY)
-        context.matrices.mul(Matrix3x2f().rotation(Math.toRadians(rotation.toDouble()).toFloat()))
+        context.matrices.scale(scale.x, scale.y)
+        context.matrices.mul(Matrix3x2f().rotation(rotation.toFloat()))
         context.matrices.translate(-pivotX, -pivotY)
-
-        context.matrices.translate(props.padding.left, props.padding.top)
     }
 
     /**
      * Resolve absolute screen position for a component.
      */
     private fun resolvePosition(component: Component, window: UIWindow) {
+        // TODO: cleanup
         val screenWidth = MinecraftClient.getInstance().window.scaledWidth
         val screenHeight = MinecraftClient.getInstance().window.scaledHeight
 
-        val width = component.width()
-        val height = component.height()
+        val width = component.width().takeIf { it > 0 } ?: component.props.size.x
+        val height = component.height().takeIf { it > 0 } ?: component.props.size.y
 
         // default relative positioning: the screen
-        var baseX = 0f
-        var baseY = 0f
+        var baseX = component.props.pos.x
+        var baseY = component.props.pos.y
         var baseWidth = screenWidth.toFloat()
         var baseHeight = screenHeight.toFloat()
 
@@ -276,24 +341,46 @@ object UIRenderer {
             val relativeTo = window.getComponentByIdDeep(relId) ?: return@let
             when (component.relativePosition) {
                 RelativePosition.RIGHT_OF -> {
-                    resolvedX = relativeTo.screenX + relativeTo.width() + component.props.pos.x
-                    resolvedY = relativeTo.screenY + component.props.pos.y
+                    resolvedX = relativeTo.screenX + relativeTo.width() + component.props.pos.x + relativeTo.props.margin.x
+                    resolvedY = relativeTo.screenY + component.props.pos.y + (component.height() / 2)
                 }
                 RelativePosition.LEFT_OF -> {
-                    resolvedX = relativeTo.screenX - width + component.props.pos.x
-                    resolvedY = relativeTo.screenY + component.props.pos.y
+                    resolvedX = relativeTo.screenX - width + component.props.pos.x - relativeTo.props.margin.x
+                    resolvedY = relativeTo.screenY + component.props.pos.y + (component.height() / 2)
                 }
                 RelativePosition.BELOW -> {
                     resolvedX = relativeTo.screenX + component.props.pos.x
-                    resolvedY = relativeTo.screenY + relativeTo.height() + component.props.pos.y
+                    resolvedY = relativeTo.screenY + relativeTo.height() + component.props.pos.y + relativeTo.props.margin.y
                 }
                 RelativePosition.ABOVE -> {
                     resolvedX = relativeTo.screenX + component.props.pos.x
-                    resolvedY = relativeTo.screenY - height + component.props.pos.y
+                    resolvedY = relativeTo.screenY - height + component.props.pos.y - relativeTo.props.margin.y
                 }
                 else -> {}
             }
         }
+
+        // apply margins (inward or outward depending on anchor)
+        val margin = component.props.margin
+
+        when (component.props.anchor) {
+            Anchor.TOP_LEFT, Anchor.CENTER_LEFT, Anchor.BOTTOM_LEFT ->
+                resolvedX += margin.left
+            Anchor.TOP_CENTER, Anchor.CENTER_CENTER, Anchor.BOTTOM_CENTER ->
+                resolvedX += margin.x
+            Anchor.TOP_RIGHT, Anchor.CENTER_RIGHT, Anchor.BOTTOM_RIGHT ->
+                resolvedX -= margin.right
+        }
+
+        when (component.props.anchor) {
+            Anchor.TOP_LEFT, Anchor.TOP_CENTER, Anchor.TOP_RIGHT ->
+                resolvedY += margin.top
+            Anchor.CENTER_LEFT, Anchor.CENTER_CENTER, Anchor.CENTER_RIGHT ->
+                resolvedY += margin.y
+            Anchor.BOTTOM_LEFT, Anchor.BOTTOM_CENTER, Anchor.BOTTOM_RIGHT ->
+                resolvedY -= margin.bottom
+        }
+
 
         component.screenX = resolvedX.toInt()
         component.screenY = resolvedY.toInt()
@@ -337,7 +424,7 @@ object UIRenderer {
  * not know what the height and width of the image is, since we do not
  * know what texture pack the player is using.
  */
-fun SpriteComponent.resolveTexture() {
+fun Sprite.resolveTexture() {
     if (props.texturePath != "") {
         val texture = UIRenderer.getTexture(props.texturePath)
         texture?.let {

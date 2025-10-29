@@ -3,20 +3,20 @@ package me.znotchill.marmot.common.ui.components
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import me.znotchill.marmot.common.ui.classes.CompType
-import me.znotchill.marmot.common.ui.components.props.LineProps
+import me.znotchill.marmot.common.ui.components.props.BoxProps
 
 @Serializable
-@SerialName("line")
-open class LineComponent(
-    override val props: LineProps
+@SerialName("box")
+open class Box(
+    override val props: BoxProps
 ) : Component() {
-    override val compType: CompType = CompType.LINE
+    override val compType: CompType = CompType.BOX
 
     override fun width(): Float {
-        return 1f
+        return props.size.x
     }
 
     override fun height(): Float {
-        return 1f
+        return props.size.y
     }
 }

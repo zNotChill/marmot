@@ -7,7 +7,7 @@ import me.znotchill.marmot.common.ui.components.props.GradientProps
 
 @Serializable
 @SerialName("gradient")
-open class GradientComponent(
+open class Gradient(
     override val props: GradientProps
 ) : Component() {
     override val compType: CompType = CompType.GRADIENT

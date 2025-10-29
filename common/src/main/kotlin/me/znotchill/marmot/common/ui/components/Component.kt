@@ -14,13 +14,16 @@ import me.znotchill.marmot.common.ui.events.MoveEvent
 import me.znotchill.marmot.common.ui.events.OpacityEvent
 import me.znotchill.marmot.common.ui.events.PaddingEvent
 import me.znotchill.marmot.common.ui.events.RotateEvent
+import java.util.UUID
 
 @Serializable
 sealed class Component {
     @Transient
     lateinit var window: UIWindow
 
-    var id: String = ""
+    var name: String = ""
+    val internalId: String = UUID.randomUUID().toString()
+        get() = name.ifBlank { field }
     var relativeTo: String? = null
     var relativePosition: RelativePosition? = null
     abstract val compType: CompType
@@ -46,8 +49,8 @@ fun Component.move(
     delay: Long = 0L
 ): MoveEvent {
     val event = MoveEvent(
-        targetId = this.id,
-        delay = 0L,
+        targetId = this.internalId,
+        delay = delay,
         position = to,
         durationSeconds = duration,
         easing = easing
@@ -64,8 +67,8 @@ fun Component.rotate(
     delay: Long = 0L
 ): RotateEvent {
     val event = RotateEvent(
-        targetId = this.id,
-        delay = 0L,
+        targetId = this.internalId,
+        delay = delay,
         rotation = rotation,
         durationSeconds = duration,
         easing = easing
@@ -86,8 +89,8 @@ fun Component.opacity(
     delay: Long = 0L
 ): OpacityEvent {
     val event = OpacityEvent(
-        targetId = this.id,
-        delay = 0L,
+        targetId = this.internalId,
+        delay = delay,
         opacity = opacity,
         durationSeconds = duration,
         easing = easing
@@ -104,8 +107,8 @@ fun Component.padding(
     delay: Long = 0L
 ): PaddingEvent {
     val event = PaddingEvent(
-        targetId = this.id,
-        delay = 0L,
+        targetId = this.internalId,
+        delay = delay,
         padding = padding,
         durationSeconds = duration,
         easing = easing
@@ -121,31 +124,31 @@ fun <T : Component> T.schedule(delay: Long, block: T.() -> Unit) {
     }
 }
 
-infix fun Component.relative(component: Component): Component {
-    this.relativeTo = component.id
+infix fun <T : Component> T.relative(component: Component): T {
+    this.relativeTo = component.internalId
     return this
 }
 
 infix fun <T : Component> T.rightOf(component: Component): T {
-    this.relativeTo = component.id
+    this.relativeTo = component.internalId
     this.relativePosition = RelativePosition.RIGHT_OF
     return this
 }
 
 infix fun <T : Component> T.leftOf(component: Component): T {
-    this.relativeTo = component.id
+    this.relativeTo = component.internalId
     this.relativePosition = RelativePosition.LEFT_OF
     return this
 }
 
 infix fun <T : Component> T.topOf(component: Component): T {
-    this.relativeTo = component.id
+    this.relativeTo = component.internalId
     this.relativePosition = RelativePosition.ABOVE
     return this
 }
 
 infix fun <T : Component> T.bottomOf(component: Component): T {
-    this.relativeTo = component.id
+    this.relativeTo = component.internalId
     this.relativePosition = RelativePosition.BELOW
     return this
 }

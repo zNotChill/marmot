@@ -3,12 +3,12 @@ package me.znotchill.marmot.common.ui.components
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import me.znotchill.marmot.common.ui.classes.CompType
-import me.znotchill.marmot.common.ui.components.props.GroupProps
+import me.znotchill.marmot.common.ui.components.props.CollectionProps
 
 @Serializable
 @SerialName("group")
-data class GroupComponent(
-    override val props: GroupProps,
+data class Group(
+    override val props: CollectionProps,
 ) : Component() {
     override val compType: CompType = CompType.GROUP
 

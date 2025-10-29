@@ -5,7 +5,7 @@ import me.znotchill.marmot.common.ui.classes.UIColor
 import me.znotchill.marmot.common.ui.components.Component
 
 @Serializable
-data class GroupProps(
-    var components: List<Component> = listOf(),
+open class CollectionProps(
+    var components: MutableList<Component> = mutableListOf(),
     var backgroundColor: UIColor? = null
 ) : BaseProps()

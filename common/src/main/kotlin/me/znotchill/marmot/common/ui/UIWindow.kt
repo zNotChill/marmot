@@ -7,7 +7,7 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.encodeToJsonElement
 import me.znotchill.marmot.common.ui.classes.UIOperation
 import me.znotchill.marmot.common.ui.components.Component
-import me.znotchill.marmot.common.ui.components.GroupComponent
+import me.znotchill.marmot.common.ui.components.Group
 
 @Serializable
 class UIWindow(val id: String) {
@@ -64,7 +64,7 @@ class UIWindow(val id: String) {
         return json.toMap()
     }
 
-    private fun componentKey(comp: Component): String = comp.id
+    private fun componentKey(comp: Component): String = comp.internalId
 
     fun getComponentById(id: String?): Component? {
         return components[id]
@@ -76,8 +76,8 @@ class UIWindow(val id: String) {
     fun getComponentByIdDeep(id: String): Component? {
         fun search(list: List<Component>): Component? {
             for (c in list) {
-                if (c.id == id) return c
-                if (c is GroupComponent) {
+                if (c.internalId == id) return c
+                if (c is Group) {
                     search(c.props.components)?.let { return it }
                 }
             }

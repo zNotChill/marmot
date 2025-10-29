@@ -8,7 +8,7 @@ import me.znotchill.marmot.common.ui.mcWidth
 
 @Serializable
 @SerialName("text")
-open class TextComponent(
+open class Text(
     override val props: TextProps
 ) : Component() {
     override val compType: CompType = CompType.TEXT

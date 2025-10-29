@@ -15,7 +15,7 @@ import me.znotchill.marmot.minestom.api.extensions.lockCamera
 import me.znotchill.marmot.minestom.api.extensions.lockPerspective
 import me.znotchill.marmot.minestom.api.extensions.openUI
 import me.znotchill.marmot.minestom.api.extensions.setPerspective
-import me.znotchill.marmot.minestom.uis.NewTestUI
+import me.znotchill.marmot.minestom.uis.MapChangeUI
 import net.minestom.server.entity.GameMode
 import net.minestom.server.event.player.AsyncPlayerConfigurationEvent
 import net.minestom.server.event.player.PlayerLoadedEvent
@@ -154,11 +154,11 @@ private class Server : BlossomServer(
             }
         )
 
-        val ui = NewTestUI()
+        val ui = MapChangeUI()
         registerCommand(
             command("ui") {
                 syntax {
-                    ui.new()
+                    ui.new(players = players.toList())
                     players.forEach { player ->
                         player.openUI(ui)
                     }

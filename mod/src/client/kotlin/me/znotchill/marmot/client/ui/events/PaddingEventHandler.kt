@@ -8,7 +8,7 @@ class PaddingEventHandler : UIEventHandler<PaddingEvent> {
     override fun handle(event: PaddingEvent, component: Component, context: UIEventContext) {
         val anim = PropertyAnimation(
             targetId = event.targetId,
-            getter = { component.props.padding },
+            getter = { c: Component -> c.props.padding },
             setter = { c, value -> c.props.padding = value },
             from = null,
             to = event.padding,

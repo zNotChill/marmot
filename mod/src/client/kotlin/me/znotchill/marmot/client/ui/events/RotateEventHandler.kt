@@ -8,7 +8,7 @@ class RotateEventHandler : UIEventHandler<RotateEvent> {
     override fun handle(event: RotateEvent, component: Component, context: UIEventContext) {
         val anim = PropertyAnimation(
             targetId = event.targetId,
-            getter = { component.props.rotation },
+            getter = { c: Component -> c.props.rotation },
             setter = { c, value -> c.props.rotation = value },
             from = null,
             to = event.rotation,

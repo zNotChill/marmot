@@ -7,6 +7,7 @@ import me.znotchill.marmot.common.ui.MarmotUI
 import me.znotchill.marmot.common.ui.classes.Easing
 import me.znotchill.marmot.common.ui.classes.Spacing
 import me.znotchill.marmot.common.ui.classes.UIColor
+import me.znotchill.marmot.common.ui.components.bottomOf
 import me.znotchill.marmot.common.ui.components.move
 import me.znotchill.marmot.common.ui.components.opacity
 import me.znotchill.marmot.common.ui.components.schedule
@@ -44,33 +45,28 @@ class MapChangeUI : MarmotUI("map_change") {
                 text = "byue bye"
                 scale = Vec2(1.5f, 1.5f)
                 shadow = true
-                anchor = Anchor.TOP_RIGHT
+                anchor = Anchor.TOP_LEFT
                 opacity = 1f
                 zIndex = 1000
-                pos = Vec2(-200f, 30f)
+                margin = Spacing(x = 20f, y = 20f)
             }
             val mapChanging = text("map_changing") {
                 text = "LOADING MAP..."
                 color = UIColor(0, 0, 0)
                 backgroundColor = UIColor(255, 255, 255)
-                anchor = Anchor.TOP_RIGHT
                 opacity = 1f
                 zIndex = 1000
                 padding = Spacing(
                     x = 3f, y = 3f
                 )
-                pos = Vec2(0f, -5f)
             } topOf mapName
-
             val map = text("map") {
                 text = "ID: hi"
                 color = UIColor(230, 230, 230)
                 shadow = true
                 opacity = 0f
-                anchor = Anchor.TOP_RIGHT
-                pos = Vec2(-200f, 50f)
                 zIndex = 100
-            }
+            } bottomOf mapName
 
             background.schedule(0) {
                 players.forEach { it.playSound(swipeInSound) }
@@ -81,9 +77,9 @@ class MapChangeUI : MarmotUI("map_change") {
 
             map.schedule(backgroundFadeTime) {
                 listOf(
-                    opacity(1f, 0.5),
+                    opacity(1f, 0.0),
                     move(
-                        Vec2(20f, 50f),
+                        Vec2(20f, 0f),
                         1.0,
                         easing = Easing.EASE_OUT_BACK
                     )
@@ -93,7 +89,7 @@ class MapChangeUI : MarmotUI("map_change") {
                 listOf(
                     opacity(1f, 1.5),
                     move(
-                        Vec2(20f, 30f),
+                        Vec2(20f, 00f),
                         1.0,
                         easing = Easing.EASE_OUT_BACK
                     )
@@ -112,16 +108,16 @@ class MapChangeUI : MarmotUI("map_change") {
                     listOf(
                         opacity(0f, 0.5),
                         move(
-                            Vec2(-200f, 50f),
+                            Vec2(-200f, 0f),
                             1.0,
                             easing = Easing.EASE_OUT_BACK
                         )
                     )
                 }
                 listOf(
-                    opacity(0f, 0.5),
+                    opacity(0f, 0.0),
                     move(
-                        Vec2(-200f, 30f),
+                        Vec2(-200f, 0f),
                         1.0,
                         easing = Easing.EASE_OUT_BACK
                     )

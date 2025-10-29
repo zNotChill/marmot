@@ -1,13 +1,13 @@
 package me.znotchill.marmot.client.ui.components
 
 import me.znotchill.marmot.client.ui.UIRenderer
-import me.znotchill.marmot.common.ui.components.SpriteComponent
+import me.znotchill.marmot.common.ui.components.Sprite
 import net.minecraft.client.MinecraftClient
 import net.minecraft.client.gl.RenderPipelines
 import net.minecraft.client.gui.DrawContext
 
-class SpriteRenderer : UIComponent<SpriteComponent> {
-    override fun draw(component: SpriteComponent, context: DrawContext, instance: MinecraftClient) {
+class SpriteRenderer : UIComponent<Sprite>() {
+    override fun drawContent(component: Sprite, context: DrawContext, instance: MinecraftClient) {
         val props = component.props
         val texture = UIRenderer.getIdentifier(props.texturePath)
         val texWidth = component.computedSize?.x?.toInt() ?: 16
@@ -22,8 +22,6 @@ class SpriteRenderer : UIComponent<SpriteComponent> {
             drawHeight = window.scaledHeight
         }
 
-        UIRenderer.applyComponentMatrices(context, component)
-
         context.drawTexture(
             RenderPipelines.GUI_TEXTURED,
             texture,
@@ -33,7 +31,5 @@ class SpriteRenderer : UIComponent<SpriteComponent> {
             drawWidth, drawHeight,
             drawWidth, drawHeight,
         )
-
-        context.matrices.popMatrix()
     }
 }

@@ -5,7 +5,7 @@ import me.znotchill.marmot.common.classes.Vec2
 import me.znotchill.marmot.common.ui.classes.UIColor
 
 @Serializable
-data class BoxProps(
+open class BoxProps(
     var color: UIColor = UIColor(255, 255, 255),
     var fillScreen: Boolean = false
 ) : BaseProps(

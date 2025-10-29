@@ -5,5 +5,5 @@ import me.znotchill.marmot.common.ui.events.PropertyAnimation
 
 class UIEventContext(
     val currentWindow: () -> UIWindow?,
-    val enqueueAnimation: (PropertyAnimation<*>) -> Unit
+    val enqueueAnimation: (PropertyAnimation<*, *>) -> Unit
 )

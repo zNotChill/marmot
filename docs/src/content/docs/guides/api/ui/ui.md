@@ -11,6 +11,10 @@ In Marmot, you can create UIs that are serialized and sent to the client.
 Due to Marmot’s age, some features may still be buggy or unstable. We’re actively improving them.
 :::
 
+:::caution
+Marmot UI is **HUD based**. This means that openable, interactable menus are not yet possible in Marmot.
+:::
+
 A simple UI can be created like this:
 
 ```kt

@@ -1,48 +1,42 @@
 package me.znotchill.marmot.minestom.uis
 
-import me.znotchill.marmot.common.classes.Vec2
 import me.znotchill.marmot.common.ui.Anchor
 import me.znotchill.marmot.common.ui.MarmotUI
-import me.znotchill.marmot.common.ui.classes.Easing
 import me.znotchill.marmot.common.ui.classes.Spacing
 import me.znotchill.marmot.common.ui.classes.UIColor
-import me.znotchill.marmot.common.ui.components.padding
-import me.znotchill.marmot.common.ui.components.relative
-import me.znotchill.marmot.common.ui.components.schedule
+import me.znotchill.marmot.common.ui.components.bottomOf
+import me.znotchill.marmot.common.ui.components.leftOf
+import me.znotchill.marmot.common.ui.components.rightOf
+import me.znotchill.marmot.common.ui.components.topOf
 
 
 class NewTestUI : MarmotUI("test_ui_2") {
     fun new() {
-        group("group") {
-            val background = box("background") {
-                anchor = Anchor.CENTER_CENTER
+        group() {
+            val test = text() {
+                anchor = Anchor.TOP_RIGHT
+                text = "LOADING MAP..."
                 color = UIColor(0, 0, 0)
-                opacity = 1f
-                size = Vec2(300f, 150f)
+                backgroundColor = UIColor(255, 255, 255)
+                padding = Spacing(x = 5f, y = 5f)
+                margin = Spacing(x = 20f, y = 20f)
             }
 
-            val test = text("test") {
-                anchor = Anchor.BOTTOM_LEFT
-                color = UIColor(255, 255, 255)
-                text = "Test"
-                padding = Spacing(
-                    x = 2f, y = 2f
-                )
-                scale = Vec2(3f, 3f)
-            } relative background
+            text() {
+                text = "noorfb"
+            } bottomOf test
 
-            test.schedule(60) {
-                listOf(
-                    padding(
-                        padding = Spacing(
-                            x = 10f,
-                            y = 10f
-                        ),
-                        duration = 0.5,
-                        easing = Easing.EASE_IN_EXPO
-                    )
-                )
-            }
+            text() {
+                text = "noorfb"
+            } rightOf test
+
+            text() {
+                text = "noorfb"
+            } topOf test
+
+            text() {
+                text = "noorfb"
+            } leftOf test
         }
     }
 }

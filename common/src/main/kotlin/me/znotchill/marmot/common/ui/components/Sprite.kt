@@ -7,7 +7,7 @@ import me.znotchill.marmot.common.ui.components.props.SpriteProps
 
 @Serializable
 @SerialName("sprite")
-open class SpriteComponent(
+open class Sprite(
     override val props: SpriteProps
 ) : Component() {
     override val compType: CompType

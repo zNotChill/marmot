@@ -5,15 +5,11 @@ import kotlinx.serialization.Transient
 import me.znotchill.marmot.common.ui.components.Component
 
 @Serializable
-data class PropertyAnimation<T>(
+data class PropertyAnimation<C : Component, T>(
     override val targetId: String,
     override var delay: Long = 0L,
-    val getter: (Component) -> T,
-    val setter: (Component, T) -> Unit,
-    /**
-     * If this value is null, the client will do the animation from
-     * the current position of the component.
-     */
+    val getter: (C) -> T,
+    val setter: (C, T) -> Unit,
     var from: T? = null,
     val to: T,
     val durationSeconds: Double,

@@ -5,7 +5,7 @@ import me.znotchill.marmot.common.classes.Vec2
 import me.znotchill.marmot.common.ui.classes.UIColor
 
 @Serializable
-data class LineProps(
+open class LineProps(
     var from: Vec2 = Vec2(0f, 0f),
     var to: Vec2 = Vec2(0f, 0f),
     var color: UIColor = UIColor(255, 255, 255),

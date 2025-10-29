@@ -37,7 +37,7 @@ class ForceKeybindsScreen(
             rowHeight
         )
         payload.binds.forEach { (bindName, keyString) ->
-            val keyBinding = client!!.options.allKeys.firstOrNull { it.boundKeyTranslationKey.endsWith(bindName) }
+            val keyBinding = client!!.options.allKeys.firstOrNull { it.id.endsWith(bindName) }
             if (keyBinding != null) {
                 keybindList.addKeybind(keyBinding, keyString)
             }

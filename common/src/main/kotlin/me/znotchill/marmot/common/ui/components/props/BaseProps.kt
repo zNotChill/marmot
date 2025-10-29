@@ -3,6 +3,7 @@ package me.znotchill.marmot.common.ui.components.props
 import kotlinx.serialization.Serializable
 import me.znotchill.marmot.common.classes.Vec2
 import me.znotchill.marmot.common.ui.Anchor
+import me.znotchill.marmot.common.ui.classes.BorderRules
 import me.znotchill.marmot.common.ui.classes.Spacing
 
 @Serializable
@@ -16,5 +17,6 @@ open class BaseProps(
     var zIndex: Int = 0,
     var padding: Spacing = Spacing(0f),
     var margin: Spacing = Spacing(0f),
-    var scale: Vec2 = Vec2(1f, 1f)
+    var scale: Vec2 = Vec2(1f, 1f),
+    var border: BorderRules = BorderRules()
 )
