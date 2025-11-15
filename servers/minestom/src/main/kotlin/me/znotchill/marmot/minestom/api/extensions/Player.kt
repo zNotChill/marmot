@@ -199,3 +199,18 @@ fun Player.updateUI(events: List<UIEvent>) {
     sendPacket(packet)
     buf.release()
 }
+
+/**
+ * Clear a player's rendered UI.
+ */
+fun Player.clearUI(id: String = "active") {
+    val buf = ByteBufAllocator.DEFAULT.buffer()
+    BufUtils.writeString(buf, id)
+
+    val bytes = ByteArray(buf.readableBytes())
+    buf.readBytes(bytes)
+    buf.release()
+
+    val packet = PluginMessagePacket("marmot:clear_ui", bytes)
+    sendPacket(packet)
+}

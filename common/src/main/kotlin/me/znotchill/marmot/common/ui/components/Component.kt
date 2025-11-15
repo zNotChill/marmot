@@ -40,6 +40,8 @@ sealed class Component {
     var computedScale: Vec2 = Vec2(0f, 0f)
     @Transient
     var computedSize: Vec2? = null
+    @Transient
+    var computedPos: Vec2? = null
 }
 
 fun Component.move(

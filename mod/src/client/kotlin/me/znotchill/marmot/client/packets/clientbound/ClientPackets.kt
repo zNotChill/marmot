@@ -10,6 +10,7 @@ object ClientPackets {
     val FORCE_KEYBINDS: Identifier = Identifier.of("marmot", "force_keybinds")
     val IS_MARMOT: Identifier = Identifier.of("marmot", "is_marmot")
     val UI: Identifier = Identifier.of("marmot", "ui")
+    val CLEAR_UI: Identifier = Identifier.of("marmot", "clear_ui")
     val PERSPECTIVE: Identifier = Identifier.of("marmot", "perspective")
     val PERSPECTIVE_LOCK: Identifier = Identifier.of("marmot", "perspective_lock")
 }

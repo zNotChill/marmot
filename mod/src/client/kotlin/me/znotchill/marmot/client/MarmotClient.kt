@@ -27,6 +27,7 @@ class MarmotClient : ClientModInitializer {
         PayloadTypeRegistry.playS2C().register(ForceKeybindsPayload.ID, ForceKeybindsPayload.CODEC)
         PayloadTypeRegistry.playS2C().register(IsMarmotClientPayload.ID, IsMarmotClientPayload.CODEC)
         PayloadTypeRegistry.playS2C().register(UIPayload.ID, UIPayload.CODEC)
+        PayloadTypeRegistry.playS2C().register(ClearUIPayload.ID, ClearUIPayload.CODEC)
         PayloadTypeRegistry.playS2C().register(PerspectiveLockPayload.ID, PerspectiveLockPayload.CODEC)
         PayloadTypeRegistry.playS2C().register(PerspectivePayload.ID, PerspectivePayload.CODEC)
 
@@ -40,6 +41,7 @@ class MarmotClient : ClientModInitializer {
         MouseHandler().register()
         IsMarmotClientHandler().register()
         UIHandler().register()
+        ClearUIHandler().register()
         PerspectiveLockHandler().register()
         PerspectiveHandler().register()
 

@@ -247,6 +247,42 @@ object MarmotAPI : BaseMarmotAPI<Player, MarmotPlayer<Player>> {
     }
 
     /**
+     * @see Player.clearUI
+     */
+    override fun clearUI(
+        audience: Audience,
+        id: String
+    ) {
+        audience.players().forEach { player ->
+            player.clearUI(id)
+        }
+    }
+
+    /**
+     * @see Player.clearUI
+     */
+    override fun clearUI(
+        audience: Audience,
+        marmotUI: MarmotUI
+    ) {
+        audience.players().forEach { player ->
+            player.clearUI(marmotUI.id)
+        }
+    }
+
+    /**
+     * @see Player.clearUI
+     */
+    override fun clearUI(
+        audience: Audience,
+        uiWindow: UIWindow
+    ) {
+        audience.players().forEach { player ->
+            player.clearUI(uiWindow.id)
+        }
+    }
+
+    /**
      * @see Player.lockPerspective
      */
     override fun lockPerspective(
@@ -257,6 +293,7 @@ object MarmotAPI : BaseMarmotAPI<Player, MarmotPlayer<Player>> {
             player.lockPerspective(locked)
         }
     }
+
     /**
      * @see Player.setPerspective
      */

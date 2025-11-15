@@ -202,17 +202,58 @@ object UIRenderer {
         window: UIWindow,
         parentScale: Vec2 = Vec2(1f, 1f)
     ) {
-        // handle textures early so width and height are accurate
-        if (component is Sprite) component.resolveTexture()
+        val effectiveScale = Vec2(
+            component.props.scale.x * parentScale.x,
+            component.props.scale.y * parentScale.y
+        )
+        component.computedScale = effectiveScale
 
         when (component) {
             is Group -> {
                 component.props.components.forEach { child ->
+                    val childBasePos = child.props.pos
+                    val groupOffset = component.props.pos
+                    val effectivePos = Vec2(
+                        childBasePos.x + groupOffset.x,
+                        childBasePos.y + groupOffset.y
+                    )
+
+                    child.computedPos = effectivePos
+
                     layoutComponent(child, window, component.computedScale)
                 }
                 return
             }
+            is Text -> {
+                // handle text early so string variables can be extracted and the new size can be calculated
+                // and the position
+                // additionally, handle multiline strings
+                val renderer = MinecraftClient.getInstance().textRenderer
 
+                val text = TextInterpolator.interpolate(component.props.text)
+                val lines = text.split("\n")
+
+                // measure widest line and total height
+                val widestLine = lines.maxOfOrNull { renderer.getWidth(it) }?.toFloat() ?: 0f
+                val totalHeight = renderer.fontHeight.toFloat() * lines.size
+
+                // apply text scale
+                val scaledWidth = widestLine * component.props.textScale.x
+                val scaledHeight = totalHeight * component.props.textScale.y
+
+                // add padding
+                val widthWithPadding =
+                    scaledWidth + component.props.padding.left + component.props.padding.right
+                val heightWithPadding =
+                    scaledHeight + component.props.padding.top + component.props.padding.bottom
+
+                component.computedSize = Vec2(widthWithPadding, heightWithPadding)
+            }
+            is Sprite -> {
+                // handle textures early so width and height are accurate
+                // (since the server does not know clientside textures)
+                component.resolveTexture()
+            }
             is FlowContainer -> {
                 val props = component.props
                 var cursorX = props.padding.left
@@ -236,8 +277,8 @@ object UIRenderer {
                             val childY = y + props.padding.top + margin.top
 
                             cursorX += child.width() + margin.left + margin.right + props.gap
-                            child.screenX = cursorX.toInt()
-                            child.screenY = cursorY.toInt()
+                            child.screenX = childX.toInt()
+                            child.screenY = childY.toInt()
                         }
 
                         FlowDirection.VERTICAL -> {
@@ -245,8 +286,8 @@ object UIRenderer {
                             val childY = y + cursorY + margin.top
 
                             cursorY += child.height() + margin.top + margin.bottom + props.gap
-                            child.screenX = cursorX.toInt()
-                            child.screenY = cursorY.toInt()
+                            child.screenX = childX.toInt()
+                            child.screenY = childY.toInt()
                         }
                     }
 
@@ -255,16 +296,10 @@ object UIRenderer {
                 return
             }
 
-            else -> {
-                val effectiveScale = Vec2(
-                    component.props.scale.x * parentScale.x,
-                    component.props.scale.y * parentScale.y
-                )
-                component.computedScale = effectiveScale
-
-                resolvePosition(component, window)
-            }
+            else -> {}
         }
+
+        resolvePosition(component, window)
     }
 
 
@@ -301,8 +336,8 @@ object UIRenderer {
         val height = component.height().takeIf { it > 0 } ?: component.props.size.y
 
         // default relative positioning: the screen
-        var baseX = component.props.pos.x
-        var baseY = component.props.pos.y
+        var baseX = component.computedPos?.x ?: component.props.pos.x
+        var baseY = component.computedPos?.y ?: component.props.pos.y
         var baseWidth = screenWidth.toFloat()
         var baseHeight = screenHeight.toFloat()
 
@@ -322,18 +357,18 @@ object UIRenderer {
             Anchor.TOP_LEFT, Anchor.CENTER_LEFT, Anchor.BOTTOM_LEFT ->
                 baseX + component.props.pos.x
             Anchor.TOP_CENTER, Anchor.CENTER_CENTER, Anchor.BOTTOM_CENTER ->
-                baseX + baseWidth / 2f + component.props.pos.x - width / 2f
+                baseX + baseWidth / 2f - width / 2f + component.props.pos.x
             Anchor.TOP_RIGHT, Anchor.CENTER_RIGHT, Anchor.BOTTOM_RIGHT ->
-                baseX + baseWidth - component.props.pos.x - width
+                baseX + baseWidth - width + component.props.pos.x
         }
 
         var resolvedY = when (component.props.anchor) {
             Anchor.TOP_LEFT, Anchor.TOP_CENTER, Anchor.TOP_RIGHT ->
                 baseY + component.props.pos.y
             Anchor.CENTER_LEFT, Anchor.CENTER_CENTER, Anchor.CENTER_RIGHT ->
-                baseY + baseHeight / 2f + component.props.pos.y - height / 2f
+                baseY + baseHeight / 2f - height / 2f + component.props.pos.y
             Anchor.BOTTOM_LEFT, Anchor.BOTTOM_CENTER, Anchor.BOTTOM_RIGHT ->
-                baseY + baseHeight - component.props.pos.y - height
+                baseY + baseHeight - height + component.props.pos.y
         }
 
         // apply relative positioning (overrides anchor)
@@ -341,24 +376,29 @@ object UIRenderer {
             val relativeTo = window.getComponentByIdDeep(relId) ?: return@let
             when (component.relativePosition) {
                 RelativePosition.RIGHT_OF -> {
-                    resolvedX = relativeTo.screenX + relativeTo.width() + component.props.pos.x + relativeTo.props.margin.x
-                    resolvedY = relativeTo.screenY + component.props.pos.y + (component.height() / 2)
+                    resolvedX = relativeTo.screenX + relativeTo.width() + relativeTo.props.margin.x
+                    resolvedY = relativeTo.screenY + relativeTo.props.margin.y
                 }
                 RelativePosition.LEFT_OF -> {
-                    resolvedX = relativeTo.screenX - width + component.props.pos.x - relativeTo.props.margin.x
-                    resolvedY = relativeTo.screenY + component.props.pos.y + (component.height() / 2)
+                    resolvedX = relativeTo.screenX - width - relativeTo.props.margin.x
+                    resolvedY = relativeTo.screenY + relativeTo.props.margin.y
                 }
                 RelativePosition.BELOW -> {
-                    resolvedX = relativeTo.screenX + component.props.pos.x
-                    resolvedY = relativeTo.screenY + relativeTo.height() + component.props.pos.y + relativeTo.props.margin.y
+                    resolvedX = relativeTo.screenX + relativeTo.props.margin.x
+                    resolvedY = relativeTo.screenY + relativeTo.height() + relativeTo.props.margin.y
                 }
                 RelativePosition.ABOVE -> {
-                    resolvedX = relativeTo.screenX + component.props.pos.x
-                    resolvedY = relativeTo.screenY - height + component.props.pos.y - relativeTo.props.margin.y
+                    resolvedX = relativeTo.screenX + relativeTo.props.margin.x
+                    resolvedY = relativeTo.screenY - height - relativeTo.props.margin.y
                 }
+
                 else -> {}
             }
+
+            resolvedX += component.props.pos.x
+            resolvedY += component.props.pos.y
         }
+
 
         // apply margins (inward or outward depending on anchor)
         val margin = component.props.margin
@@ -381,7 +421,7 @@ object UIRenderer {
                 resolvedY -= margin.bottom
         }
 
-
+        println(component.props.pos)
         component.screenX = resolvedX.toInt()
         component.screenY = resolvedY.toInt()
     }

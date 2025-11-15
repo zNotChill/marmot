@@ -44,6 +44,9 @@ interface BaseMarmotAPI<P, M : MarmotPlayer<P>> {
     fun openUI(audience: Audience, marmotUI: MarmotUI)
     fun openUI(audience: Audience, uiWindow: UIWindow)
     fun updateUI(audience: Audience, events: List<UIEvent>)
+    fun clearUI(audience: Audience, id: String)
+    fun clearUI(audience: Audience, marmotUI: MarmotUI)
+    fun clearUI(audience: Audience, uiWindow: UIWindow)
     fun lockPerspective(audience: Audience, locked: Boolean)
     fun setPerspective(audience: Audience, perspective: ClientPerspective)
 }

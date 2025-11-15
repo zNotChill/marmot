@@ -1,5 +1,6 @@
 package me.znotchill.marmot.client.ui.components
 
+import me.znotchill.marmot.client.ui.TextInterpolator
 import me.znotchill.marmot.common.ui.components.Text
 import net.minecraft.client.MinecraftClient
 import net.minecraft.client.gui.DrawContext
@@ -12,9 +13,13 @@ class TextRenderer : UIComponent<Text>() {
         val x = props.pos.x
         val y = props.pos.y
 
-        val text = props.text
-        val textWidth = renderer.getWidth(text).toFloat()
-        val textHeight = renderer.fontHeight.toFloat()
+        // interpolate dynamic variables & split into lines
+        val text = TextInterpolator.interpolate(props.text)
+        val lines = text.split("\n")
+
+        // measure and get widest line
+        val textWidth = lines.maxOfOrNull { renderer.getWidth(it) }?.toFloat() ?: 0f
+        val textHeight = (renderer.fontHeight * lines.size).toFloat()
 
         val scaleX = props.textScale.x
         val scaleY = props.textScale.y
@@ -28,35 +33,31 @@ class TextRenderer : UIComponent<Text>() {
         val bgWidth = scaledTextWidth + paddingX * 2
         val bgHeight = scaledTextHeight + paddingY * 2
 
+        // Draw background
         props.backgroundColor?.let { bg ->
             context.fill(
                 x.toInt(),
                 y.toInt(),
                 (x + bgWidth).toInt(),
-
-                // very arbitrary value (-2) but text backgrounds appear to go too deep without it
                 (y + bgHeight - 2).toInt(),
                 bg.toArgb()
             )
         }
 
-        val textStartX = x + paddingX + (bgWidth - scaledTextWidth) / 2 - paddingX
-        val textStartY = y + paddingY + (bgHeight - scaledTextHeight) / 2 - paddingY
+        val textStartX = x + paddingX
+        val textStartY = y + paddingY
 
         context.matrices.pushMatrix()
         context.matrices.translate(textStartX, textStartY)
-        context.matrices.scale(props.textScale.x, props.textScale.y)
+        context.matrices.scale(scaleX, scaleY)
 
-        context.drawText(
-            renderer,
-            text,
-            0,
-            0,
-            props.color.copy(a = (props.opacity * 255).toInt()).toArgb(),
-            props.shadow
-        )
+        val color = props.color.copy(a = (props.opacity * 255).toInt()).toArgb()
+
+        for (line in lines) {
+            context.drawText(renderer, line, 0, 0, color, props.shadow)
+            context.matrices.translate(0f, renderer.fontHeight.toFloat())
+        }
 
         context.matrices.popMatrix()
     }
-
 }
