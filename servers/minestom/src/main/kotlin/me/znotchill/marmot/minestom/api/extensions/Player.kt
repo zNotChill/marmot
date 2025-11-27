@@ -34,16 +34,29 @@ fun Player.handshake() {
  * Forcefully manipulate the player's camera.
  */
 fun Player.adjustCamera(
-    pitch: Float,
-    yaw: Float,
-    roll: Float,
-    fov: Float
+    pitch: Float = -1f,
+    yaw: Float = -1f,
+    roll: Float = -1f,
+    fov: Float = -1f,
+    lockFov: Boolean? = null,
+    animateFov: Boolean? = null
 ) {
-    val buffer = ByteBuffer.allocate(16)
+    val buffer = ByteBuffer.allocate(18)
     buffer.putFloat(pitch)
     buffer.putFloat(yaw)
     buffer.putFloat(roll)
     buffer.putFloat(fov)
+
+    if (lockFov == null)
+        buffer.put(-1)
+    else
+        buffer.put(if (lockFov) 1 else 0)
+
+    if (animateFov == null)
+        buffer.put(-1)
+    else
+        buffer.put(if (animateFov) 1 else 0)
+
     val packet = PluginMessagePacket("marmot:camera", buffer.array())
     sendPacket(packet)
 }

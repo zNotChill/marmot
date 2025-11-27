@@ -167,10 +167,12 @@ object MarmotAPI : BaseMarmotAPI<Player, MarmotPlayer<Player>> {
         pitch: Float,
         yaw: Float,
         roll: Float,
-        fov: Float
+        fov: Float,
+        overrideFov: Boolean,
+        animateFov: Boolean,
     ) {
         audience.players().forEach { player ->
-            player.adjustCamera(pitch, yaw, roll, fov)
+            player.adjustCamera(pitch, yaw, roll, fov, overrideFov, animateFov)
         }
     }
 

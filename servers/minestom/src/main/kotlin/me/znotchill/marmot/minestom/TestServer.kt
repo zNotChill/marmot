@@ -89,7 +89,17 @@ private class Server : BlossomServer(
                 val roll = argument<Float>("roll")
                 val fov = argument<Float>("fov")
                 syntax(pitch, yaw, roll, fov) { pitchFloat, yawFloat, rollFloat, fovFloat ->
-                    adjustCamera(pitchFloat, yawFloat, rollFloat, fovFloat)
+                    adjustCamera(pitchFloat, yawFloat, rollFloat, fovFloat, lockFov = true, animateFov = true)
+                }
+            }
+        )
+
+        registerCommand(
+            command("fov") {
+                val lockBool = argument<Boolean>("lock")
+                val animateBool = argument<Boolean>("animate")
+                syntax(lockBool, animateBool) { lock, animate ->
+                    adjustCamera(lockFov = lock, animateFov = animate)
                 }
             }
         )

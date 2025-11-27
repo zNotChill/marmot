@@ -6,6 +6,7 @@ import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import org.joml.Quaternionf;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -15,21 +16,52 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class GameRendererMixin {
     @Inject(method = "getFov", at = @At("RETURN"), cancellable = true)
     void onGetFov(Camera camera, float tickDelta, boolean changingFov, CallbackInfoReturnable<Float> ci) {
+        // run last so we get the return value from vanilla, zoomify/other zoom mods
         float vanillaFov = ci.getReturnValue();
 
-        if (Client.targetFov > 0f) {
-            if (Client.currentFov < 0f) {
+        // first case - FOV is not locked
+        if (!Client.lockFov) {
+            // if not animating, fully restore vanilla/zoom mod control
+            if (!Client.isInterpolatingFov) {
                 Client.currentFov = vanillaFov;
+                return;
             }
 
-            float speed = 0.2f;
-            Client.currentFov += (Client.targetFov - Client.currentFov) * speed;
+            // we are currently interpolating, but FOV is not locked
+            float animated = animateFov(vanillaFov);
 
-            ci.setReturnValue(Client.currentFov);
-        } else {
-            Client.currentFov = -1f;
-            ci.setReturnValue(vanillaFov);
+            // when animation finished, stop canceling slider/zoom
+            if (!Client.isInterpolatingFov) {
+                Client.currentFov = Client.targetFov;
+            }
+
+            ci.setReturnValue(animated);
+            return;
         }
+
+        // second case - FOV is LOCKED (ignore fov slider & zoom mods)
+        if (!Client.animateFov) {
+            ci.setReturnValue(Client.targetFov);
+            return;
+        }
+
+        ci.setReturnValue(animateFov(vanillaFov));
+    }
+
+    @Unique
+    private float animateFov(float fallbackFov) {
+        if (Client.currentFov < 0f)
+            Client.currentFov = fallbackFov;
+
+        float speed = 0.2f;
+        Client.currentFov += (Client.targetFov - Client.currentFov) * speed;
+
+        if (Math.abs(Client.targetFov - Client.currentFov) < 0.01f) {
+            Client.currentFov = Client.targetFov;
+            Client.isInterpolatingFov = false;
+        }
+
+        return Client.currentFov;
     }
 
     @Inject(method = "tiltViewWhenHurt", at = @At("HEAD"))

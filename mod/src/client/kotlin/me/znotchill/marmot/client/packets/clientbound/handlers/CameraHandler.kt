@@ -9,10 +9,18 @@ class CameraHandler {
         ClientPlayNetworking.registerGlobalReceiver(CameraPayload.ID) { payload, context ->
             val client = context.client()
             client.execute {
-                Client.customPitch = payload.x
-                Client.customYaw = payload.y
-                Client.customRoll = payload.z
-                Client.targetFov = payload.fov
+                if (payload.x != -1f)
+                    Client.customPitch = payload.x
+                if (payload.y != -1f)
+                    Client.customYaw = payload.y
+                if (payload.z != -1f)
+                    Client.customRoll = payload.z
+                if (payload.fov != -1f)
+                    Client.targetFov = payload.fov
+                if (payload.lockFov.toInt() != -1)
+                    Client.lockFov = payload.lockFov.toInt() != 0
+                if (payload.animateFov.toInt() != -1)
+                    Client.animateFov = payload.animateFov.toInt() != 0
             }
         }
     }

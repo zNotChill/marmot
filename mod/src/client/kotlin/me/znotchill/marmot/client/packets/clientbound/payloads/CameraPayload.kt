@@ -11,6 +11,8 @@ class CameraPayload(
     val y: Float,
     val z: Float,
     val fov: Float,
+    val lockFov: Byte,
+    val animateFov: Byte,
 ) : CustomPayload {
     companion object {
         val ID = CustomPayload.Id<CameraPayload>(ClientPackets.CAMERA)
@@ -20,6 +22,8 @@ class CameraPayload(
             PacketCodecs.FLOAT, CameraPayload::y,
             PacketCodecs.FLOAT, CameraPayload::z,
             PacketCodecs.FLOAT, CameraPayload::fov,
+            PacketCodecs.BYTE, CameraPayload::lockFov,
+            PacketCodecs.BYTE, CameraPayload::animateFov,
             ::CameraPayload
         )
     }

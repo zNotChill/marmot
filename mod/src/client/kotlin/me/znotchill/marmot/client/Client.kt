@@ -15,6 +15,12 @@ object Client {
     var targetFov: Float = -1f
     @JvmField
     var currentFov: Float = MinecraftClient.getInstance().options.fov.value.toFloat()
+    @JvmField
+    var lockFov: Boolean = false
+    @JvmField
+    var isInterpolatingFov: Boolean = false
+    @JvmField
+    var animateFov: Boolean = false
 
     @JvmField
     var cameraOffsetX  = 0f

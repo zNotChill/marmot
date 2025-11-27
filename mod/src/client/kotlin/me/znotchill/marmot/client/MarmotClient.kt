@@ -71,7 +71,10 @@ class MarmotClient : ClientModInitializer {
             Client.customPitch = 0f
             Client.customYaw = 0f
             Client.customRoll = 0f
-            Client.targetFov = client.options.fov.value.toFloat()
+            Client.targetFov = -1f
+            Client.currentFov = client.options.fov.value.toFloat()
+            Client.lockFov = false
+            Client.animateFov = false
             Client.cameraOffsetX = 0f
             Client.cameraOffsetY = 0f
             Client.cameraOffsetZ = 0f

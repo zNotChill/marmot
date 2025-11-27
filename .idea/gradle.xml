@@ -13,7 +13,6 @@
             <option value="$PROJECT_DIR$/mod" />
             <option value="$PROJECT_DIR$/servers" />
             <option value="$PROJECT_DIR$/servers/minestom" />
-            <option value="$PROJECT_DIR$/servers/paper" />
           </set>
         </option>
         <option name="resolveExternalAnnotations" value="true" />

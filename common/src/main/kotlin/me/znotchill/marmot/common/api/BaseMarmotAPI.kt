@@ -37,7 +37,7 @@ interface BaseMarmotAPI<P, M : MarmotPlayer<P>> {
 
     fun handshake(player: P)
     fun sendKeybinds(audience: Audience, binds: Map<String, String>)
-    fun adjustCamera(audience: Audience, pitch: Float, yaw: Float, roll: Float, fov: Float)
+    fun adjustCamera(audience: Audience, pitch: Float, yaw: Float, roll: Float, fov: Float, lockFov: Boolean, animateFov: Boolean)
     fun adjustCameraOffset(audience: Audience, x: Float, y: Float, z: Float)
     fun lockCamera(audience: Audience, locked: Boolean)
     fun configureMouse(audience: Audience, locked: Boolean, emitEvents: Boolean)

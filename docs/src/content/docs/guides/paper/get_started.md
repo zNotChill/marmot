@@ -3,6 +3,10 @@ title: Get Started with Paper
 description: Add Marmot to your Paper server.
 ---
 
+:::danger
+As of now, the Paper API is unsupported and unmaintained. This will change in the future once we find more time to dedicate to its maintenance.
+:::
+
 ## Installation
 Add the repository below to your build config:
 ```
