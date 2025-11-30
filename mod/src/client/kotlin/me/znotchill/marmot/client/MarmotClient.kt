@@ -75,6 +75,8 @@ class MarmotClient : ClientModInitializer {
             Client.currentFov = client.options.fov.value.toFloat()
             Client.lockFov = false
             Client.animateFov = false
+            Client.isInterpolatingFov = false
+            Client.fovAnimTicks = 5
             Client.cameraOffsetX = 0f
             Client.cameraOffsetY = 0f
             Client.cameraOffsetZ = 0f

@@ -20,6 +20,8 @@ object Client {
     @JvmField
     var isInterpolatingFov: Boolean = false
     @JvmField
+    var fovAnimTicks: Int = 5
+    @JvmField
     var animateFov: Boolean = false
 
     @JvmField

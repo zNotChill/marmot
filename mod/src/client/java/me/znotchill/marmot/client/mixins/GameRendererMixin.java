@@ -28,7 +28,7 @@ public class GameRendererMixin {
             }
 
             // we are currently interpolating, but FOV is not locked
-            float animated = animateFov(vanillaFov);
+            float animated = animateFov(vanillaFov, tickDelta);
 
             // when animation finished, stop canceling slider/zoom
             if (!Client.isInterpolatingFov) {
@@ -45,20 +45,30 @@ public class GameRendererMixin {
             return;
         }
 
-        ci.setReturnValue(animateFov(vanillaFov));
+        ci.setReturnValue(animateFov(vanillaFov, tickDelta));
     }
 
     @Unique
-    private float animateFov(float fallbackFov) {
+    private float animateFov(float fallbackFov, float tickDelta) {
         if (Client.currentFov < 0f)
             Client.currentFov = fallbackFov;
 
-        float speed = 0.2f;
-        Client.currentFov += (Client.targetFov - Client.currentFov) * speed;
+        if (Client.fovAnimTicks <= 0) {
+            Client.currentFov = Client.targetFov;
+            Client.isInterpolatingFov = false;
+            return Client.currentFov;
+        }
+
+        float fractionPerTick = 1f / Client.fovAnimTicks;
+        float delta = Client.targetFov - Client.currentFov;
+
+        Client.currentFov += delta * fractionPerTick * tickDelta;
 
         if (Math.abs(Client.targetFov - Client.currentFov) < 0.01f) {
             Client.currentFov = Client.targetFov;
             Client.isInterpolatingFov = false;
+            Client.fovAnimTicks = 0;
+
         }
 
         return Client.currentFov;

@@ -11,6 +11,7 @@ import me.znotchill.marmot.common.ClientPerspective
 import me.znotchill.marmot.common.api.BaseMarmotAPI
 import me.znotchill.marmot.common.api.MarmotEvent
 import me.znotchill.marmot.common.api.MarmotPlayer
+import me.znotchill.marmot.common.classes.FovOp
 import me.znotchill.marmot.common.ui.MarmotUI
 import me.znotchill.marmot.common.ui.UIEventQueue
 import me.znotchill.marmot.common.ui.UIWindow
@@ -168,11 +169,22 @@ object MarmotAPI : BaseMarmotAPI<Player, MarmotPlayer<Player>> {
         yaw: Float,
         roll: Float,
         fov: Float,
-        overrideFov: Boolean,
+        fovOp: FovOp,
+        fovAnimTicks: Int,
+        lockFov: Boolean,
         animateFov: Boolean,
     ) {
         audience.players().forEach { player ->
-            player.adjustCamera(pitch, yaw, roll, fov, overrideFov, animateFov)
+            player.adjustCamera(
+                pitch,
+                yaw,
+                roll,
+                fov,
+                fovOp,
+                fovAnimTicks,
+                lockFov,
+                animateFov
+            )
         }
     }
 

@@ -11,6 +11,8 @@ class CameraPayload(
     val y: Float,
     val z: Float,
     val fov: Float,
+    val fovOp: Byte,
+    val fovAnimTicks: Int,
     val lockFov: Byte,
     val animateFov: Byte,
 ) : CustomPayload {
@@ -22,6 +24,8 @@ class CameraPayload(
             PacketCodecs.FLOAT, CameraPayload::y,
             PacketCodecs.FLOAT, CameraPayload::z,
             PacketCodecs.FLOAT, CameraPayload::fov,
+            PacketCodecs.BYTE, CameraPayload::fovOp,
+            PacketCodecs.INTEGER, CameraPayload::fovAnimTicks,
             PacketCodecs.BYTE, CameraPayload::lockFov,
             PacketCodecs.BYTE, CameraPayload::animateFov,
             ::CameraPayload

@@ -19,11 +19,9 @@ repositories {
 
 Add the library:
 ```
-me.znotchill.marmot:minestom-api:LATEST
-me.znotchill.marmot:common:LATEST
+me.znotchill.marmot:minestom-api:1.2.17
+me.znotchill.marmot:common:1.2.17
 ```
-
-Replace `LATEST` with whichever version is latest according to the [GitHub](https://github.com/zNotChill/marmot). Currently, it is `1.2.12`.
 
 ## Usage
 Once you have finished installation, you can add the Marmot API to your Minestom server:

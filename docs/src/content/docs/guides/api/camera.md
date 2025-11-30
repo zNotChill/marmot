@@ -10,7 +10,10 @@ If any fields are left empty:
 - `yaw` will default to -1 (don't change from the client's current yaw)
 - `roll` will default to -1 (don't change from the client's current roll)
 - `fov` will default to -1 (don't change from the client's current fov)
-- `overrideFov` will default to false
+- `fovOp` will default to `0` (`FovOp.SET`)
+  - Options: `SET`, `ADD`, `DIV`, `MUL`, `RESET`
+- `fovAnimTicks` will default to `5`
+- `lockFov` will default to false
 - `animateFov` will default to false
 
 In Kotlin, it looks like this:
@@ -20,7 +23,9 @@ player.adjustCamera(
   yaw = 0, 
   roll = 15, // degrees, 360 for one revolution
   fov = 90,
-  lockFov = true, // currently required to change the fov
-  animateFov = true // whether to interpolate the fov change or immediately apply it
+  fovOp = FovOp.SET,
+  fovAnimTicks = 2, // how many ticks to spend interpolating/animating the FOV
+  lockFov = true, // false grants control back to vanilla/zoom mods
+  animateFov = true // whether to interpolate the FOV change or immediately apply it
 )
 ```

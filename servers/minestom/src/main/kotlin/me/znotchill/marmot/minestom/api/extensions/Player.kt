@@ -8,6 +8,7 @@ import me.znotchill.marmot.common.ui.UIEventSerializer
 import me.znotchill.marmot.common.ui.UIWindow
 import me.znotchill.marmot.common.ui.events.UIEvent
 import me.znotchill.marmot.common.api.MarmotPlayer
+import me.znotchill.marmot.common.classes.FovOp
 import me.znotchill.marmot.minestom.api.marmot
 import net.minestom.server.entity.Player
 import net.minestom.server.network.packet.server.common.PluginMessagePacket
@@ -38,14 +39,19 @@ fun Player.adjustCamera(
     yaw: Float = -1f,
     roll: Float = -1f,
     fov: Float = -1f,
+    fovOp: FovOp = FovOp.SET,
+    fovAnimTicks: Int = 5,
     lockFov: Boolean? = null,
     animateFov: Boolean? = null
 ) {
-    val buffer = ByteBuffer.allocate(18)
+    val buffer = ByteBuffer.allocate(23)
     buffer.putFloat(pitch)
     buffer.putFloat(yaw)
     buffer.putFloat(roll)
     buffer.putFloat(fov)
+
+    buffer.put(fovOp.id)
+    buffer.putInt(fovAnimTicks)
 
     if (lockFov == null)
         buffer.put(-1)

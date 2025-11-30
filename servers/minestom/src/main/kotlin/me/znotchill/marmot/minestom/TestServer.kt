@@ -3,9 +3,12 @@ package me.znotchill.marmot.minestom
 import me.znotchill.blossom.command.command
 import me.znotchill.blossom.component.component
 import me.znotchill.blossom.extensions.addListener
+import me.znotchill.blossom.extensions.seconds
+import me.znotchill.blossom.scheduler.task
 import me.znotchill.blossom.server.BlossomServer
 import me.znotchill.marmot.common.ClientPerspective
 import me.znotchill.marmot.common.api.MarmotEvent
+import me.znotchill.marmot.common.classes.FovOp
 import me.znotchill.marmot.minestom.api.MarmotAPI
 import me.znotchill.marmot.minestom.api.extensions.adjustCamera
 import me.znotchill.marmot.minestom.api.extensions.adjustCameraOffset
@@ -89,7 +92,31 @@ private class Server : BlossomServer(
                 val roll = argument<Float>("roll")
                 val fov = argument<Float>("fov")
                 syntax(pitch, yaw, roll, fov) { pitchFloat, yawFloat, rollFloat, fovFloat ->
-                    adjustCamera(pitchFloat, yawFloat, rollFloat, fovFloat, lockFov = true, animateFov = true)
+                    adjustCamera(
+                        pitchFloat,
+                        yawFloat,
+                        rollFloat,
+                        fovFloat,
+                        lockFov = true,
+                        animateFov = true,
+                        fovOp = FovOp.MUL,
+                        fovAnimTicks = 20
+                    )
+                    scheduler.task {
+                        run = { task ->
+                            adjustCamera(
+                                pitchFloat,
+                                yawFloat,
+                                rollFloat,
+                                fovFloat,
+                                lockFov = true,
+                                animateFov = true,
+                                fovOp = FovOp.RESET,
+                                fovAnimTicks = 20
+                            )
+                        }
+                        delay = 2.seconds
+                    }
                 }
             }
         )

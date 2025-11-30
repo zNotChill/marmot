@@ -1,6 +1,7 @@
 package me.znotchill.marmot.common.api
 
 import me.znotchill.marmot.common.ClientPerspective
+import me.znotchill.marmot.common.classes.FovOp
 import me.znotchill.marmot.common.ui.MarmotUI
 import me.znotchill.marmot.common.ui.UIWindow
 import me.znotchill.marmot.common.ui.events.UIEvent
@@ -37,7 +38,17 @@ interface BaseMarmotAPI<P, M : MarmotPlayer<P>> {
 
     fun handshake(player: P)
     fun sendKeybinds(audience: Audience, binds: Map<String, String>)
-    fun adjustCamera(audience: Audience, pitch: Float, yaw: Float, roll: Float, fov: Float, lockFov: Boolean, animateFov: Boolean)
+    fun adjustCamera(
+        audience: Audience,
+        pitch: Float,
+        yaw: Float,
+        roll: Float,
+        fov: Float,
+        fovOp: FovOp,
+        fovAnimTicks: Int = 5,
+        lockFov: Boolean,
+        animateFov: Boolean
+    )
     fun adjustCameraOffset(audience: Audience, x: Float, y: Float, z: Float)
     fun lockCamera(audience: Audience, locked: Boolean)
     fun configureMouse(audience: Audience, locked: Boolean, emitEvents: Boolean)
