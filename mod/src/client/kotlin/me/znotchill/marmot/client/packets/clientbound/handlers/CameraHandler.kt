@@ -31,6 +31,7 @@ class CameraHandler {
                     }
 
                     Client.fovAnimTicks = payload.fovAnimTicks
+                    Client.fovTicksRemaining = payload.fovAnimTicks
                 }
                 if (payload.lockFov.toInt() != -1)
                     Client.lockFov = payload.lockFov.toInt() != 0

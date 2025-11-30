@@ -48,6 +48,7 @@ class MarmotClient : ClientModInitializer {
         UIRenderer.register()
 
         ClientTickEvents.END_CLIENT_TICK.register { client: MinecraftClient ->
+            Client.updateFovAnimation()
             val leftPressed = client.mouse.wasLeftButtonClicked()
             val rightPressed = client.mouse.wasRightButtonClicked()
 
@@ -77,6 +78,8 @@ class MarmotClient : ClientModInitializer {
             Client.animateFov = false
             Client.isInterpolatingFov = false
             Client.fovAnimTicks = 5
+            Client.previousFov = -1f
+            Client.fovTicksRemaining = 0
             Client.cameraOffsetX = 0f
             Client.cameraOffsetY = 0f
             Client.cameraOffsetZ = 0f
@@ -84,6 +87,7 @@ class MarmotClient : ClientModInitializer {
             Client.isLeftClicking = false
             Client.isRightClicking = false
             Client.emitMouseEvents = true
+            Client.mouseButtonsLocked = false
             Client.cameraLocked = false
             UIRenderer.setWindow(null)
 

@@ -23,13 +23,17 @@ object Client {
     var fovAnimTicks: Int = 5
     @JvmField
     var animateFov: Boolean = false
+    @JvmField
+    var previousFov: Float = -1f
+    @JvmField
+    var fovTicksRemaining: Int = 0
 
     @JvmField
-    var cameraOffsetX  = 0f
+    var cameraOffsetX = 0f
     @JvmField
-    var cameraOffsetY  = 0f
+    var cameraOffsetY = 0f
     @JvmField
-    var cameraOffsetZ  = 0f
+    var cameraOffsetZ = 0f
 
     @JvmField
     var cameraLocked: Boolean = false
@@ -50,4 +54,11 @@ object Client {
         set(value) {
             MinecraftClient.getInstance().options.perspective = value
         }
+
+    fun updateFovAnimation() {
+        if (fovTicksRemaining > 0) {
+            println(fovTicksRemaining)
+            fovTicksRemaining--
+        }
+    }
 }

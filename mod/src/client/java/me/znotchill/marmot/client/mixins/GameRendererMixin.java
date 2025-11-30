@@ -59,10 +59,10 @@ public class GameRendererMixin {
             return Client.currentFov;
         }
 
-        float fractionPerTick = 1f / Client.fovAnimTicks;
         float delta = Client.targetFov - Client.currentFov;
+        float step = delta / Client.fovAnimTicks;
 
-        Client.currentFov += delta * fractionPerTick * tickDelta;
+        Client.currentFov += step;
 
         if (Math.abs(Client.targetFov - Client.currentFov) < 0.01f) {
             Client.currentFov = Client.targetFov;
