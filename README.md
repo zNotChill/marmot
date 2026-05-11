@@ -1,5 +1,8 @@
 ﻿# Marmot
 
+> [!WARNING]
+> This project is no longer actively maintained! Do not use it! Check out [Piku](https://github.com/obscurecomputer/piku), the spiritual successor to Marmot.
+
 ![Minecraft Version](https://img.shields.io/badge/minecraft-1.21.10-blue)
 ![Mod Loader](https://img.shields.io/badge/loader-Fabric-magenta)
 ![Status](https://img.shields.io/badge/status-Development-yellow)
